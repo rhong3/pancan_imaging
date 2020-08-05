@@ -90,9 +90,9 @@ def cut(impath, outdir):
 
 
 # Run as main
+# 'CM', 'PDA', 'SAR'
 if __name__ == "__main__":
     if not os.path.isdir('../tiles'):
         os.mkdir('../tiles')
-    for cancer in ['UCEC', 'GBM', 'LSCC', 'CCRCC', 'CM', 'HNSCC', 'PDA', 'SAR', 'LUAD']:
+    for cancer in ['UCEC', 'GBM', 'LSCC', 'CCRCC', 'HNSCC', 'LUAD']:
         cut('../images/'+cancer, '../tiles/'+cancer)
-
