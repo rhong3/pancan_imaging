@@ -14,7 +14,6 @@ import pandas as pd
 matplotlib.use('Agg')
 import Slicer
 import staintools
-import re
 
 
 # Get all images in the root directory
@@ -25,7 +24,7 @@ def image_ids_in(root_dir, ignore=['.DS_Store', 'dict.csv']):
             print('Skipping ID:', id)
         elif '.svs' in id:
             dirname = id.split('.')[0][:-3]
-            sldnum = id.split('-')[-1]
+            sldnum = id.split('-')[-1].split('.')[0]
             ids.append((id, dirname, sldnum))
         else:
             continue
@@ -77,7 +76,7 @@ def cut(impath, outdir):
             except FileExistsError:
                 pass
             try:
-                n_x, n_y, raw_img, ct = Slicer.tile(image_file= impath+'/'+i[0], outdir=otdir,
+                n_x, n_y, raw_img, ct = Slicer.tile(image_file=impath+'/'+i[0], outdir=otdir,
                                                                 level=level, std_img=std, ft=tff)
             except IndexError:
                 pass
