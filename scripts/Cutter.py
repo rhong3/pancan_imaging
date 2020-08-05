@@ -47,7 +47,7 @@ def cut(impath, outdir):
 
     CPTACpp = pd.DataFrame(CPTAClist, columns=['id', 'dir', 'sld'])
     CPTACpp.to_csv(outdir+'/sum.csv', index=False)
-    
+
     for i in CPTAClist:
         try:
             os.mkdir("{}/{}".format(outdir, i[1]))
@@ -85,6 +85,7 @@ def cut(impath, outdir):
                 shutil.rmtree(otdir, ignore_errors=True)
         if len(os.listdir(outfolder)) < 3:
             shutil.rmtree(outfolder, ignore_errors=True)
+            print(outfolder+' has less than 3 levels. Deleted!')
 
     print("--- %s seconds ---" % (time.time() - start_time))
 
