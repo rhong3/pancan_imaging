@@ -78,7 +78,9 @@ def cut(impath, outdir):
             try:
                 n_x, n_y, raw_img, ct = Slicer.tile(image_file=impath+'/'+i[0], outdir=otdir,
                                                                 level=level, std_img=std, ft=tff)
-            except IndexError:
+            except Exception as err:
+                print(type(err))
+                print(err)
                 pass
             if len(os.listdir(otdir)) < 2:
                 shutil.rmtree(otdir, ignore_errors=True)
@@ -90,9 +92,9 @@ def cut(impath, outdir):
 
 
 # Run as main
-# 'CM', 'PDA', 'SAR'
+#
 if __name__ == "__main__":
     if not os.path.isdir('../tiles'):
         os.mkdir('../tiles')
-    for cancer in ['UCEC', 'GBM', 'LSCC', 'CCRCC', 'HNSCC', 'LUAD']:
+    for cancer in ['UCEC', 'GBM', 'LSCC', 'CCRCC', 'HNSCC', 'LUAD', 'CM', 'PDA', 'SAR']:
         cut('../images/'+cancer, '../tiles/'+cancer)

@@ -34,10 +34,15 @@ def bgcheck(img, ts):
 # Tile color normalization
 def normalization(img, sttd):
     img = np.array(img)[:, :, :3]
-    img = staintools.LuminosityStandardizer.standardize(img)
-    normalizer = staintools.StainNormalizer(method='vahadane')
-    normalizer.fit(sttd)
-    img = normalizer.transform(img)
+    try:
+        img = staintools.LuminosityStandardizer.standardize(img)
+        normalizer = staintools.StainNormalizer(method='vahadane')
+        normalizer.fit(sttd)
+        img = normalizer.transform(img)
+    except Exception as err:
+        print(type(err))
+        print(err)
+        pass
     img = Image.fromarray(img.astype('uint8'), 'RGB')
     return img
 
