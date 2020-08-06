@@ -93,3 +93,29 @@ import numpy
 # pa['Stage'] = pa['Stage'].replace({'IV': 4, 'III': 3, 'II': 2, 'I': 1})
 # pa.to_csv('../clinical/pancreatic_clinical.csv', index=False)
 
+images = pd.read_csv('../cohort.csv')
+images['Tumor'] = images['Specimen_Type'].replace({'tumor_tissue': 1, 'normal_tissue': 0})
+images = images.drop_duplicates()
+images.to_csv('../tumor_label.csv', index=False)
+br = pd.read_csv('../clinical/breast_clincial.csv', usecols=['Patient_ID', 'Stage'])
+cc = pd.read_csv('../clinical/ccrcc_clincial.csv', usecols=['Patient_ID', 'Stage'])
+co = pd.read_csv('../clinical/colon_clincial.csv', usecols=['Patient_ID', 'Stage'])
+en = pd.read_csv('../clinical/endometrial_clincial.csv', usecols=['Patient_ID', 'Stage'])
+gbm = pd.read_csv('../clinical/gbm_clincial.csv', usecols=['Patient_ID', 'Stage'])
+hn = pd.read_csv('../clinical/headneck_clincial.csv', usecols=['Patient_ID', 'Stage'])
+ls = pd.read_csv('../clinical/lscc_clincial.csv', usecols=['Patient_ID', 'Stage'])
+lu = pd.read_csv('../clinical/luad_clincial.csv', usecols=['Patient_ID', 'Stage'])
+ov = pd.read_csv('../clinical/ovarian_clincial.csv', usecols=['Patient_ID', 'Stage'])
+pa = pd.read_csv('../clinical/pancreatic_clinical.csv', usecols=['Patient_ID', 'Stage'])
+
+meta = pd.concat([br, cc, co, en, gbm, hn, ls, lu, ov, pa], axis=0)
+meta = meta.reset_index()
+meta = meta.drop(['index'], axis=1)
+meta = meta.drop_duplicates()
+
+joint = images.join(meta.set_index('Patient_ID'), on='Patient_ID', how='inner')
+joint = joint.drop_duplicates()
+joint['label'] = joint['Tumor']*joint['Stage']
+joint = joint.drop_duplicates()
+joint = joint[joint['label'].notnull()]
+joint.to_csv('../stage_label.csv', index=False)
