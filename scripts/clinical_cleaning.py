@@ -93,6 +93,7 @@ import numpy
 # pa['Stage'] = pa['Stage'].replace({'IV': 4, 'III': 3, 'II': 2, 'I': 1})
 # pa.to_csv('../clinical/pancreatic_clinical.csv', index=False)
 
+# Merge dataframes to create label files
 images = pd.read_csv('../cohort.csv')
 images['Tumor'] = images['Specimen_Type'].replace({'tumor_tissue': 1, 'normal_tissue': 0})
 images = images.drop_duplicates()
