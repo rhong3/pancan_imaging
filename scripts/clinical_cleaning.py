@@ -99,15 +99,25 @@ images['Tumor'] = images['Specimen_Type'].replace({'tumor_tissue': 1, 'normal_ti
 images = images.drop_duplicates()
 images.to_csv('../tumor_label.csv', index=False)
 br = pd.read_csv('../clinical/breast_clincial.csv', usecols=['Patient_ID', 'Stage'])
+br['type'] = 'BRCA'
 cc = pd.read_csv('../clinical/ccrcc_clincial.csv', usecols=['Patient_ID', 'Stage'])
+cc['type'] = 'CCRCC'
 co = pd.read_csv('../clinical/colon_clincial.csv', usecols=['Patient_ID', 'Stage'])
+co['type'] = 'CO'
 en = pd.read_csv('../clinical/endometrial_clincial.csv', usecols=['Patient_ID', 'Stage'])
+en['type'] = 'ENDO'
 gbm = pd.read_csv('../clinical/gbm_clincial.csv', usecols=['Patient_ID', 'Stage'])
+gbm['type'] = 'GBM'
 hn = pd.read_csv('../clinical/headneck_clincial.csv', usecols=['Patient_ID', 'Stage'])
+hn['type'] = 'HN'
 ls = pd.read_csv('../clinical/lscc_clincial.csv', usecols=['Patient_ID', 'Stage'])
+ls['type'] = 'LSCC'
 lu = pd.read_csv('../clinical/luad_clincial.csv', usecols=['Patient_ID', 'Stage'])
+lu['type'] = 'LUAD'
 ov = pd.read_csv('../clinical/ovarian_clincial.csv', usecols=['Patient_ID', 'Stage'])
+ov['type'] = 'OV'
 pa = pd.read_csv('../clinical/pancreatic_clinical.csv', usecols=['Patient_ID', 'Stage'])
+pa['type'] = 'PDA'
 
 meta = pd.concat([br, cc, co, en, gbm, hn, ls, lu, ov, pa], axis=0)
 meta = meta.reset_index()
@@ -120,3 +130,27 @@ joint['label'] = joint['Tumor']*joint['Stage']
 joint = joint.drop_duplicates()
 joint = joint[joint['label'].notnull()]
 joint.to_csv('../stage_label.csv', index=False)
+
+imlist = images['Patient_ID'].tolist()
+metalist = meta['Patient_ID'].tolist()
+has_img = []
+for idx, row in meta.iterrows():
+    if row['Patient_ID'] in imlist:
+        has_img.append(1)
+    else:
+        has_img.append(0)
+
+meta['has_image'] = has_img
+
+meta.to_csv('../meta_cohort.csv', index=False)
+
+in_proteomics = []
+for idx, row in images.iterrows():
+    if row['Patient_ID'] in metalist:
+        in_proteomics.append(1)
+    else:
+        in_proteomics.append(0)
+
+images['in_proteomics'] = in_proteomics
+
+images.to_csv('../cohort.csv', index=False)
