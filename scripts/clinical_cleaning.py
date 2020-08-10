@@ -95,7 +95,7 @@ import numpy
 
 # Merge dataframes to create label files
 images = pd.read_csv('../cohort.csv')
-images['Tumor'] = images['Specimen_Type'].replace({'tumor_tissue': 1, 'normal_tissue': 0})
+images['Tumor_normal'] = images['Specimen_Type'].replace({'tumor_tissue': 1, 'normal_tissue': 0})
 images = images.drop_duplicates()
 images.to_csv('../tumor_label.csv', index=False)
 br = pd.read_csv('../clinical/breast_clincial.csv', usecols=['Patient_ID', 'Stage'])
@@ -105,11 +105,11 @@ cc['type'] = 'CCRCC'
 co = pd.read_csv('../clinical/colon_clincial.csv', usecols=['Patient_ID', 'Stage'])
 co['type'] = 'CO'
 en = pd.read_csv('../clinical/endometrial_clincial.csv', usecols=['Patient_ID', 'Stage'])
-en['type'] = 'ENDO'
+en['type'] = 'UCEC'
 gbm = pd.read_csv('../clinical/gbm_clincial.csv', usecols=['Patient_ID', 'Stage'])
 gbm['type'] = 'GBM'
 hn = pd.read_csv('../clinical/headneck_clincial.csv', usecols=['Patient_ID', 'Stage'])
-hn['type'] = 'HN'
+hn['type'] = 'HNSCC'
 ls = pd.read_csv('../clinical/lscc_clincial.csv', usecols=['Patient_ID', 'Stage'])
 ls['type'] = 'LSCC'
 lu = pd.read_csv('../clinical/luad_clincial.csv', usecols=['Patient_ID', 'Stage'])
@@ -126,7 +126,7 @@ meta = meta.drop_duplicates()
 
 joint = images.join(meta.set_index('Patient_ID'), on='Patient_ID', how='inner')
 joint = joint.drop_duplicates()
-joint['label'] = joint['Tumor']*joint['Stage']
+joint['label'] = joint['Tumor_normal']*joint['Stage']
 joint = joint.drop_duplicates()
 joint = joint[joint['label'].notnull()]
 joint.to_csv('../stage_label.csv', index=False)
