@@ -95,6 +95,7 @@ import numpy
 
 # Merge dataframes to create label files
 images = pd.read_csv('../cohort.csv')
+images = images[images['Tumor_Segment_Acceptable'] != 'No']
 images['Tumor_normal'] = images['Specimen_Type'].replace({'tumor_tissue': 1, 'normal_tissue': 0})
 images = images.drop_duplicates()
 images.to_csv('../tumor_label.csv', index=False)
