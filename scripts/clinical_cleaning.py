@@ -99,6 +99,13 @@ images = images[images['Tumor_Segment_Acceptable'] != 'No']
 images['Tumor_normal'] = images['Specimen_Type'].replace({'tumor_tissue': 1, 'normal_tissue': 0})
 images = images.drop_duplicates()
 images.to_csv('../tumor_label.csv', index=False)
+
+images = pd.read_csv('../data_freeze.tsv', sep='\t')
+images = images[images['Tumor_Segment_Acceptable'] != 'No']
+images = images.rename(columns={'Case_ID': 'Patient_ID'})
+images['Tumor_normal'] = images['Specimen_Type'].replace({'tumor_tissue': 1, 'normal_tissue': 0})
+images = images.drop_duplicates()
+
 br = pd.read_csv('../clinical/breast_clincial.csv', usecols=['Patient_ID', 'Stage'])
 br['type'] = 'BRCA'
 cc = pd.read_csv('../clinical/ccrcc_clincial.csv', usecols=['Patient_ID', 'Stage'])
@@ -131,27 +138,3 @@ joint['label'] = joint['Tumor_normal']*joint['Stage']
 joint = joint.drop_duplicates()
 joint = joint[joint['label'].notnull()]
 joint.to_csv('../stage_label.csv', index=False)
-
-imlist = images['Patient_ID'].tolist()
-metalist = meta['Patient_ID'].tolist()
-has_img = []
-for idx, row in meta.iterrows():
-    if row['Patient_ID'] in imlist:
-        has_img.append(1)
-    else:
-        has_img.append(0)
-
-meta['has_image'] = has_img
-
-meta.to_csv('../meta_cohort.csv', index=False)
-
-in_proteomics = []
-for idx, row in images.iterrows():
-    if row['Patient_ID'] in metalist:
-        in_proteomics.append(1)
-    else:
-        in_proteomics.append(0)
-
-images['in_proteomics'] = in_proteomics
-
-images.to_csv('../cohort.csv', index=False)
