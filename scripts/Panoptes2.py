@@ -14,7 +14,7 @@ from keras.layers.merge import concatenate, add
 from keras.regularizers import l2
 
 
-def resnet_v2_stem(input, train=True):
+def resnet_v2_stem(input):
     # The stem of the pure Inception-v4 and Inception-ResNet-v2 networks. This is input part of those networks.
 
     # Input shape is 299 * 299 * 3 (Tensorflow dimension ordering)
@@ -49,7 +49,7 @@ def resnet_v2_stem(input, train=True):
     return x
 
 
-def inception_resnet_v2_A(input, scale_residual=True, train=True):
+def inception_resnet_v2_A(input, scale_residual=True):
     # Architecture of Inception_ResNet_A block which is a 35 * 35 grid module.
 
     ar1 = Conv2D(32, (1, 1), kernel_regularizer=l2(0.0002), activation="relu", padding="same")(input)
@@ -73,7 +73,7 @@ def inception_resnet_v2_A(input, scale_residual=True, train=True):
     return output
 
 
-def inception_resnet_v2_B(input, scale_residual=True, train=True):
+def inception_resnet_v2_B(input, scale_residual=True):
     # Architecture of Inception_ResNet_B block which is a 17 * 17 grid module.
 
     br1 = Conv2D(192, (1, 1), kernel_regularizer=l2(0.0002), activation="relu", padding="same")(input)
@@ -94,7 +94,7 @@ def inception_resnet_v2_B(input, scale_residual=True, train=True):
     return output
 
 
-def inception_resnet_v2_C(input, scale_residual=True, train=True):
+def inception_resnet_v2_C(input, scale_residual=True):
     # Architecture of Inception_ResNet_C block which is a 8 * 8 grid module.
 
     cr1 = Conv2D(192, (1, 1), kernel_regularizer=l2(0.0002), activation="relu", padding="same")(input)
@@ -115,7 +115,7 @@ def inception_resnet_v2_C(input, scale_residual=True, train=True):
     return output
 
 
-def reduction_resnet_A(input, k=192, l=224, m=256, n=384, train=True):
+def reduction_resnet_A(input, k=192, l=224, m=256, n=384):
     # Architecture of a 35 * 35 to 17 * 17 Reduction_ResNet_A block. It is used by both v1 and v2 Inception-ResNets.
 
     rar1 = MaxPooling2D((3, 3), strides=(2, 2))(input)
@@ -133,7 +133,7 @@ def reduction_resnet_A(input, k=192, l=224, m=256, n=384, train=True):
     return rar
 
 
-def reduction_resnet_v2_B(input, train=True):
+def reduction_resnet_v2_B(input):
     # Architecture of a 17 * 17 to 8 * 8 Reduction_ResNet_B block.
 
     rbr1 = MaxPooling2D((3, 3), strides=(2, 2), padding="valid")(input)
@@ -205,8 +205,8 @@ def Branch(input, dropout_keep_prob=0.8, num_classes=1000, is_training=True):
     return x, loss2_classifier
 
 
-def Panoptes2(inputa, inputb, inputc, demographics=None,
-               dropout=0.8, num_cls=1000, is_train=True, scope='Panoptes2', supermd=False):
+def Panoptes2(inputa, inputb, inputc,
+               dropout=0.8, num_cls=1000, is_train=True, scope='Panoptes2'):
     with tf.variable_scope(scope, 'Panoptes2', [inputa, inputb, inputc]):
 
         xa, auxa = Branch(inputa, dropout_keep_prob=dropout, num_classes=num_cls, is_training=is_train)
@@ -225,13 +225,7 @@ def Panoptes2(inputa, inputb, inputc, demographics=None,
 
         pool5_drop_10x10_s1 = Dropout(dropout)(x, training=is_train)
 
-        if supermd:
-            # integration of clinical variables
-            demographics = Dense(2, name='demographic_fc1', activation="relu", kernel_regularizer=l2(0.0002))(
-                demographics)
-            merged = concatenate([pool5_drop_10x10_s1, demographics])
-        else:
-            merged = pool5_drop_10x10_s1
+        merged = pool5_drop_10x10_s1
 
         loss3_classifier_w = Dense(num_cls, name='loss3/classifier', kernel_regularizer=l2(0.0002))
 

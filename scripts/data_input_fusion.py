@@ -1,5 +1,5 @@
 """
-Data input preparation from decoding TFrecords, onehot encoding, augmentation, and batching 3.0 for fusion
+Data input preparation from decoding TFrecords, onehot encoding, augmentation, and batching 3.0
 
 Created on 11/06/2019
 
@@ -32,8 +32,6 @@ class DataSet(object):
             features={self._mode + '/imageL0': tf.FixedLenFeature([], tf.string),
                       self._mode + '/imageL1': tf.FixedLenFeature([], tf.string),
                       self._mode + '/imageL2': tf.FixedLenFeature([], tf.string),
-                      self._mode + '/age': tf.FixedLenFeature([], tf.float32),
-                      self._mode + '/BMI': tf.FixedLenFeature([], tf.float32),
                       self._mode + '/label': tf.FixedLenFeature([], tf.int64), })
 
         imagea = tf.decode_raw(features[self._mode + '/imageL0'], tf.float32)
@@ -43,13 +41,9 @@ class DataSet(object):
         imagec = tf.decode_raw(features[self._mode + '/imageL2'], tf.float32)
         imagec = tf.reshape(imagec, [-1, 299, 299, 3])
 
-        age = tf.cast(features[self._mode + '/age'], tf.float32)
-        BMI = tf.cast(features[self._mode + '/BMI'], tf.float32)
-        demographic = tf.concat([age, BMI], -1)
-
         # Convert label from a scalar uint8 tensor to an int32 scalar.
         label = tf.cast(features[self._mode + '/label'], tf.int32)
-        return imagea, imageb, imagec, label, demographic
+        return imagea, imageb, imagec, label
 
     # decoding tfrecords for real test
     def Real_decode(self, serialized_example):
@@ -58,9 +52,7 @@ class DataSet(object):
             # Defaults are not specified since both keys are required.
             features={self._mode + '/imageL0': tf.FixedLenFeature([], tf.string),
                       self._mode + '/imageL1': tf.FixedLenFeature([], tf.string),
-                      self._mode + '/imageL2': tf.FixedLenFeature([], tf.string),
-                      self._mode + '/age': tf.FixedLenFeature([], tf.float32),
-                      self._mode + '/BMI': tf.FixedLenFeature([], tf.float32), })
+                      self._mode + '/imageL2': tf.FixedLenFeature([], tf.string),})
 
         imagea = tf.decode_raw(features[self._mode + '/imageL0'], tf.float32)
         imagea = tf.reshape(imagea, [-1, 299, 299, 3])
@@ -69,14 +61,10 @@ class DataSet(object):
         imagec = tf.decode_raw(features[self._mode + '/imageL2'], tf.float32)
         imagec = tf.reshape(imagec, [-1, 299, 299, 3])
 
-        age = tf.cast(features[self._mode + '/age'], tf.float32)
-        BMI = tf.cast(features[self._mode + '/BMI'], tf.float32)
-        demographic = tf.concat([age, BMI], -1)
-
-        return imagea, imageb, imagec, demographic
+        return imagea, imageb, imagec
 
     # augmentation including onehot encoding
-    def augment(self, imagea, imageb, imagec, labels, demographics):
+    def augment(self, imagea, imageb, imagec, labels):
 
         angles = tf.cast(tf.random_uniform([], 0, 4), tf.int32)
         imagea = tf.image.rot90(imagea, k=angles)
@@ -105,22 +93,25 @@ class DataSet(object):
 
         labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=self._classes)
 
-        return imagea, imageb, imagec, labels, demographics
+        return imagea, imageb, imagec, labels
 
     # onehot encoding only; for test set
-    def onehot_only(self, imagea, imageb, imagec, labels, demographics):
+    def onehot_only(self, imagea, imageb, imagec, labels):
         with tf.name_scope('onehot_only'):
             labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=self._classes)
-        return imagea, imageb, imagec, labels, demographics
+        return imagea, imageb, imagec, labels
 
     # dataset preparation; batching; Real test or not; train or test
-    def data(self, Not_Realtest=True, train=True):
+    def data(self, realtest=False, train=True):
         batch_size = self._batchsize
         ep = self._epochs
         filenames = tf.placeholder(tf.string, shape=None)
         dataset = tf.data.TFRecordDataset(filenames)
         dataset = dataset.repeat(ep)
-        if Not_Realtest:
+        if realtest:
+            batched_dataset = dataset.batch(batch_size, drop_remainder=False)
+            batched_dataset = batched_dataset.map(self.Real_decode)
+        else:
             if train:
                 batched_dataset = dataset.batch(batch_size, drop_remainder=True)
                 batched_dataset = batched_dataset.map(self.decode)
@@ -129,9 +120,6 @@ class DataSet(object):
                 batched_dataset = dataset.batch(batch_size, drop_remainder=False)
                 batched_dataset = batched_dataset.map(self.decode)
                 batched_dataset = batched_dataset.map(self.onehot_only)
-        else:
-            batched_dataset = dataset.batch(batch_size, drop_remainder=False)
-            batched_dataset = batched_dataset.map(self.Real_decode)
         iterator = batched_dataset.make_initializable_iterator()
         return iterator, self._filename, filenames
 
