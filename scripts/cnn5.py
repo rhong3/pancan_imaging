@@ -11,6 +11,8 @@ import sys
 import time
 import numpy as np
 import tensorflow as tf
+from keras.layers.core import Dense, Dropout
+from keras.regularizers import l2
 import Accessory2 as ac
 import Panoptes2
 
@@ -52,16 +54,49 @@ class INCEPTION:
             self.sesh.run(tf.global_variables_initializer())
 
         # unpack handles for tensor ops to feed or fetch for lower layers
-        (self.xa_in, self.xb_in, self.xc_in, self.is_train, self.y_in, self.logits,
+        (self.xa_in, self.xb_in, self.xc_in, self.is_train, self.dropout_layer, self.dense_a, self.dense_b,
+         self.x_logits, self.x_auxa, self.x_auxb, self.x_auxc, self.y_in, self.logits,
          self.net, self.w, self.pred, self.pred_loss,
          self.global_step, self.train_op, self.merged_summary) = handles
 
+        # transfer learning requires resetting a few handles
         if self.transfer:
+
+            self.dropout_layer = Dropout(self.dropout)
+            self.dense_a = Dense(self.classes, name='loss2/classifier', kernel_regularizer=l2(0.0002))
+            self.dense_b = Dense(self.classes, name='loss3/classifier', kernel_regularizer=l2(0.0002))
+
+            auxa = self.dense_a(self.dropout_layer(self.x_auxa, training=self.is_train))
+            auxb = self.dense_a(self.dropout_layer(self.x_auxb, training=self.is_train))
+            auxc = self.dense_a(self.dropout_layer(self.x_auxc, training=self.is_train))
+
+            loss2_classifier = tf.add(auxa, tf.add(auxb, auxc))
+            merged = self.dropout_layer(self.x_logits, training=self.is_train)
+            loss3_classifier = self.dense_b(merged)
+            self.ww = self.dense_b.get_weights()[0]
+            self.logits = tf.cond(tf.equal(self.is_train, tf.constant(True)),
+                             lambda: tf.add(loss3_classifier, tf.scalar_mul(tf.constant(0.1), loss2_classifier)),
+                             lambda: loss3_classifier)
+
+            self.pred = tf.nn.softmax(self.logits, name="prediction")
+
+            sample_weights = tf.gather(self.weights, tf.argmax(self.y_in, axis=1))
+
+            self.pred_loss = tf.losses.softmax_cross_entropy(onehot_labels=self.y_in,
+                                                             logits=self.logits, weights=sample_weights)
+
             self.train_op = tf.train.AdamOptimizer(
                 learning_rate=self.learning_rate).minimize(
                 loss=self.pred_loss, global_step=self.global_step,
                 var_list=['loss3/classifier/kernel:0', 'loss2/classifier/kernel:0',
                           'loss3/classifier/bias:0', 'loss2/classifier/bias:0'])
+
+            self.global_step = tf.Variable(0, trainable=False)
+
+            tf.summary.scalar("loss", self.pred_loss)
+
+            tf.summary.tensor_summary("pred", self.pred)
+            self.merged_summary = tf.summary.merge_all()
 
         if save_graph_def:  # tensorboard
             try:
@@ -87,19 +122,30 @@ class INCEPTION:
         xb_in_reshape = tf.reshape(xb_in, [-1, self.input_dim[1], self.input_dim[2], 3])
         xc_in = tf.placeholder(tf.float32, name="x")
         xc_in_reshape = tf.reshape(xc_in, [-1, self.input_dim[1], self.input_dim[2], 3])
-        # dropout
-        dropout = self.dropout
         # label input
         y_in = tf.placeholder(dtype=tf.float32, name="y")
         # train or test
         is_train = tf.placeholder_with_default(True, shape=[], name="is_train")
         classes = self.classes
 
-        logits, nett, ww = Panoptes2.Panoptes2(xa_in_reshape, xb_in_reshape, xc_in_reshape,
-                                                   num_cls=classes,
+        x_logits, nett, x_auxa, x_auxb, x_auxc = Panoptes2.Panoptes2(xa_in_reshape, xb_in_reshape, xc_in_reshape,
                                                    is_train=is_train,
-                                                   dropout=dropout,
                                                    scope='Panoptes2')
+        dropout_layer = Dropout(self.dropout)
+        dense_a = Dense(classes, name='loss2/classifier', kernel_regularizer=l2(0.0002))
+        dense_b = Dense(classes, name='loss3/classifier', kernel_regularizer=l2(0.0002))
+
+        auxa = dense_a(dropout_layer(x_auxa, training=is_train))
+        auxb = dense_a(dropout_layer(x_auxb, training=is_train))
+        auxc = dense_a(dropout_layer(x_auxc, training=is_train))
+
+        loss2_classifier = tf.add(auxa, tf.add(auxb, auxc))
+        merged = dropout_layer(x_logits, training=is_train)
+        loss3_classifier = dense_b(merged)
+        ww = dense_b.get_weights()[0]
+        logits = tf.cond(tf.equal(is_train, tf.constant(True)),
+                         lambda: tf.add(loss3_classifier, tf.scalar_mul(tf.constant(0.1), loss2_classifier)),
+                         lambda: loss3_classifier)
 
         pred = tf.nn.softmax(logits, name="prediction")
 
@@ -115,16 +161,13 @@ class INCEPTION:
         tf.summary.tensor_summary("pred", pred)
 
         # optimizer based on TensorFlow version
-        if int(str(tf.__version__).split('.', 3)[0]) == 2:
-            opt = tf.optimizers.Adam(learning_rate=self.learning_rate)
-        else:
-            opt = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
+        opt = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
 
         train_op = opt.minimize(loss=pred_loss, global_step=global_step)
 
         merged_summary = tf.summary.merge_all()
 
-        return (xa_in, xb_in, xc_in, is_train,
+        return (xa_in, xb_in, xc_in, is_train, dropout_layer, dense_a, dense_b, x_logits, x_auxa, x_auxb, x_auxc,
                 y_in, logits, nett, ww, pred, pred_loss,
                 global_step, train_op, merged_summary)
 
