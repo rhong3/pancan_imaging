@@ -87,7 +87,7 @@ def big_image_sum(label_col, path, ref_file):
     big_images = []
     ref = ref.loc[ref[label_col].notna()]
     for idx, row in ref.iterrows():
-        big_images.append([row['Patient_ID'], row['Slide_ID'].str.split('-', expand=True)[-1],
+        big_images.append([row['Patient_ID'], row['Slide_ID'],
                            path + "{}/{}/".format(str(row['Patient_ID']),
                                                   row['Slide_ID'].str.split('-', expand=True)[-1]), row[label_col]])
 

@@ -21,7 +21,7 @@ class INCEPTION:
     DEFAULTS = {
         "batch_size": 24,
         "dropout": 0.3,
-        "learning_rate": 1E-3,
+        "learning_rate": 1E-4,
         "classes": 2
     }
 
