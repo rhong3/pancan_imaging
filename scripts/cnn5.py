@@ -1,5 +1,5 @@
 """
-Convolutional neural nets driving code for TF2.0 and Xeption
+Convolutional neural nets driving code for TF2.0
 
 Created on 04/26/2019
 
@@ -112,13 +112,14 @@ class INCEPTION:
 
         tf.summary.scalar("loss", pred_loss)
 
-        tf.summary.tensor_summary("{pred", pred)
+        tf.summary.tensor_summary("pred", pred)
 
         # optimizer based on TensorFlow version
         if int(str(tf.__version__).split('.', 3)[0]) == 2:
             opt = tf.optimizers.Adam(learning_rate=self.learning_rate)
         else:
             opt = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
+
         train_op = opt.minimize(loss=pred_loss, global_step=global_step)
 
         merged_summary = tf.summary.merge_all()
