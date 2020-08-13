@@ -33,11 +33,11 @@ parser.add_argument('--modeltoload', type=str, default='', help='reload trained 
 parser.add_argument('--reference', type=str, default='../tumor_label.csv', help='reference label file')
 parser.add_argument('--label_column', type=str, default='Tumor_normal', help='label column name in reference file')
 parser.add_argument('--tile_path', type=str, default='../tiles', help='directory to tiles')
+parser.add_argument('--transfer', type=bool, default=False, help='reload for transfer learning (True or False)')
 
 opt = parser.parse_args()
 print('Input config:')
 print(opt, flush=True)
-
 
 # input image dimension
 INPUT_DIM = [opt.bs, opt.img.size, opt.img.size, 3]
@@ -167,7 +167,7 @@ def main(trc, tec, vac, cls, weight, testset=None, to_reload=None, test=None):
 
     elif to_reload:  # restore for further training and testing
         m = cnn5.INCEPTION(INPUT_DIM, HYPERPARAMS, meta_graph=to_reload, log_dir=LOG_DIR,
-                           meta_dir=LOG_DIR, weights=weight)
+                           meta_dir=LOG_DIR, weights=weight, transfer=opt.transfer)
         print("Loaded! Restart training.")
         HE = tfreloader('train', opt.ep, opt.bs, cls, trc, tec, vac)
         VHE = tfreloader('validation', opt.ep*100, opt.bs, cls, trc, tec, vac)
