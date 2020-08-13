@@ -26,9 +26,14 @@ parser.add_argument('--classes', type=int, default=2, help='number of classes to
 parser.add_argument('--img_size', type=int, default=299, help='input tile size (default 299)')
 parser.add_argument('--dropout', type=float, default=0.3, help='drop out keep rate (default 0.3)')
 parser.add_argument('--lr', type=float, default=0.0001, help='initial learning rate (default 0.0001)')
+parser.add_argument('--cut', type=float, default=0.3, help='train and test+validation split (default 0.3)')
 parser.add_argument('--pdmd', type=str, default='tumor', help='feature to predict')
 parser.add_argument('--mode', type=str, default='train', help='train or test')
 parser.add_argument('--modeltoload', type=str, default='', help='reload trained model')
+parser.add_argument('--reference', type=str, default='../tumor_label.csv', help='reference label file')
+parser.add_argument('--label_column', type=str, default='Tumor_normal', help='label column name in reference file')
+parser.add_argument('--tile_path', type=str, default='../tiles', help='directory to tiles')
+
 opt = parser.parse_args()
 print('Input config:')
 print(opt, flush=True)
@@ -102,9 +107,9 @@ def loader(totlist_dir, ds):
         slist = pd.read_csv(totlist_dir + '/te_sample.csv', header=0)
     else:
         slist = pd.read_csv(totlist_dir + '/te_sample.csv', header=0)
-    imlista = slist['L0path'].values.tolist()
-    imlistb = slist['L1path'].values.tolist()
-    imlistc = slist['L2path'].values.tolist()
+    imlista = slist['L1path'].values.tolist()
+    imlistb = slist['L2path'].values.tolist()
+    imlistc = slist['L3path'].values.tolist()
     lblist = slist['label'].values.tolist()
     filename = data_dir + '/' + ds + '.tfrecords'
     writer = tf.python_io.TFRecordWriter(filename)
@@ -117,9 +122,9 @@ def loader(totlist_dir, ds):
             label = lblist[i]
             # Create a feature
             feature = {ds + '/label': _int64_feature(label),
-                       ds + '/imageL0': _bytes_feature(tf.compat.as_bytes(imga.tostring())),
-                       ds + '/imageL1': _bytes_feature(tf.compat.as_bytes(imgb.tostring())),
-                       ds + '/imageL2': _bytes_feature(tf.compat.as_bytes(imgc.tostring()))}
+                       ds + '/imageL1': _bytes_feature(tf.compat.as_bytes(imga.tostring())),
+                       ds + '/imageL2': _bytes_feature(tf.compat.as_bytes(imgb.tostring())),
+                       ds + '/imageL3': _bytes_feature(tf.compat.as_bytes(imgc.tostring()))}
             # Create an example protocol buffer
             example = tf.train.Example(features=tf.train.Features(feature=feature))
 
@@ -210,8 +215,8 @@ if __name__ == "__main__":
         tes = pd.read_csv(data_dir+'/te_sample.csv', header=0)
         vas = pd.read_csv(data_dir+'/va_sample.csv', header=0)
     except FileNotFoundError:
-        alll = Sample_prep2.big_image_sum(pmd=opt.pdmd, path=img_dir)
-        trs, tes, vas = Sample_prep2.set_sep_idp(alll, path=data_dir, cls=opt.classes, batchsize=opt.bs)
+        alll = Sample_prep2.big_image_sum(label_col=opt.label_column, path=opt.tile_path, ref_file=opt.reference)
+        trs, tes, vas = Sample_prep2.set_sep(alll, path=data_dir, cut=opt.cut)
         trc, tec, vac, weights = counters(data_dir, opt.classes)
         loader(data_dir, 'train')
         loader(data_dir, 'validation')

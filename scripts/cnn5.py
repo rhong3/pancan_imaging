@@ -364,9 +364,9 @@ class INCEPTION:
                             wb = w[int(np.shape(net)[3] / 3):2 * int(np.shape(net)[3] / 3), :]
 
                             wc = w[2 * int(np.shape(net)[3] / 3):, :]
-                            ac.CAM(neta, wa, pred, xa, y, dirr, 'Validation_level0', bs, pmd)
-                            ac.CAM(netb, wb, pred, xb, y, dirr, 'Validation_level1', bs, pmd)
-                            ac.CAM(netc, wc, pred, xc, y, dirr, 'Validation_level2', bs, pmd)
+                            ac.CAM(neta, wa, pred, xa, y, dirr, 'Validation_level1', bs, pmd)
+                            ac.CAM(netb, wb, pred, xb, y, dirr, 'Validation_level2', bs, pmd)
+                            ac.CAM(netc, wc, pred, xc, y, dirr, 'Validation_level3', bs, pmd)
                         ac.metrics(pred, y, dirr, 'Validation', pmd)
                         now = datetime.now().isoformat()[11:]
                         print("------- Final Validation end: {} -------\n".format(now), flush=True)
@@ -414,9 +414,9 @@ class INCEPTION:
 
                         wc = w[2 * int(np.shape(net)[3] / 3):, :]
 
-                        ac.CAM(neta, wa, pred, xa, y, dirr, 'Validation_level0', bs, pmd)
-                        ac.CAM(netb, wb, pred, xb, y, dirr, 'Validation_level1', bs, pmd)
-                        ac.CAM(netc, wc, pred, xc, y, dirr, 'Validation_level2', bs, pmd)
+                        ac.CAM(neta, wa, pred, xa, y, dirr, 'Validation_level1', bs, pmd)
+                        ac.CAM(netb, wb, pred, xb, y, dirr, 'Validation_level2', bs, pmd)
+                        ac.CAM(netc, wc, pred, xc, y, dirr, 'Validation_level3', bs, pmd)
                     ac.metrics(pred, y, dirr, 'Validation', pmd)
                     now = datetime.now().isoformat()[11:]
                     print("------- Validation end: {} -------\n".format(now), flush=True)

@@ -29,16 +29,16 @@ class DataSet(object):
         features = tf.parse_example(
             serialized_example,
             # Defaults are not specified since both keys are required.
-            features={self._mode + '/imageL0': tf.FixedLenFeature([], tf.string),
-                      self._mode + '/imageL1': tf.FixedLenFeature([], tf.string),
+            features={self._mode + '/imageL1': tf.FixedLenFeature([], tf.string),
                       self._mode + '/imageL2': tf.FixedLenFeature([], tf.string),
+                      self._mode + '/imageL3': tf.FixedLenFeature([], tf.string),
                       self._mode + '/label': tf.FixedLenFeature([], tf.int64), })
 
-        imagea = tf.decode_raw(features[self._mode + '/imageL0'], tf.float32)
+        imagea = tf.decode_raw(features[self._mode + '/imageL1'], tf.float32)
         imagea = tf.reshape(imagea, [-1, 299, 299, 3])
-        imageb = tf.decode_raw(features[self._mode + '/imageL1'], tf.float32)
+        imageb = tf.decode_raw(features[self._mode + '/imageL2'], tf.float32)
         imageb = tf.reshape(imageb, [-1, 299, 299, 3])
-        imagec = tf.decode_raw(features[self._mode + '/imageL2'], tf.float32)
+        imagec = tf.decode_raw(features[self._mode + '/imageL3'], tf.float32)
         imagec = tf.reshape(imagec, [-1, 299, 299, 3])
 
         # Convert label from a scalar uint8 tensor to an int32 scalar.
@@ -50,15 +50,15 @@ class DataSet(object):
         features = tf.parse_example(
             serialized_example,
             # Defaults are not specified since both keys are required.
-            features={self._mode + '/imageL0': tf.FixedLenFeature([], tf.string),
-                      self._mode + '/imageL1': tf.FixedLenFeature([], tf.string),
-                      self._mode + '/imageL2': tf.FixedLenFeature([], tf.string),})
+            features={self._mode + '/imageL1': tf.FixedLenFeature([], tf.string),
+                      self._mode + '/imageL2': tf.FixedLenFeature([], tf.string),
+                      self._mode + '/imageL3': tf.FixedLenFeature([], tf.string),})
 
-        imagea = tf.decode_raw(features[self._mode + '/imageL0'], tf.float32)
+        imagea = tf.decode_raw(features[self._mode + '/imageL1'], tf.float32)
         imagea = tf.reshape(imagea, [-1, 299, 299, 3])
-        imageb = tf.decode_raw(features[self._mode + '/imageL1'], tf.float32)
+        imageb = tf.decode_raw(features[self._mode + '/imageL2'], tf.float32)
         imageb = tf.reshape(imageb, [-1, 299, 299, 3])
-        imagec = tf.decode_raw(features[self._mode + '/imageL2'], tf.float32)
+        imagec = tf.decode_raw(features[self._mode + '/imageL3'], tf.float32)
         imagec = tf.reshape(imagec, [-1, 299, 299, 3])
 
         return imagea, imageb, imagec
