@@ -61,7 +61,6 @@ class INCEPTION:
 
         # transfer learning requires resetting a few handles
         if self.transfer:
-
             self.dropout_layer = Dropout(self.dropout)
             self.dense_a = Dense(self.classes, name='loss2/classifier', kernel_regularizer=l2(0.0002))
             self.dense_b = Dense(self.classes, name='loss3/classifier', kernel_regularizer=l2(0.0002))

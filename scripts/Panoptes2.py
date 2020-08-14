@@ -209,24 +209,11 @@ def Panoptes2(inputa, inputb, inputc, is_train=True, scope='Panoptes2'):
         xc, auxc = Branch(inputc, is_training=is_train)
 
         # branch concatenation
-        x = concatenate([xa, xb, xc], axis=3) # Output: 8 * 8 * 2688
+        x = concatenate([xa, xb, xc], axis=3)  # Output: 8 * 8 * 2688
 
         net = x
 
         # Average Pooling
         x = GlobalAveragePooling2D(name='avg_pool')(x)  # Output: 2688
 
-        # merged = Dropout(dropout)(x, training=is_train)
-        #
-        # loss3_classifier_w = Dense(num_cls, name='loss3/classifier', kernel_regularizer=l2(0.0002))
-        #
-        # loss3_classifier = loss3_classifier_w(merged)
-        #
-        # w_variables = loss3_classifier_w.get_weights()
-        # w_variables = w_variables[0]
-        #
-        # logits = tf.cond(tf.equal(is_train, tf.constant(True)),
-        #                  lambda: tf.add(loss3_classifier, tf.scalar_mul(tf.constant(0.1), loss2_classifier)),
-        #                  lambda: loss3_classifier)
-
-        return x, net, auxa, auxb, auxc #, tf.convert_to_tensor(w_variables)
+        return x, net, auxa, auxb, auxc
