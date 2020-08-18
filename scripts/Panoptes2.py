@@ -8,7 +8,7 @@ Created on 01/21/2020
 import tensorflow as tf
 from keras.layers.convolutional import Conv2D
 from keras.layers.pooling import MaxPooling2D, AveragePooling2D, GlobalAveragePooling2D
-from keras.layers.core import Dense, Dropout, Flatten, Activation, Lambda
+from keras.layers.core import Dense, Flatten, Activation, Lambda
 from keras.layers.normalization import BatchNormalization
 from keras.layers.merge import concatenate, add
 from keras.regularizers import l2

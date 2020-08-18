@@ -31,7 +31,7 @@ def image_ids_in(root_dir, ignore=['.DS_Store', 'dict.csv']):
     return ids
 
 
-# cut; each level is 2 times difference (20x, 10x, 5x)
+# cut; each level is 2 times difference (10x, 5x, 2.5x)
 def cut(impath, outdir):
     try:
         os.mkdir(outdir)

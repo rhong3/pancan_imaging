@@ -41,7 +41,6 @@ class INCEPTION:
 
         if meta_graph:  # load saved graph
             model_name = os.path.basename(meta_graph)
-            meta_graph = os.path.abspath(meta_graph)
             tf.train.import_meta_graph(meta_dir + '/' + model_name +'.meta').restore(
                 self.sesh, meta_dir + '/' + model_name)
             handles = self.sesh.graph.get_collection(INCEPTION.RESTORE_KEY)
@@ -115,11 +114,11 @@ class INCEPTION:
     # build graph; choose a structure defined in model
     def _buildGraph(self):
         # image input
-        xa_in = tf.placeholder(tf.float32, name="x")
+        xa_in = tf.placeholder(tf.float32, name="xa")
         xa_in_reshape = tf.reshape(xa_in, [-1, self.input_dim[1], self.input_dim[2], 3])
-        xb_in = tf.placeholder(tf.float32, name="x")
+        xb_in = tf.placeholder(tf.float32, name="xb")
         xb_in_reshape = tf.reshape(xb_in, [-1, self.input_dim[1], self.input_dim[2], 3])
-        xc_in = tf.placeholder(tf.float32, name="x")
+        xc_in = tf.placeholder(tf.float32, name="xc")
         xc_in_reshape = tf.reshape(xc_in, [-1, self.input_dim[1], self.input_dim[2], 3])
         # label input
         y_in = tf.placeholder(dtype=tf.float32, name="y")
@@ -371,7 +370,7 @@ class INCEPTION:
                             feed_dict = {self.xa_in: xa, self.xb_in: xb, self.xc_in: xc, self.y_in: y,
                                          self.is_train: False}
                             fetches = [self.pred_loss, self.merged_summary]
-                            valid_loss, valid_summary= self.sesh.run(fetches, feed_dict)
+                            valid_loss, valid_summary = self.sesh.run(fetches, feed_dict)
 
                             self.valid_logger.add_summary(valid_summary, i)
                             print("round {} --> Final Last validation loss: ".format(i), valid_loss)
