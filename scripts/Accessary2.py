@@ -196,8 +196,8 @@ def ROC_PRC(outtl, pdx, path, name, fdict, dm, accur, pmd):
 # slide level; need prediction scores, true labels, output path, and name of the files for metrics;
 # accuracy, AUROC; AUPRC.
 def slide_metrics(inter_pd, path, name, fordict, pmd):
-    inter_pd = inter_pd.drop(['patient', 'L1path', 'L2path', 'L3path', 'label', 'Prediction'], axis=1)
-    inter_pd = inter_pd.groupby(['slide']).mean()
+    inter_pd = inter_pd.drop(['Patient_ID', 'Tumor', 'L1path', 'L2path', 'L3path', 'label', 'Prediction'], axis=1)
+    inter_pd = inter_pd.groupby(['Slide_ID']).mean()    # Need to change in transfer learning
     inter_pd = inter_pd.round({'True_label': 0})
     if pmd == 'stage':
         inter_pd['Prediction'] = inter_pd[
