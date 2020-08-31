@@ -140,8 +140,7 @@ def set_sep(alll, path, cut=0.3):
     validation_tiles = sku.shuffle(validation_tiles)
     test_tiles = test_tiles.sort_values(by=['Tumor', 'Patient_ID'], ascending=True)
 
-    test_tiles.to_csv(path+'/te_sample.csv', header=True, index=False)
-    train_tiles.to_csv(path+'/tr_sample.csv', header=True, index=False)
-    validation_tiles.to_csv(path+'/va_sample.csv', header=True, index=False)
+    test_tiles.to_csv(path+'/te_sample_full.csv', header=True, index=False)
+    train_tiles.to_csv(path+'/tr_sample_full.csv', header=True, index=False)
+    validation_tiles.to_csv(path+'/va_sample_full.csv', header=True, index=False)
 
-    return train_tiles, test_tiles, validation_tiles

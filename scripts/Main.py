@@ -22,6 +22,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dirr', type=str, default='trial', help='output directory')
 parser.add_argument('--bs', type=int, default=24, help='batch size')
 parser.add_argument('--ep', type=int, default=100, help='max epochs')
+parser.add_argument('--frac', type=float, default=0.2, help='fraction of data to use')
 parser.add_argument('--classes', type=int, default=2, help='number of classes to predict')
 parser.add_argument('--img_size', type=int, default=299, help='input tile size (default 299)')
 parser.add_argument('--dropout', type=float, default=0.3, help='drop out keep rate (default 0.3)')
@@ -58,10 +59,7 @@ out_dir = "../Results/{}/out".format(opt.dirr)
 
 
 # count numbers of training and testing images
-def counters(totlist_dir, cls):
-    trlist = pd.read_csv(totlist_dir + '/tr_sample.csv', header=0)
-    telist = pd.read_csv(totlist_dir + '/te_sample.csv', header=0)
-    valist = pd.read_csv(totlist_dir + '/va_sample.csv', header=0)
+def counters(trlist, telist, valist, cls):
     trcc = len(trlist['label'])
     tecc = len(telist['label'])
     vacc = len(valist['label'])
@@ -207,31 +205,46 @@ if __name__ == "__main__":
             os.mkdir(DIR)
         except FileExistsError:
             pass
-    # get counts of testing, validation, and training datasets;
     # if not exist, prepare testing and training datasets from sampling
     try:
-        trc, tec, vac, weights = counters(data_dir, opt.classes)
         trs = pd.read_csv(data_dir + '/tr_sample.csv', header=0)
-        tes = pd.read_csv(data_dir+'/te_sample.csv', header=0)
-        vas = pd.read_csv(data_dir+'/va_sample.csv', header=0)
+        tes = pd.read_csv(data_dir + '/te_sample.csv', header=0)
+        vas = pd.read_csv(data_dir + '/va_sample.csv', header=0)
     except FileNotFoundError:
-        alll = Sample_prep2.big_image_sum(label_col=opt.label_column, path=opt.tile_path, ref_file=opt.reference)
-        trs, tes, vas = Sample_prep2.set_sep(alll, path=data_dir, cut=opt.cut)
-        trc, tec, vac, weights = counters(data_dir, opt.classes)
-        loader(data_dir, 'train')
-        loader(data_dir, 'validation')
-        loader(data_dir, 'test')
+        try:
+            tr = pd.read_csv(data_dir + '/tr_sample_full.csv', header=0)
+            te = pd.read_csv(data_dir + '/te_sample_full.csv', header=0)
+            va = pd.read_csv(data_dir + '/va_sample_full.csv', header=0)
+        except FileNotFoundError:
+            alll = Sample_prep2.big_image_sum(label_col=opt.label_column, path=opt.tile_path, ref_file=opt.reference)
+            Sample_prep2.set_sep(alll, path=data_dir, cut=opt.cut)
+            tr = pd.read_csv(data_dir + '/tr_sample_full.csv', header=0)
+            te = pd.read_csv(data_dir + '/te_sample_full.csv', header=0)
+            va = pd.read_csv(data_dir + '/va_sample_full.csv', header=0)
+        trs = tr.sample(frac=opt.frac, replace=False)
+        trs.to_csv(data_dir + '/tr_sample.csv', header=True, index=False)
+        tes = te.sample(frac=opt.frac, replace=False)
+        tes = tes.sort_values(by=['Tumor', 'Patient_ID'], ascending=True)
+        tes.to_csv(data_dir + '/te_sample.csv', header=True, index=False)
+        vas = va.sample(frac=opt.frac, replace=False)
+        vas.to_csv(data_dir + '/va_sample.csv', header=True, index=False)
+
+    # get counts of testing, validation, and training datasets
+    trc, tec, vac, weights = counters(trs, tes, vas, opt.classes)
+
     # test or not
     if opt.mode == 'test':
+        if not os.path.isfile(data_dir + '/test.tfrecords'):
+            loader(data_dir, 'test')
         main(trc, tec, vac, opt.classes, weights, testset=tes, to_reload=opt.modeltoload, test=True)
     elif opt.mode == 'train':
+        if not os.path.isfile(data_dir + '/test.tfrecords'):
+            loader(data_dir, 'test')
+        if not os.path.isfile(data_dir + '/train.tfrecords'):
+            loader(data_dir, 'train')
+        if not os.path.isfile(data_dir + '/validation.tfrecords'):
+            loader(data_dir, 'validation')
         if opt.modeltoload == '':
-            if not os.path.isfile(data_dir + '/test.tfrecords'):
-                loader(data_dir, 'test')
-            if not os.path.isfile(data_dir + '/train.tfrecords'):
-                loader(data_dir, 'train')
-            if not os.path.isfile(data_dir + '/validation.tfrecords'):
-                loader(data_dir, 'validation')
             main(trc, tec, vac, opt.classes, weights, testset=tes)
         else:
             main(trc, tec, vac, opt.classes, weights, testset=tes, to_reload=opt.modeltoload)
