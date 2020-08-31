@@ -40,7 +40,7 @@ print('Input config:')
 print(opt, flush=True)
 
 # input image dimension
-INPUT_DIM = [opt.bs, opt.img.size, opt.img.size, 3]
+INPUT_DIM = [opt.bs, opt.img_size, opt.img_size, 3]
 # hyper parameters
 HYPERPARAMS = {
     "batch_size": opt.bs,

@@ -76,6 +76,7 @@ def paired_tile_ids_in(patient, slide, tumor, label, root_dir):
         idsa = idsa.dropna()
         idsa = sku.shuffle(idsa)
     else:
+        print('Pass: ', root_dir)
         idsa = pd.DataFrame(columns=['patient', 'slide', 'tumor', 'label', 'L1path', 'L2path', 'L3path'])
 
     return idsa
@@ -88,8 +89,8 @@ def big_image_sum(label_col, path, ref_file):
     ref = ref.loc[ref[label_col].notna()]
     for idx, row in ref.iterrows():
         big_images.append([row['Patient_ID'], row['Slide_ID'], row['Tumor'],
-                           path + "{}/{}/".format(str(row['Patient_ID']),
-                                                  row['Slide_ID'].str.split('-', expand=True)[-1]), row[label_col]])
+                           path + "/{}/{}/{}/".format(str(row['Tumor']), str(row['Patient_ID']),
+                                                      row['Slide_ID'].split('-')[-1]), row[label_col]])
 
     datapd = pd.DataFrame(big_images, columns=['Patient_ID', 'Slide_ID', 'Tumor', 'path', 'label'])
     datapd = datapd.dropna()
