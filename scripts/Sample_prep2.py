@@ -58,15 +58,15 @@ def paired_tile_ids_in(patient, slide, tumor, label, root_dir):
                     ids.append([patient, slide, tumor, label, level, dirr + '/' + id, x, y])
                 else:
                     print('Skipping ID:', id)
-        ids = pd.DataFrame(ids, columns=['patient', 'slide', 'tumor', 'label', 'level', 'path', 'x', 'y'])
+        ids = pd.DataFrame(ids, columns=['Patient_ID', 'Slide_ID', 'Tumor', 'label', 'level', 'path', 'x', 'y'])
         idsa = ids.loc[ids['level'] == 1]
         idsa = idsa.drop(columns=['level'])
         idsa = idsa.rename(index=str, columns={"path": "L1path"})
         idsb = ids.loc[ids['level'] == 2]
-        idsb = idsb.drop(columns=['patient', 'slide', 'tumor', 'label', 'level'])
+        idsb = idsb.drop(columns=['Patient_ID', 'Slide_ID', 'Tumor', 'label', 'level'])
         idsb = idsb.rename(index=str, columns={"path": "L2path"})
         idsc = ids.loc[ids['level'] == 3]
-        idsc = idsc.drop(columns=['patient', 'slide', 'tumor', 'label', 'level'])
+        idsc = idsc.drop(columns=['Patient_ID', 'Slide_ID', 'Tumor', 'label', 'level'])
         idsc = idsc.rename(index=str, columns={"path": "L3path"})
         idsa = pd.merge(idsa, idsb, on=['x', 'y'], how='left', validate="many_to_many")
         idsa['x'] = idsa['x'] - (idsa['x'] % 2)
@@ -77,7 +77,7 @@ def paired_tile_ids_in(patient, slide, tumor, label, root_dir):
         idsa = sku.shuffle(idsa)
     else:
         print('Pass: ', root_dir)
-        idsa = pd.DataFrame(columns=['patient', 'slide', 'tumor', 'label', 'L1path', 'L2path', 'L3path'])
+        idsa = pd.DataFrame(columns=['Patient_ID', 'Slide_ID', 'Tumor', 'label', 'L1path', 'L2path', 'L3path'])
 
     return idsa
 
