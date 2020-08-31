@@ -224,7 +224,7 @@ if __name__ == "__main__":
         trs = tr.sample(frac=opt.frac, replace=False)
         trs.to_csv(data_dir + '/tr_sample.csv', header=True, index=False)
         tes = te.sample(frac=opt.frac, replace=False)
-        tes = tes.sort_values(by=['Tumor', 'Patient_ID'], ascending=True)
+        tes = tes.sort_values(by=['Tumor', 'Slide_ID'], ascending=True)
         tes.to_csv(data_dir + '/te_sample.csv', header=True, index=False)
         vas = va.sample(frac=opt.frac, replace=False)
         vas.to_csv(data_dir + '/va_sample.csv', header=True, index=False)

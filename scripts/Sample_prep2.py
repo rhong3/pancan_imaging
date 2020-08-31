@@ -138,7 +138,7 @@ def set_sep(alll, path, cut=0.3):
     # No shuffle on test set
     train_tiles = sku.shuffle(train_tiles)
     validation_tiles = sku.shuffle(validation_tiles)
-    test_tiles = test_tiles.sort_values(by=['Tumor', 'Patient_ID'], ascending=True)
+    test_tiles = test_tiles.sort_values(by=['Tumor', 'Slide_ID'], ascending=True)
 
     test_tiles.to_csv(path+'/te_sample_full.csv', header=True, index=False)
     train_tiles.to_csv(path+'/tr_sample_full.csv', header=True, index=False)
