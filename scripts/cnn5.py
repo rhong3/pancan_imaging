@@ -139,7 +139,7 @@ class INCEPTION:
         loss2_classifier = tf.add(auxa, tf.add(auxb, auxc))
         merged = dropout_layer(x_logits, training=is_train)
         loss3_classifier = dense_b(merged)
-        ww = dense_b.get_weights()[0]
+        ww = tf.convert_to_tensor(dense_b.get_weights()[0])
         logits = tf.cond(tf.equal(is_train, tf.constant(True)),
                          lambda: tf.add(loss3_classifier, tf.scalar_mul(tf.constant(0.1), loss2_classifier)),
                          lambda: loss3_classifier)
