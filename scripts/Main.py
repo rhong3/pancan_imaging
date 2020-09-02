@@ -119,7 +119,7 @@ def loader(totlist_dir, ds):
             imgc = load_image(imlistc[i])
             label = lblist[i]
             # Create a feature
-            feature = {ds + '/label': _int64_feature(label),
+            feature = {ds + '/label': _int64_feature(int(label)),
                        ds + '/imageL1': _bytes_feature(tf.compat.as_bytes(imga.tostring())),
                        ds + '/imageL2': _bytes_feature(tf.compat.as_bytes(imgb.tostring())),
                        ds + '/imageL3': _bytes_feature(tf.compat.as_bytes(imgc.tostring()))}
