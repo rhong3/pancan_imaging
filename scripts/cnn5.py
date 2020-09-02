@@ -70,7 +70,7 @@ class INCEPTION:
             loss2_classifier = tf.add(auxa, tf.add(auxb, auxc))
             merged = self.dropout_layer(self.x_logits, training=self.is_train)
             loss3_classifier = self.dense_b(merged)
-            self.ww = self.dense_b.get_weights()[0]
+            self.ww = tf.convert_to_tensor(self.dense_b.get_weights()[0])
             self.logits = tf.cond(tf.equal(self.is_train, tf.constant(True)),
                              lambda: tf.add(loss3_classifier, tf.scalar_mul(tf.constant(0.1), loss2_classifier)),
                              lambda: loss3_classifier)
