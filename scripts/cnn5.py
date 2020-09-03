@@ -9,6 +9,9 @@ from datetime import datetime
 import os
 import time
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 import tensorflow as tf
 from keras.layers.core import Dense, Dropout
 from keras.regularizers import l2
@@ -266,6 +269,8 @@ class INCEPTION:
             train_loss = []
             validation_loss = []
             valid_loss = 0
+            trloss_plt = []
+            valoss_plt = []
 
             try:
                 while True:
@@ -333,6 +338,18 @@ class INCEPTION:
                         validation_loss.append(tempminvalid)
                         print("round {} --> Step Average validation loss: ".format(i), tempminvalid, flush=True)
 
+                        # Loss figures
+                        if len(train_loss) >= 1000:
+                            trloss_plt.append(np.mean(train_loss[-1000:]))
+                        else:
+                            trloss_plt.append(np.mean(train_loss[-len(train_loss):]))
+                        valoss_plt.append(tempminvalid)
+                        plt.plot(trloss_plt)
+                        plt.plot(valoss_plt)
+                        plt.title('Average Train & Validation Loss (every 1000 itrs)')
+                        plt.legend(['Train', 'Validation'], loc='upper right')
+                        plt.savefig(outdir + '/loss.png')
+
                         if save and tempminvalid <= minvalid:
                             print("New Min loss model found!")
                             print("round {} --> loss: ".format(i), loss)
@@ -341,7 +358,7 @@ class INCEPTION:
                             saver.save(self.sesh, outfile, global_step=None)
                             svs = i
 
-                        if i > 99999:
+                        if i > 199999:
                             valid_mean_loss = np.mean(validation_loss[-10:-1])
                             print('Mean validation loss: {}'.format(valid_mean_loss))
                             if valid_loss > valid_mean_loss:
