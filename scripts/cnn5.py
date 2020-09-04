@@ -131,7 +131,7 @@ class INCEPTION:
         x_logits, nett, x_auxa, x_auxb, x_auxc = Panoptes2.Panoptes2(xa_in_reshape, xb_in_reshape, xc_in_reshape,
                                                    is_train=is_train,
                                                    scope='Panoptes2')
-        dropout_layer = Dropout(self.dropout)
+        dropout_layer = Dropout(self.dropout, name="dropout")
         dense_a = Dense(classes, name='loss2/classifier', kernel_regularizer=l2(0.0002))
         dense_b = Dense(classes, name='loss3/classifier', kernel_regularizer=l2(0.0002))
 
