@@ -344,8 +344,10 @@ class INCEPTION:
                         else:
                             trloss_plt.append(np.mean(train_loss[-len(train_loss):]))
                         valoss_plt.append(tempminvalid)
-                        plt.plot(trloss_plt, color='green')
-                        plt.plot(valoss_plt, color='blue')
+                        plt.plot(trloss_plt, color='blue')
+                        plt.plot(valoss_plt, color='orange')
+                        plt.xlabel('thousand iterations')
+                        plt.ylabel('loss')
                         plt.title('Average Train & Validation Loss (every 1000 itrs)')
                         plt.legend(['Train', 'Validation'], loc='upper right')
                         plt.savefig(outdir + '/loss.png')
