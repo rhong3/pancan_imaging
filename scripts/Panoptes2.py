@@ -1,14 +1,12 @@
 """
 Panoptes2 for TF2.0
-
 Created on 01/21/2020
-
 @author: RH
 """
 import tensorflow as tf
 from keras.layers.convolutional import Conv2D
 from keras.layers.pooling import MaxPooling2D, AveragePooling2D, GlobalAveragePooling2D
-from keras.layers.core import Dense, Flatten, Activation, Lambda
+from keras.layers.core import Dense, Dropout, Flatten, Activation, Lambda
 from keras.layers.normalization import BatchNormalization
 from keras.layers.merge import concatenate, add
 from keras.regularizers import l2
@@ -155,21 +153,21 @@ def reduction_resnet_v2_B(input):
     return rbr
 
 
-def Branch(input, is_training=True):
+def Branch(input, dropout_keep_prob=0.8, num_classes=1000, is_training=True):
     # Input shape is 299 * 299 * 3
-    x = resnet_v2_stem(input)  # Output: 35 * 35 * 256
+    x = resnet_v2_stem(input, train=is_training)  # Output: 35 * 35 * 256
 
     # 5 x Inception A
     for i in range(5):
-        x = inception_resnet_v2_A(x)
+        x = inception_resnet_v2_A(x, train=is_training)
         # Output: 35 * 35 * 256
 
     # Reduction A
-    x = reduction_resnet_A(x, k=256, l=256, m=384, n=384)  # Output: 17 * 17 * 896
+    x = reduction_resnet_A(x, k=256, l=256, m=384, n=384, train=is_training)  # Output: 17 * 17 * 896
 
     # 10 x Inception B
     for i in range(10):
-        x = inception_resnet_v2_B(x)
+        x = inception_resnet_v2_B(x, train=is_training)
         # Output: 17 * 17 * 896
 
     # auxiliary
@@ -188,32 +186,54 @@ def Branch(input, is_training=True):
 
     loss2_fc = Dense(1024, activation='relu', name='loss2/fc', kernel_regularizer=l2(0.0002))(loss2_flat)
 
+    loss2_drop_fc = Dropout(dropout_keep_prob)(loss2_fc, training=is_training)
+
+    loss2_classifier = Dense(num_classes, name='loss2/classifier', kernel_regularizer=l2(0.0002))(loss2_drop_fc)
+
     # Reduction B
-    x = reduction_resnet_v2_B(x)  # Output: 8 * 8 * 1792
+    x = reduction_resnet_v2_B(x, train=is_training)  # Output: 8 * 8 * 1792
 
     # 5 x Inception C
     for i in range(5):
-        x = inception_resnet_v2_C(x)
+        x = inception_resnet_v2_C(x, train=is_training)
         # Output: 8 * 8 * 1792
 
     x = Conv2D(896, (1, 1), kernel_regularizer=l2(0.0002), activation="relu", padding="same")(x)
 
-    return x, loss2_fc
+    return x, loss2_classifier
 
 
-def Panoptes2(inputa, inputb, inputc, is_train=True, scope='Panoptes2'):
+def Panoptes2(inputa, inputb, inputc,
+               dropout=0.8, num_cls=1000, is_train=True, scope='Panoptes2'):
     with tf.variable_scope(scope, 'Panoptes2', [inputa, inputb, inputc]):
 
-        xa, auxa = Branch(inputa, is_training=is_train)
-        xb, auxb = Branch(inputb, is_training=is_train)
-        xc, auxc = Branch(inputc, is_training=is_train)
+        xa, auxa = Branch(inputa, dropout_keep_prob=dropout, num_classes=num_cls, is_training=is_train)
+        xb, auxb = Branch(inputb, dropout_keep_prob=dropout, num_classes=num_cls, is_training=is_train)
+        xc, auxc = Branch(inputc, dropout_keep_prob=dropout, num_classes=num_cls, is_training=is_train)
 
         # branch concatenation
-        x = concatenate([xa, xb, xc], axis=3)  # Output: 8 * 8 * 2688
+        x = concatenate([xa, xb, xc], axis=3) # Output: 8 * 8 * 2688
 
         net = x
+
+        loss2_classifier = tf.add(auxa, tf.add(auxb, auxc))
 
         # Average Pooling
         x = GlobalAveragePooling2D(name='avg_pool')(x)  # Output: 2688
 
-        return x, net, auxa, auxb, auxc
+        pool5_drop_10x10_s1 = Dropout(dropout)(x, training=is_train)
+
+        merged = pool5_drop_10x10_s1
+
+        loss3_classifier_w = Dense(num_cls, name='loss3/classifier', kernel_regularizer=l2(0.0002))
+
+        loss3_classifier = loss3_classifier_w(merged)
+
+        w_variables = loss3_classifier_w.get_weights()
+        w_variables = w_variables[0]
+
+        logits = tf.cond(tf.equal(is_train, tf.constant(True)),
+                         lambda: tf.add(loss3_classifier, tf.scalar_mul(tf.constant(0.1), loss2_classifier)),
+                         lambda: loss3_classifier)
+
+        return logits, net, tf.convert_to_tensor(w_variables)

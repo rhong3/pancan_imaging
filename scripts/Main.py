@@ -47,7 +47,6 @@ HYPERPARAMS = {
     "batch_size": opt.bs,
     "dropout": opt.dropout,
     "learning_rate": opt.lr,
-    "classes": opt.classes,
 }
 
 # paths to directories
@@ -136,7 +135,7 @@ def loader(totlist_dir, ds):
 
 
 # load tfrecords and prepare datasets
-def tfreloader(mode, ep, bs, cls, ctr, cte, cva):
+def tfreloader(mode, ep, bs, ctr, cte, cva):
     filename = data_dir + '/' + mode + '.tfrecords'
     if mode == 'train':
         ct = ctr
@@ -145,20 +144,20 @@ def tfreloader(mode, ep, bs, cls, ctr, cte, cva):
     else:
         ct = cva
 
-    datasets = data_input3.DataSet(bs, ct, ep=ep, cls=cls, mode=mode, filename=filename)
+    datasets = data_input3.DataSet(bs, ct, ep=ep, mode=mode, filename=filename)
 
     return datasets
 
 
 # main; trc is training image count; tec is testing image count; to_reload is the model to load; test or not
-def main(trc, tec, vac, cls, weight, testset=None, to_reload=None, test=None):
+def main(trc, tec, vac, weight, testset=None, to_reload=None, test=None):
 
     if test:  # restore for testing only
         m = cnn5.INCEPTION(INPUT_DIM, HYPERPARAMS, meta_graph=to_reload, log_dir=LOG_DIR,
                            meta_dir=LOG_DIR, weights=weight)
         print("Loaded! Ready for test!")
         if tec >= opt.bs:
-            THE = tfreloader('test', 1, opt.bs, cls, trc, tec, vac)
+            THE = tfreloader('test', 1, opt.bs, trc, tec, vac)
             m.inference(THE, opt.dirr, testset=testset, pmd=opt.pdmd)
         else:
             print("Not enough testing images!")
@@ -167,15 +166,15 @@ def main(trc, tec, vac, cls, weight, testset=None, to_reload=None, test=None):
         m = cnn5.INCEPTION(INPUT_DIM, HYPERPARAMS, meta_graph=to_reload, log_dir=LOG_DIR,
                            meta_dir=LOG_DIR, weights=weight, transfer=opt.transfer)
         print("Loaded! Restart training.")
-        HE = tfreloader('train', opt.ep, opt.bs, cls, trc, tec, vac)
-        VHE = tfreloader('validation', opt.ep*100, opt.bs, cls, trc, tec, vac)
+        HE = tfreloader('train', opt.ep, opt.bs, trc, tec, vac)
+        VHE = tfreloader('validation', opt.ep*100, opt.bs, trc, tec, vac)
         itt = int(trc * opt.ep / opt.bs)
         if trc <= 2 * opt.bs or vac <= opt.bs:
             print("Not enough training/validation images!")
         else:
             m.train(HE, VHE, trc, opt.bs, pmd=opt.pdmd, dirr=opt.dirr, max_iter=itt, save=True, outdir=METAGRAPH_DIR)
         if tec >= opt.bs:
-            THE = tfreloader('test', 1, opt.bs, cls, trc, tec, vac)
+            THE = tfreloader('test', 1, opt.bs, trc, tec, vac)
             m.inference(THE, opt.dirr, testset=testset, pmd=opt.pdmd)
         else:
             print("Not enough testing images!")
@@ -183,15 +182,15 @@ def main(trc, tec, vac, cls, weight, testset=None, to_reload=None, test=None):
     else:  # train and test
         m = cnn5.INCEPTION(INPUT_DIM, HYPERPARAMS, log_dir=LOG_DIR, weights=weight)
         print("Start a new training!")
-        HE = tfreloader('train', opt.ep, opt.bs, cls, trc, tec, vac)
-        VHE = tfreloader('validation', opt.ep*100, opt.bs, cls, trc, tec, vac)
+        HE = tfreloader('train', opt.ep, opt.bs, trc, tec, vac)
+        VHE = tfreloader('validation', opt.ep*100, opt.bs, trc, tec, vac)
         itt = int(trc*opt.ep/opt.bs)+1
         if trc <= 2 * opt.bs or vac <= opt.bs:
             print("Not enough training/validation images!")
         else:
             m.train(HE, VHE, trc, opt.bs, pmd=opt.pdmd, dirr=opt.dirr, max_iter=itt, save=True, outdir=METAGRAPH_DIR)
         if tec >= opt.bs:
-            THE = tfreloader('test', 1, opt.bs, cls, trc, tec, vac)
+            THE = tfreloader('test', 1, opt.bs, trc, tec, vac)
             m.inference(THE, opt.dirr, testset=testset, pmd=opt.pdmd)
         else:
             print("Not enough testing images!")
@@ -236,7 +235,7 @@ if __name__ == "__main__":
     if opt.mode == 'test':
         if not os.path.isfile(data_dir + '/test.tfrecords'):
             loader(data_dir, 'test')
-        main(trc, tec, vac, opt.classes, weights, testset=tes, to_reload=opt.modeltoload, test=True)
+        main(trc, tec, vac, weights, testset=tes, to_reload=opt.modeltoload, test=True)
     elif opt.mode == 'train':
         if not os.path.isfile(data_dir + '/test.tfrecords'):
             loader(data_dir, 'test')
@@ -245,9 +244,9 @@ if __name__ == "__main__":
         if not os.path.isfile(data_dir + '/validation.tfrecords'):
             loader(data_dir, 'validation')
         if opt.modeltoload == '':
-            main(trc, tec, vac, opt.classes, weights, testset=tes)
+            main(trc, tec, vac, weights, testset=tes)
         else:
-            main(trc, tec, vac, opt.classes, weights, testset=tes, to_reload=opt.modeltoload)
+            main(trc, tec, vac, weights, testset=tes, to_reload=opt.modeltoload)
     else:
         print('Mode must be specified as either train or test!')
 
