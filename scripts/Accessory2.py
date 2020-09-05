@@ -250,10 +250,10 @@ def realout(pdx, path, name, pmd):
     prl = pd.DataFrame(prl, columns=['Prediction'])
     prl = prl.replace(lbdict)
     if pmd == 'stage':
-        out = pd.DataFrame(pdx,
+        out = pd.DataFrame(pdx[:, 0:5],
                            columns=['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score'])
     else:
-        out = pd.DataFrame(pdx, columns=['NEG_score', 'POS_score'])
+        out = pd.DataFrame(pdx[:, 0:2], columns=['NEG_score', 'POS_score'])
     out.reset_index(drop=True, inplace=True)
     prl.reset_index(drop=True, inplace=True)
     out = pd.concat([out, prl], axis=1)
@@ -271,11 +271,11 @@ def metrics(pdx, tl, path, name, pmd, ori_test=None):
     prl = pd.DataFrame(prl, columns=['Prediction'])
     if pmd == 'stage':
         lbdict = {1: 'stage1', 2: 'stage2', 3: 'stage3', 4: 'stage4', 0: 'stage0'}
-        outt = pd.DataFrame(pdxt,
+        outt = pd.DataFrame(pdxt[:, 0:5],
                             columns=['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score'])
     else:
         lbdict = {0: 'negative', 1: pmd}
-        outt = pd.DataFrame(pdxt, columns=['NEG_score', 'POS_score'])
+        outt = pd.DataFrame(pdxt[:, 0:2], columns=['NEG_score', 'POS_score'])
     outtlt = pd.DataFrame(tl, columns=['True_label'])
     if name == 'Validation' or name == 'Training':
         outtlt = outtlt.round(0)
