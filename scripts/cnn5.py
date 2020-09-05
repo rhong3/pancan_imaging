@@ -87,7 +87,7 @@ class INCEPTION:
         y_in = tf.placeholder(dtype=tf.float32, name="y")
         # train or test
         is_train = tf.placeholder_with_default(True, shape=[], name="is_train")
-        classes = 50
+        classes = 20
 
         # other features input
 

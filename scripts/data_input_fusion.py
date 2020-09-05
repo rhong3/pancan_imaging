@@ -22,7 +22,7 @@ class DataSet(object):
         self._mode = mode
         self._filename = filename
         self._epochs = ep
-        self._classes = 50
+        self._classes = 20
 
     # decoding tfrecords; return images and labels
     def decode(self, serialized_example):
