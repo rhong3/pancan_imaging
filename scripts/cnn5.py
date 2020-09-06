@@ -114,13 +114,13 @@ class INCEPTION:
         if self.transfer:
             train_op = tf.train.AdamOptimizer(
             learning_rate=self.learning_rate).minimize(
-            loss=self.pred_loss, global_step=self.global_step,
+            loss=pred_loss, global_step=global_step,
             var_list=['loss3/classifier/kernel:0', 'loss2/classifier/kernel:0',
                       'loss3/classifier/bias:0', 'loss2/classifier/bias:0'])
         else:
             train_op = tf.train.AdamOptimizer(
             learning_rate=self.learning_rate).minimize(
-            loss=self.pred_loss, global_step=self.global_step)
+            loss=pred_loss, global_step=global_step)
 
         merged_summary = tf.summary.merge_all()
 
