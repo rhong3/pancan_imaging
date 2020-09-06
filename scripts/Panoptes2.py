@@ -155,19 +155,19 @@ def reduction_resnet_v2_B(input):
 
 def Branch(input, dropout_keep_prob=0.8, num_classes=1000, is_training=True):
     # Input shape is 299 * 299 * 3
-    x = resnet_v2_stem(input, train=is_training)  # Output: 35 * 35 * 256
+    x = resnet_v2_stem(input)  # Output: 35 * 35 * 256
 
     # 5 x Inception A
     for i in range(5):
-        x = inception_resnet_v2_A(x, train=is_training)
+        x = inception_resnet_v2_A(x)
         # Output: 35 * 35 * 256
 
     # Reduction A
-    x = reduction_resnet_A(x, k=256, l=256, m=384, n=384, train=is_training)  # Output: 17 * 17 * 896
+    x = reduction_resnet_A(x, k=256, l=256, m=384, n=384)  # Output: 17 * 17 * 896
 
     # 10 x Inception B
     for i in range(10):
-        x = inception_resnet_v2_B(x, train=is_training)
+        x = inception_resnet_v2_B(x)
         # Output: 17 * 17 * 896
 
     # auxiliary
@@ -191,11 +191,11 @@ def Branch(input, dropout_keep_prob=0.8, num_classes=1000, is_training=True):
     loss2_classifier = Dense(num_classes, name='loss2/classifier', kernel_regularizer=l2(0.0002))(loss2_drop_fc)
 
     # Reduction B
-    x = reduction_resnet_v2_B(x, train=is_training)  # Output: 8 * 8 * 1792
+    x = reduction_resnet_v2_B(x)  # Output: 8 * 8 * 1792
 
     # 5 x Inception C
     for i in range(5):
-        x = inception_resnet_v2_C(x, train=is_training)
+        x = inception_resnet_v2_C(x)
         # Output: 8 * 8 * 1792
 
     x = Conv2D(896, (1, 1), kernel_regularizer=l2(0.0002), activation="relu", padding="same")(x)
