@@ -493,10 +493,10 @@ def tSNE_prep(flatnet, ori_test, y, pred, path, pmd):
     print(np.shape(flatnet))
     act = pd.DataFrame(np.asmatrix(flatnet))
     if pmd == 'stage':
-        outt = pd.DataFrame(pdxt,
+        outt = pd.DataFrame(pdxt[:, 0:5],
                             columns=['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score'])
     else:
-        outt = pd.DataFrame(pdxt, columns=['NEG_score', 'POS_score'])
+        outt = pd.DataFrame(pdxt[:, 0:2], columns=['NEG_score', 'POS_score'])
     outtlt = pd.DataFrame(tl, columns=['True_label'])
     outt.reset_index(drop=True, inplace=True)
     prl.reset_index(drop=True, inplace=True)
