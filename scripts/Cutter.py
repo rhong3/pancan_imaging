@@ -55,7 +55,7 @@ def cut(impath, outdir):
         try:
             os.mkdir("{}/{}/{}".format(outdir, i[1], i[2]))
         except FileExistsError:
-            pass
+            continue
         outfolder = "{}/{}/{}".format(outdir, i[1], i[2])
         for m in range(1, 4):
             if m == 0:
@@ -96,5 +96,5 @@ def cut(impath, outdir):
 if __name__ == "__main__":
     if not os.path.isdir('../tiles'):
         os.mkdir('../tiles')
-    for cancer in ['UCEC', 'GBM', 'LSCC', 'CCRCC', 'HNSCC', 'LUAD', 'CM', 'PDA', 'SAR']:
+    for cancer in ['LUAD', 'CM', 'PDA', 'SAR']:
         cut('../images/'+cancer, '../tiles/'+cancer)
