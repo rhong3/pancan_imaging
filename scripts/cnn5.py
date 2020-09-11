@@ -58,7 +58,6 @@ class INCEPTION:
             vars.extend(tf.trainable_variables(scope=i))
 
         if transfer:
-            self.global_step = tf.Variable(0, trainable=False)
             self.train_op = tf.train.AdamOptimizer(
                 learning_rate=self.learning_rate, name='TransferAdam').minimize(
                 loss=self.pred_loss, global_step=self.global_step,
