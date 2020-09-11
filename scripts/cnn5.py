@@ -59,7 +59,7 @@ class INCEPTION:
 
         if transfer:
             self.train_op = tf.train.AdamOptimizer(
-                learning_rate=self.learning_rate, name='TransferAdam').minimize(
+                learning_rate=self.learning_rate, name='Transfer_Adam').minimize(
                 loss=self.pred_loss, global_step=self.global_step,
                 var_list=vars)
 
