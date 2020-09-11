@@ -19,40 +19,30 @@ import Panoptes2
 
 # Define an Inception
 class INCEPTION:
-    # hyper parameters
-    DEFAULTS = {
-        "batch_size": 24,
-        "dropout": 0.3,
-        "learning_rate": 1E-3
-    }
-
-    RESTORE_KEY = "cnn_to_restore"
-
-    def __init__(self, input_dim, d_hyperparams={},
+    def __init__(self, input_dim, d_hyperparams=None,
                  save_graph_def=True, meta_graph=None, transfer=False,
                  log_dir="./log", meta_dir="./meta", weights=tf.constant([1., 1., 1., 1.])):
-
+        if d_hyperparams is None:
+            d_hyperparams = {}
+        self.input_dim = input_dim
+        self.batch_size = d_hyperparams['batch_size']
+        self.dropout = d_hyperparams['dropout']
+        self.learning_rate = d_hyperparams['learning_rate']
+        self.sesh = tf.Session()
+        self.weights = weights
         self.transfer = transfer
 
         if meta_graph:  # load saved graph
-            self.sesh = tf.Session()
             model_name = os.path.basename(meta_graph)
             tf.train.import_meta_graph(meta_dir + '/' + model_name +'.meta').restore(
                 self.sesh, meta_dir + '/' + model_name)
-            handles = self.sesh.graph.get_collection(INCEPTION.RESTORE_KEY)
-            self.input_dim = input_dim
-            self.__dict__.update(INCEPTION.DEFAULTS, **d_hyperparams)
-            self.weights = weights
+            handles = self.sesh.graph.get_collection("cnn_to_restore")
 
         else:  # build graph from scratch
-            self.input_dim = input_dim
-            self.__dict__.update(INCEPTION.DEFAULTS, **d_hyperparams)
-            self.weights = weights
-            self.sesh = tf.Session()
             self.datetime = datetime.now().strftime(r"%y%m%d_%H%M")
             handles = self._buildGraph()
             for handle in handles:
-                tf.add_to_collection(INCEPTION.RESTORE_KEY, handle)
+                tf.add_to_collection("cnn_to_restore", handle)
             self.sesh.run(tf.global_variables_initializer())
 
         # unpack handles for tensor ops to feed or fetch for lower layers
