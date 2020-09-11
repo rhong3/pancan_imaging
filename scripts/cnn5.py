@@ -59,7 +59,7 @@ class INCEPTION:
 
         if transfer:
             self.train_op = tf.train.AdamOptimizer(
-                learning_rate=self.learning_rate, name='Transfer_Adam').minimize(
+                learning_rate=self.learning_rate, name='Trans_Adam').minimize(
                 loss=self.pred_loss, global_step=self.global_step,
                 var_list=vars)
 
@@ -236,6 +236,7 @@ class INCEPTION:
             trloss_plt = []
             valoss_plt = []
 
+            init_i = self.step()
             try:
                 while True:
                     xa, xb, xc, y = sessa.run(next_element)
@@ -245,7 +246,7 @@ class INCEPTION:
                                self.pred_loss, self.global_step]
 
                     summary, logits, pred, loss, i = self.sesh.run(fetches, feed_dict)
-
+                    i = i - init_i
                     self.train_logger.add_summary(summary, i)
                     err_train += loss
 
