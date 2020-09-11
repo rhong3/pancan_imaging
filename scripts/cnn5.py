@@ -64,14 +64,6 @@ class INCEPTION:
                 loss=self.pred_loss, global_step=self.global_step,
                 var_list=vars)
 
-            uninitialized_vars = []
-            for var in tf.global_variables():
-                try:
-                    self.sesh.run(var)
-                except tf.errors.FailedPreconditionError:
-                    uninitialized_vars.append(var)
-            tf.variables_initializer(uninitialized_vars)
-
         if save_graph_def:  # tensorboard
             try:
                 os.mkdir(log_dir + '/training')
@@ -229,6 +221,15 @@ class INCEPTION:
         vanext_element = vaitr.get_next()
 
         with tf.Session() as sessa:
+
+            uninitialized_vars = []
+            for var in tf.global_variables():
+                try:
+                    sessa.run(var)
+                except tf.errors.FailedPreconditionError:
+                    uninitialized_vars.append(var)
+            tf.variables_initializer(uninitialized_vars)
+
             sessa.run(itr.initializer, feed_dict={ph: file})
             sessa.run(vaitr.initializer, feed_dict={vaph: vafile})
             train_loss = []
