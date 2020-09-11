@@ -186,7 +186,7 @@ def Branch(input, dropout_keep_prob=0.8, num_classes=1000, is_training=True):
 
     loss2_fc = Dense(1024, activation='relu', name='loss2/fc', kernel_regularizer=l2(0.0002))(loss2_flat)
 
-    loss2_drop_fc = Dropout(dropout_keep_prob)(loss2_fc, training=is_training)
+    loss2_drop_fc = Dropout(dropout_keep_prob, name='loss2/dropout')(loss2_fc, training=is_training)
 
     loss2_classifier = Dense(num_classes, name='loss2/classifier', kernel_regularizer=l2(0.0002))(loss2_drop_fc)
 
@@ -221,7 +221,7 @@ def Panoptes2(inputa, inputb, inputc,
         # Average Pooling
         x = GlobalAveragePooling2D(name='avg_pool')(x)  # Output: 2688
 
-        pool5_drop_10x10_s1 = Dropout(dropout)(x, training=is_train)
+        pool5_drop_10x10_s1 = Dropout(dropout, name='loss3/dropout')(x, training=is_train)
 
         merged = pool5_drop_10x10_s1
 
