@@ -221,15 +221,6 @@ class INCEPTION:
         vanext_element = vaitr.get_next()
 
         with tf.Session() as sessa:
-
-            uninitialized_vars = []
-            for var in tf.global_variables():
-                try:
-                    sessa.run(var)
-                except tf.errors.FailedPreconditionError:
-                    uninitialized_vars.append(var)
-            tf.variables_initializer(uninitialized_vars)
-
             sessa.run(itr.initializer, feed_dict={ph: file})
             sessa.run(vaitr.initializer, feed_dict={vaph: vafile})
             train_loss = []
@@ -239,6 +230,13 @@ class INCEPTION:
             valoss_plt = []
 
             try:
+                uninitialized_vars = []
+                for var in tf.global_variables():
+                    try:
+                        self.sesh.run(var)
+                    except tf.errors.FailedPreconditionError:
+                        uninitialized_vars.append(var)
+                tf.variables_initializer(uninitialized_vars)
                 while True:
                     xa, xb, xc, y = sessa.run(next_element)
                     feed_dict = {self.xa_in: xa, self.xb_in: xb, self.xc_in: xc, self.y_in: y}
