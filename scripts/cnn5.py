@@ -40,7 +40,6 @@ class INCEPTION:
 
         if meta_graph:  # load saved graph
             model_name = os.path.basename(meta_graph)
-            meta_graph = os.path.abspath(meta_graph)
             tf.train.import_meta_graph(meta_dir + '/' + model_name +'.meta').restore(
                 self.sesh, meta_dir + '/' + model_name)
             handles = self.sesh.graph.get_collection(INCEPTION.RESTORE_KEY)
@@ -56,6 +55,14 @@ class INCEPTION:
         (self.xa_in, self.xb_in, self.xc_in, self.is_train, self.y_in, self.logits,
          self.net, self.w, self.pred, self.pred_loss,
          self.global_step, self.train_op, self.merged_summary) = handles
+
+        if transfer:
+            self.global_step = tf.Variable(0, trainable=False)
+            self.train_op = tf.train.AdamOptimizer(
+                learning_rate=self.learning_rate).minimize(
+                loss=self.pred_loss, global_step=self.global_step,
+                var_list=['loss3/classifier/kernel:0', 'loss2/classifier/kernel:0',
+                          'loss3/classifier/bias:0', 'loss2/classifier/bias:0'])
 
         if save_graph_def:  # tensorboard
             try:
@@ -111,16 +118,9 @@ class INCEPTION:
         tf.summary.tensor_summary("pred", pred)
 
         # optimizer based on TensorFlow version
-        if self.transfer:
-            train_op = tf.train.AdamOptimizer(
-            learning_rate=self.learning_rate).minimize(
-            loss=pred_loss, global_step=global_step,
-            var_list=['loss3/classifier/kernel:0', 'loss2/classifier/kernel:0',
-                      'loss3/classifier/bias:0', 'loss2/classifier/bias:0'])
-        else:
-            train_op = tf.train.AdamOptimizer(
-            learning_rate=self.learning_rate).minimize(
-            loss=pred_loss, global_step=global_step)
+        train_op = tf.train.AdamOptimizer(
+        learning_rate=self.learning_rate).minimize(
+        loss=pred_loss, global_step=global_step)
 
         merged_summary = tf.summary.merge_all()
 
