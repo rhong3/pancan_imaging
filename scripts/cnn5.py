@@ -70,7 +70,7 @@ class INCEPTION:
                     self.sesh.run(var)
                 except tf.errors.FailedPreconditionError:
                     uninitialized_vars.append(var)
-            tf.initialize_variables(uninitialized_vars)
+            tf.variables_initializer(uninitialized_vars)
 
         if save_graph_def:  # tensorboard
             try:
