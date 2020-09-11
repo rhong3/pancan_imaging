@@ -50,13 +50,27 @@ class INCEPTION:
          self.net, self.w, self.pred, self.pred_loss,
          self.global_step, self.train_op, self.merged_summary) = handles
 
+        vars = []
+        for i in ['Panoptes2/loss3/classifier/kernel:0', 'Panoptes2/loss3/classifier/bias:0',
+                  'Panoptes2/loss2/classifier_1/kernel:0', 'Panoptes2/loss2/classifier_1/bias:0',
+                  'Panoptes2/loss2/classifier_2/kernel:0', 'Panoptes2/loss2/classifier_2/bias:0',
+                  'Panoptes2/loss2/classifier/kernel:0', 'Panoptes2/loss2/classifier/bias:0']:
+            vars.extend(tf.trainable_variables(scope=i))
+
         if transfer:
             self.global_step = tf.Variable(0, trainable=False)
             self.train_op = tf.train.AdamOptimizer(
-                learning_rate=self.learning_rate).minimize(
+                learning_rate=self.learning_rate, name='TransferAdam').minimize(
                 loss=self.pred_loss, global_step=self.global_step,
-                var_list=['loss3/classifier/kernel:0', 'loss2/classifier/kernel:0',
-                          'loss3/classifier/bias:0', 'loss2/classifier/bias:0'])
+                var_list=vars)
+
+            uninitialized_vars = []
+            for var in tf.global_variables():
+                try:
+                    self.sesh.run(var)
+                except tf.errors.FailedPreconditionError:
+                    uninitialized_vars.append(var)
+            tf.initialize_variables(uninitialized_vars)
 
         if save_graph_def:  # tensorboard
             try:
