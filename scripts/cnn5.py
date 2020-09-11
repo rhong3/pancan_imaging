@@ -243,9 +243,9 @@ class INCEPTION:
                     feed_dict = {self.xa_in: xa, self.xb_in: xb, self.xc_in: xc, self.y_in: y}
 
                     fetches = [self.merged_summary, self.logits, self.pred,
-                               self.pred_loss, self.global_step, self.train_op]
+                               self.pred_loss, self.global_step]
 
-                    summary, logits, pred, loss, i, _ = self.sesh.run(fetches, feed_dict)
+                    summary, logits, pred, loss, i = self.sesh.run(fetches, feed_dict)
 
                     self.train_logger.add_summary(summary, i)
                     err_train += loss
