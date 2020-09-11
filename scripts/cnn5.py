@@ -64,6 +64,14 @@ class INCEPTION:
                 loss=self.pred_loss, global_step=self.global_step,
                 var_list=vars)
 
+            uninitialized_vars = []
+            for var in tf.global_variables():
+                try:
+                    self.sesh.run(var)
+                except tf.errors.FailedPreconditionError:
+                    uninitialized_vars.append(var)
+            self.sesh.run(tf.variables_initializer(uninitialized_vars))
+
         if save_graph_def:  # tensorboard
             try:
                 os.mkdir(log_dir + '/training')
@@ -230,13 +238,6 @@ class INCEPTION:
             valoss_plt = []
 
             try:
-                uninitialized_vars = []
-                for var in tf.global_variables():
-                    try:
-                        self.sesh.run(var)
-                    except tf.errors.FailedPreconditionError:
-                        uninitialized_vars.append(var)
-                tf.variables_initializer(uninitialized_vars)
                 while True:
                     xa, xb, xc, y = sessa.run(next_element)
                     feed_dict = {self.xa_in: xa, self.xb_in: xb, self.xc_in: xc, self.y_in: y}
