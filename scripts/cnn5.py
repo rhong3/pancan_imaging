@@ -32,19 +32,23 @@ class INCEPTION:
                  save_graph_def=True, meta_graph=None, transfer=False,
                  log_dir="./log", meta_dir="./meta", weights=tf.constant([1., 1., 1., 1.])):
 
-        self.input_dim = input_dim
-        self.__dict__.update(INCEPTION.DEFAULTS, **d_hyperparams)
-        self.sesh = tf.Session()
-        self.weights = weights
         self.transfer = transfer
 
         if meta_graph:  # load saved graph
+            self.sesh = tf.Session()
             model_name = os.path.basename(meta_graph)
             tf.train.import_meta_graph(meta_dir + '/' + model_name +'.meta').restore(
                 self.sesh, meta_dir + '/' + model_name)
             handles = self.sesh.graph.get_collection(INCEPTION.RESTORE_KEY)
+            self.input_dim = input_dim
+            self.__dict__.update(INCEPTION.DEFAULTS, **d_hyperparams)
+            self.weights = weights
 
         else:  # build graph from scratch
+            self.input_dim = input_dim
+            self.__dict__.update(INCEPTION.DEFAULTS, **d_hyperparams)
+            self.weights = weights
+            self.sesh = tf.Session()
             self.datetime = datetime.now().strftime(r"%y%m%d_%H%M")
             handles = self._buildGraph()
             for handle in handles:
