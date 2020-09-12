@@ -236,7 +236,7 @@ class INCEPTION:
             trloss_plt = []
             valoss_plt = []
 
-            init_i = self.step()
+            init_i = self.step
             try:
                 while True:
                     xa, xb, xc, y = sessa.run(next_element)
