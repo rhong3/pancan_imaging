@@ -59,7 +59,7 @@ class INCEPTION:
 
         if transfer:
             self.train_op = tf.train.AdamOptimizer(
-                learning_rate=self.learning_rate, name='Trans_Adam').minimize(
+                learning_rate=self.learning_rate, name='Tran_Adam').minimize(
                 loss=self.pred_loss, global_step=self.global_step,
                 var_list=vars)
 
@@ -227,6 +227,9 @@ class INCEPTION:
         vaitr, vafile, vaph = VAX.data(train=False)
         vanext_element = vaitr.get_next()
 
+        init_i = self.step
+        print(init_i)
+
         with tf.Session() as sessa:
             sessa.run(itr.initializer, feed_dict={ph: file})
             sessa.run(vaitr.initializer, feed_dict={vaph: vafile})
@@ -236,7 +239,6 @@ class INCEPTION:
             trloss_plt = []
             valoss_plt = []
 
-            init_i = self.step
             try:
                 while True:
                     xa, xb, xc, y = sessa.run(next_element)
