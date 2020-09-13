@@ -59,7 +59,7 @@ class INCEPTION:
 
         if transfer:
             self.train_op = tf.train.AdamOptimizer(
-                learning_rate=self.learning_rate, name='tran_Adam').minimize(
+                learning_rate=self.learning_rate, name='trans_Adam').minimize(
                 loss=self.pred_loss, global_step=self.global_step,
                 var_list=vars)
 
@@ -228,7 +228,6 @@ class INCEPTION:
         vanext_element = vaitr.get_next()
 
         init_i = self.step
-        print(init_i)
 
         with tf.Session() as sessa:
             sessa.run(itr.initializer, feed_dict={ph: file})
@@ -245,13 +244,10 @@ class INCEPTION:
                     feed_dict = {self.xa_in: xa, self.xb_in: xb, self.xc_in: xc, self.y_in: y}
 
                     fetches = [self.merged_summary, self.logits, self.pred,
-                               self.pred_loss, self.global_step]
+                               self.pred_loss, self.global_step, self.train_op]
 
-                    summary, logits, pred, loss, i = self.sesh.run(fetches, feed_dict)
-                    print(i)
-                    print(init_i)
+                    summary, logits, pred, loss, i, _ = self.sesh.run(fetches, feed_dict)
                     i = i - init_i
-                    print(i)
                     self.train_logger.add_summary(summary, i)
                     err_train += loss
 
