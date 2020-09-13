@@ -51,15 +51,15 @@ class INCEPTION:
          self.global_step, self.train_op, self.merged_summary) = handles
 
         vars = []
-        for i in ['Panoptes2/loss3/classifier/kernel:0', 'Panoptes2/loss3/classifier/bias:0',
+        for mm in ['Panoptes2/loss3/classifier/kernel:0', 'Panoptes2/loss3/classifier/bias:0',
                   'Panoptes2/loss2/classifier_1/kernel:0', 'Panoptes2/loss2/classifier_1/bias:0',
                   'Panoptes2/loss2/classifier_2/kernel:0', 'Panoptes2/loss2/classifier_2/bias:0',
                   'Panoptes2/loss2/classifier/kernel:0', 'Panoptes2/loss2/classifier/bias:0']:
-            vars.extend(tf.trainable_variables(scope=i))
+            vars.extend(tf.trainable_variables(scope=mm))
 
         if transfer:
             self.train_op = tf.train.AdamOptimizer(
-                learning_rate=self.learning_rate, name='Tran_Adam').minimize(
+                learning_rate=self.learning_rate, name='tran_Adam').minimize(
                 loss=self.pred_loss, global_step=self.global_step,
                 var_list=vars)
 
@@ -248,7 +248,10 @@ class INCEPTION:
                                self.pred_loss, self.global_step]
 
                     summary, logits, pred, loss, i = self.sesh.run(fetches, feed_dict)
+                    print(i)
+                    print(init_i)
                     i = i - init_i
+                    print(i)
                     self.train_logger.add_summary(summary, i)
                     err_train += loss
 
