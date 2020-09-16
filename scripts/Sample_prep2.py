@@ -56,8 +56,7 @@ def paired_tile_ids_in(patient, slide, tumor, label, root_dir):
                     x = int(float(id.split('x-', 1)[1].split('-', 1)[0]) / fac)
                     y = int(float(re.split('.p', id.split('y-', 1)[1])[0]) / fac)
                     ids.append([patient, slide, tumor, label, level, dirr + '/' + id, x, y])
-                else:
-                    print('Skipping ID:', id)
+
         ids = pd.DataFrame(ids, columns=['Patient_ID', 'Slide_ID', 'Tumor', 'label', 'level', 'path', 'x', 'y'])
         idsa = ids.loc[ids['level'] == 1]
         idsa = idsa.drop(columns=['level'])
@@ -107,20 +106,22 @@ def set_sep(alll, path, cut=0.3):
 
     for tm in list(alll.Tumor.unique()):
         sub = alll[alll['Tumor'] == tm]
-        for lb in list(sub.label.unique()):
-            sub_sub = sub[sub['label'] == lb]
-            unq = list(sub_sub.Patient_ID.unique())
-            np.random.shuffle(unq)
-            validation = unq[:int(len(unq) * cut / 2)]
-            valist.append(alll[alll['Patient_ID'].isin(validation)])
-            test = unq[int(len(unq) * cut / 2):int(len(unq) * cut)]
-            telist.append(alll[alll['Patient_ID'].isin(test)])
-            train = unq[int(len(unq) * cut):]
-            trlist.append(alll[alll['Patient_ID'].isin(train)])
+        unq = list(sub.Patient_ID.unique())
+        np.random.shuffle(unq)
+        validation = unq[:int(len(unq) * cut / 2)]
+        valist.append(sub[sub['Patient_ID'].isin(validation)])
+        test = unq[int(len(unq) * cut / 2):int(len(unq) * cut)]
+        telist.append(sub[sub['Patient_ID'].isin(test)])
+        train = unq[int(len(unq) * cut):]
+        trlist.append(sub[sub['Patient_ID'].isin(train)])
 
     test = pd.concat(telist)
     train = pd.concat(trlist)
     validation = pd.concat(valist)
+
+    test.to_csv(path + '/te_sample_raw.csv', header=True, index=False)
+    train.to_csv(path + '/tr_sample_raw.csv', header=True, index=False)
+    validation.to_csv(path + '/va_sample_raw.csv', header=True, index=False)
 
     test_tiles = pd.DataFrame(columns=['Patient_ID', 'Slide_ID', 'Tumor', 'label', 'L1path', 'L2path', 'L3path'])
     train_tiles = pd.DataFrame(columns=['Patient_ID', 'Slide_ID', 'Tumor', 'label', 'L1path', 'L2path', 'L3path'])
