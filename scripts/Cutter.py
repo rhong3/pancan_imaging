@@ -53,7 +53,6 @@ def image_ids_in_2(root_dir, can, dict_path='../CPTAC2_images.csv', ignore=['.DS
             sldnum = 21
             while (dirname, sldnum) in ck_ids:
                 sldnum += 1
-            print((id, dirname, sldnum))
             ids.append((id, dirname, sldnum))
             ck_ids.append((dirname, sldnum))
         else:
