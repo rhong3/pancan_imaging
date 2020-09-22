@@ -31,8 +31,33 @@ def image_ids_in(root_dir, ignore=['.DS_Store', 'dict.csv']):
     return ids
 
 
+# Get all images in the root directory for CPTAC2 images
+def image_ids_in_2(root_dir, dict_path='../CPTAC2_images.csv', ignore=['.DS_Store', 'dict.csv']):
+    dict_file = pd.read_csv(dict_path, header=0)
+    ck_ids = []
+    ids = []
+    for id in os.listdir(root_dir):
+        if id in ignore:
+            print('Skipping ID:', id)
+        elif '.svs' in id:
+            strip = id.split('.')[0]
+            dirname = dict_file['Stripped Label'].isin([strip])['Patient_ID']
+            sldnum = 21
+            while (dirname, sldnum) in ck_ids:
+                sldnum += 1
+            ids.append((id, dirname, sldnum))
+            ck_ids.append((dirname, sldnum))
+        else:
+            continue
+    temp_sum = pd.DataFrame(ids, columns=['image_path', 'Patient_ID', 'Slide_ID'])
+    dict_file = dict_file.join(temp_sum.set_index('Patient_ID'), on='Patient_ID', how='left')
+    dict_file.to_csv('../CPTAC2_images_sum.csv', index=True)
+
+    return ids
+
+
 # cut; each level is 2 times difference (10x, 5x, 2.5x)
-def cut(impath, outdir):
+def cut(impath, outdir, cptac2=False):
     try:
         os.mkdir(outdir)
     except FileExistsError:
@@ -42,8 +67,10 @@ def cut(impath, outdir):
     std = staintools.LuminosityStandardizer.standardize(std)
     # cut tiles with coordinates in the name (exclude white)
     start_time = time.time()
-    CPTAClist = image_ids_in(impath)
-
+    if cptac2:
+        CPTAClist = image_ids_in_2(impath)
+    else:
+        CPTAClist = image_ids_in(impath)
     CPTACpp = pd.DataFrame(CPTAClist, columns=['id', 'dir', 'sld'])
     CPTACpp.to_csv(outdir+'/sum.csv', index=False)
 
@@ -96,5 +123,5 @@ def cut(impath, outdir):
 if __name__ == "__main__":
     if not os.path.isdir('../tiles'):
         os.mkdir('../tiles')
-    for cancer in ['LUAD', 'CM', 'PDA', 'SAR']:
-        cut('../images/'+cancer, '../tiles/'+cancer)
+    for cancer in ['CO', 'OV', 'BRCA']:
+        cut('../images/'+cancer, '../tiles/'+cancer, cptac2=True)
