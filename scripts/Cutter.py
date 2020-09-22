@@ -42,6 +42,9 @@ def image_ids_in_2(root_dir, dict_path='../CPTAC2_images.csv', ignore=['.DS_Stor
         elif '.svs' in id:
             strip = id.split('.')[0]
             dirname = dict_file['Stripped Label'].isin([strip])['Patient_ID']
+            if pd.isna(dirname):
+                print(id)
+                dirname = dict_file['Filename'].isin([id])['Patient_ID']
             sldnum = 21
             while (dirname, sldnum) in ck_ids:
                 sldnum += 1
