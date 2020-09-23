@@ -1,5 +1,6 @@
 # Processing CPTAC2 Data
 import pandas as pd
+import numpy as np
 
 
 def combine(pdin):
@@ -49,17 +50,90 @@ def combine(pdin):
 # cobl.to_csv('../clinical/colon_full.csv', index=False)
 
 # Concatenate to image DF
-imgdf = pd.read_excel('../CPTAC II Images to TCIA.xlsx')
-imgdf.columns = imgdf.columns.str.replace('Subject ID', 'Patient_ID')
-brbl = pd.read_csv('../clinical/breast_full.csv', usecols=['Patient_ID', 'Stage'])
-brbl['type'] = 'BRCA'
-ovbl = pd.read_csv('../clinical/ovarian_full.csv', usecols=['Patient_ID', 'Stage'])
-ovbl['type'] = 'OV'
-cobl = pd.read_csv('../clinical/colon_full.csv', usecols=['Patient_ID', 'Stage'])
-cobl['type'] = 'CO'
+# imgdf = pd.read_excel('../CPTAC II Images to TCIA.xlsx')
+# imgdf.columns = imgdf.columns.str.replace('Subject ID', 'Patient_ID')
+# brbl = pd.read_csv('../clinical/breast_full.csv', usecols=['Patient_ID', 'Stage'])
+# brbl['type'] = 'BRCA'
+# ovbl = pd.read_csv('../clinical/ovarian_full.csv', usecols=['Patient_ID', 'Stage'])
+# ovbl['type'] = 'OV'
+# cobl = pd.read_csv('../clinical/colon_full.csv', usecols=['Patient_ID', 'Stage'])
+# cobl['type'] = 'CO'
+#
+# bl = pd.concat([brbl, ovbl, cobl], axis=0)
+# imgdf = imgdf.join(bl.set_index('Patient_ID'), on='Patient_ID', how='left')
+# imgdf['type'] = imgdf['type'].fillna('no_clinical')
+# imgdf.to_csv('../CPTAC2_images.csv', index=False)
 
-bl = pd.concat([brbl, ovbl, cobl], axis=0)
-imgdf = imgdf.join(bl.set_index('Patient_ID'), on='Patient_ID', how='left')
-imgdf['type'] = imgdf['type'].fillna('no_clinical')
-imgdf.to_csv('../CPTAC2_images.csv', index=False)
+imsum_OV = pd.read_csv('../CPTAC2_images_OV.csv', header=0)
+imsum_OV = imsum_OV[imsum_OV['type'] == 'OV']
+imsum_OV = imsum_OV.drop(columns=['Unnamed: 0'], axis=1)
+imsum_BRCA = pd.read_csv('../CPTAC2_images_BRCA.csv', header=0)
+imsum_BRCA = imsum_BRCA[imsum_BRCA['type'] == 'BRCA']
+imsum_BRCA = imsum_BRCA.drop(columns=['Unnamed: 0'], axis=1)
+imsum_CO = pd.read_csv('../CPTAC2_images_CO.csv', header=0)
+imsum_CO = imsum_CO[imsum_CO['type'] == 'CO']
+imsum_CO = imsum_CO.drop(columns=['Unnamed: 0'], axis=1)
+
+clinical_OV = pd.read_csv('../clinical/ovarian_clincial.csv', header=0)
+clinical_OV = clinical_OV.drop(columns=['Stage'], axis=1)
+clinical_OV['Tumor_normal'] = clinical_OV['Sample_Tumor_Normal']
+clinical_OV['Tumor_normal'] = clinical_OV['Tumor_normal'].replace({'Tumor': 1, 'Normal': 0})
+
+clinical_BRCA = pd.read_csv('../clinical/breast_clincial.csv', header=0)
+clinical_BRCA = clinical_BRCA.drop(columns=['Stage'], axis=1)
+clinical_BRCA['Patient_ID'] = clinical_BRCA['Patient_ID'].str.replace('X', '')
+clinical_BRCA['Replicate_Measurement_IDs'] = clinical_BRCA['Replicate_Measurement_IDs'].str.replace('X', '')
+clinical_BRCA['Tumor_normal'] = clinical_BRCA['Sample_Tumor_Normal']
+clinical_BRCA['Tumor_normal'] = clinical_BRCA['Tumor_normal'].replace({'Tumor': 1, 'Normal': 0})
+
+clinical_CO = pd.read_csv('../clinical/colon_clincial.csv', header=0)
+clinical_CO = clinical_CO.drop(columns=['Stage'], axis=1)
+clinical_CO['Tumor_normal'] = clinical_CO['Sample_Tumor_Normal']
+clinical_CO['Tumor_normal'] = clinical_CO['Tumor_normal'].replace({'Tumor': 1, 'Normal': 0})
+
+
+OV = imsum_OV.join(clinical_OV.set_index('Patient_ID'), on='Patient_ID', how='left')
+BRCA = imsum_BRCA.join(clinical_BRCA.set_index('Patient_ID'), on='Patient_ID', how='left')
+CO = imsum_CO.join(clinical_CO.set_index('Patient_ID'), on='Patient_ID', how='left')
+
+OV = OV.rename(columns={'Patient_ID': 'Case_ID', 'Specimen ID': 'Specimen_ID', 'type': 'Tumor'})
+CO = CO.rename(columns={'Patient_ID': 'Case_ID', 'Specimen ID': 'Specimen_ID', 'type': 'Tumor'})
+BRCA = BRCA.rename(columns={'Patient_ID': 'Case_ID', 'Specimen ID': 'Specimen_ID', 'type': 'Tumor'})
+
+OVc = pd.read_csv('../Case_ID/OV/Case_ID_OV.tsv', sep='\t')
+OVc = OVc['CASE_ID'].tolist()
+COc = pd.read_csv('../Case_ID/CO/Case_ID_CO.tsv', sep='\t')
+COc = COc['CASE_ID'].tolist()
+BRc = pd.read_csv('../Case_ID/BR/Case_ID_BR.tsv', sep='\t')
+BRc = BRc['CASE_ID'].tolist()
+
+OVx = OV[OV['Case_ID'].isin(OVc)]
+BRCAx = BRCA[BRCA['Case_ID'].isin(BRc)]
+COx = CO[CO['Case_ID'].isin(COc)]
+
+# OVx.to_csv('../data_freeze/OV/OV.tsv', index=False, sep='\t')
+# BRCAx.to_csv('../data_freeze/BRCA/BRCA.tsv', index=False, sep='\t')
+# COx.to_csv('../data_freeze/CO/CO.tsv', index=False, sep='\t')
+
+# df = pd.read_csv('../data_freeze.tsv', header=0, sep='\t')
+# df = pd.concat([df, OVx, COx, BRCAx], axis=0)
+# df.to_csv('../data_freeze.tsv', index=False, sep='\t')
+
+
+dff = pd.concat([OV, BRCA, CO], axis=0)
+
+dff['Slide_ID'] = dff['Case_ID'].str.cat(dff['Slide_ID'].astype(str), sep='-')
+dff['Slide_ID'] = dff['Slide_ID'].str.replace(".0", "", regex=False)
+dff = dff.rename(columns={'Case_ID': 'Patient_ID'})
+
+tumor = pd.read_csv('../tumor_label.csv', header=0)
+tumor = pd.concat([tumor, dff], axis=0)
+tumor = tumor.dropna(subset=['Tumor_normal'])
+tumor.to_csv('../tumor_label.csv', index=False)
+
+dff['label'] = dff['Stage']*dff['Tumor_normal']
+stage = pd.read_csv('../stage_label.csv', header=0)
+stage = pd.concat([stage, dff], axis=0)
+stage = stage.dropna(subset=['label'])
+stage.to_csv('../stage_label.csv', index=False)
 
