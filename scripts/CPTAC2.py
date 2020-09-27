@@ -147,6 +147,16 @@ for i in os.listdir('../Case_ID/'):
     except NotADirectoryError:
         print(i)
         pass
+#
+
+# tumor = pd.read_csv('../tumor_label.csv', header=0)
+# stage = pd.read_csv('../stage_label.csv', header=0)
+#
+# tumor.drop_duplicates(subset='Slide_ID', inplace=True)
+# stage.drop_duplicates(subset='Slide_ID', inplace=True)
+#
+# tumor.to_csv('../tumor_label.csv', index=False)
+# stage.to_csv('../stage_label.csv', index=False)
 
 tumor = pd.read_csv('../tumor_label.csv', header=0)
 stage = pd.read_csv('../stage_label.csv', header=0)
@@ -157,6 +167,4 @@ stage_df = stage[stage['Patient_ID'].isin(df_case)]
 tumor_df.to_csv('../tumor_label_df.csv', index=False)
 stage_df.to_csv('../stage_label_df.csv', index=False)
 
-
-
-
+print(len(tumor_df[tumor_df['Tumor']=='CO'].Patient_ID.unique()))
