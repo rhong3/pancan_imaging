@@ -138,15 +138,15 @@ def combine(pdin):
 # stage = stage.dropna(subset=['label'])
 # stage.to_csv('../stage_label.csv', index=False)
 
-df_case = []
-for i in os.listdir('../Case_ID/'):
-    try:
-        for j in os.listdir('../Case_ID/'+i):
-            pdd = pd.read_csv('../Case_ID/'+i+'/'+j, sep='\t')
-            df_case.extend(pdd['CASE_ID'].tolist())
-    except NotADirectoryError:
-        print(i)
-        pass
+# df_case = []
+# for i in os.listdir('../Case_ID/'):
+#     try:
+#         for j in os.listdir('../Case_ID/'+i):
+#             pdd = pd.read_csv('../Case_ID/'+i+'/'+j, sep='\t')
+#             df_case.extend(pdd['CASE_ID'].tolist())
+#     except NotADirectoryError:
+#         print(i)
+#         pass
 #
 
 # tumor = pd.read_csv('../tumor_label.csv', header=0)
@@ -158,13 +158,17 @@ for i in os.listdir('../Case_ID/'):
 # tumor.to_csv('../tumor_label.csv', index=False)
 # stage.to_csv('../stage_label.csv', index=False)
 
-tumor = pd.read_csv('../tumor_label.csv', header=0)
-stage = pd.read_csv('../stage_label.csv', header=0)
+# tumor = pd.read_csv('../tumor_label.csv', header=0)
+# stage = pd.read_csv('../stage_label.csv', header=0)
+#
+# tumor_df = tumor[tumor['Patient_ID'].isin(df_case)]
+# stage_df = stage[stage['Patient_ID'].isin(df_case)]
+#
+# tumor_df.to_csv('../tumor_label_df.csv', index=False)
+# stage_df.to_csv('../stage_label_df.csv', index=False)
+#
+# print(len(tumor_df[tumor_df['Tumor']=='CO'].Patient_ID.unique()))
 
-tumor_df = tumor[tumor['Patient_ID'].isin(df_case)]
-stage_df = stage[stage['Patient_ID'].isin(df_case)]
+ims = pd.read_csv('../CPTAC2_images.csv', header=0)
+print(len(ims[ims['type'] == 'OV'].Patient_ID.unique()))
 
-tumor_df.to_csv('../tumor_label_df.csv', index=False)
-stage_df.to_csv('../stage_label_df.csv', index=False)
-
-print(len(tumor_df[tumor_df['Tumor']=='CO'].Patient_ID.unique()))
