@@ -35,6 +35,7 @@ parser.add_argument('--reference', type=str, default='../tumor_label.csv', help=
 parser.add_argument('--label_column', type=str, default='Tumor_normal', help='label column name in reference file')
 parser.add_argument('--tile_path', type=str, default='../tiles', help='directory to tiles')
 parser.add_argument('--transfer', type=bool, default=False, help='reload for transfer learning (True or False)')
+parser.add_argument('--exclude', nargs='+', type=str, default=[], help='list cancer types to exclude from this study')
 
 opt = parser.parse_args()
 print('Input config:')
@@ -215,7 +216,8 @@ if __name__ == "__main__":
             te = pd.read_csv(data_dir + '/te_sample_full.csv', header=0)
             va = pd.read_csv(data_dir + '/va_sample_full.csv', header=0)
         except FileNotFoundError:
-            alll = Sample_prep2.big_image_sum(label_col=opt.label_column, path=opt.tile_path, ref_file=opt.reference)
+            alll = Sample_prep2.big_image_sum(label_col=opt.label_column, path=opt.tile_path,
+                                              ref_file=opt.reference, exclude=opt.exclude)
             Sample_prep2.set_sep(alll, path=data_dir, cut=opt.cut)
             tr = pd.read_csv(data_dir + '/tr_sample_full.csv', header=0)
             te = pd.read_csv(data_dir + '/te_sample_full.csv', header=0)

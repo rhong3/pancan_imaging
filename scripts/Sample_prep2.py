@@ -82,7 +82,7 @@ def paired_tile_ids_in(patient, slide, tumor, label, root_dir):
 
 
 # Prepare label at per patient level
-def big_image_sum(label_col, path, ref_file):
+def big_image_sum(label_col, path, ref_file, exclude=None):
     ref = pd.read_csv(ref_file, header=0)
     big_images = []
     ref = ref.loc[ref[label_col].notna()]
@@ -93,6 +93,8 @@ def big_image_sum(label_col, path, ref_file):
 
     datapd = pd.DataFrame(big_images, columns=['Patient_ID', 'Slide_ID', 'Tumor', 'path', 'label'])
     datapd = datapd.dropna()
+    if exclude:
+        datapd = datapd[~datapd['Tumor'].isin(exclude)]
 
     return datapd
 
