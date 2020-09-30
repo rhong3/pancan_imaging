@@ -35,7 +35,7 @@ parser.add_argument('--reference', type=str, default='../tumor_label.csv', help=
 parser.add_argument('--label_column', type=str, default='Tumor_normal', help='label column name in reference file')
 parser.add_argument('--tile_path', type=str, default='../tiles', help='directory to tiles')
 parser.add_argument('--transfer', type=bool, default=False, help='reload for transfer learning (True or False)')
-parser.add_argument('--exclude', nargs='+', type=str, default=[], help='list cancer types to exclude from this study')
+parser.add_argument('--exclude', nargs='+', type=str, default=None, help='list cancer types to exclude from this study')
 
 opt = parser.parse_args()
 print('Input config:')
