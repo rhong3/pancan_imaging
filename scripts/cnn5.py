@@ -326,7 +326,7 @@ class INCEPTION:
                             saver.save(self.sesh, outfile, global_step=None)
                             svs = i
 
-                        if i > 199999:
+                        if i > 129999:
                             valid_mean_loss = np.mean(validation_loss[-10:-1])
                             print('Mean validation loss: {}'.format(valid_mean_loss))
                             if valid_loss > valid_mean_loss:
