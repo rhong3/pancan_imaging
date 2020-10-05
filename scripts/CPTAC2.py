@@ -170,5 +170,5 @@ def combine(pdin):
 # print(len(tumor_df[tumor_df['Tumor']=='CO'].Patient_ID.unique()))
 
 ims = pd.read_csv('../CPTAC2_images.csv', header=0)
-print(len(ims[ims['type'] == 'OV'].Patient_ID.unique()))
+print(len(ims[ims['type'] == 'CO'].Patient_ID.unique()))
 
