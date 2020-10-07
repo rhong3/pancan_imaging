@@ -265,6 +265,31 @@ def realout(pdx, path, name, pmd):
     out.to_csv("../Results/{}/out/{}.csv".format(path, name), index=False)
 
 
+def type_metrics(path, name, pmd, fdict):
+    bdict = {value: key for (key, value) in fdict.items()}
+    slide = pd.read_csv("../Results/{}/out/{}_slide.csv".format(path, name), header=0)
+    tile = pd.read_csv("../Results/{}/out/{}_tile.csv".format(path, name), header=0)
+    unq = slide.Tumor.unique().tolist()
+    for tt in unq:
+        slide_sub = slide[slide['Tumor'] == tt]
+        tott = slide_sub.shape[0]
+        accout = slide_sub.loc[slide_sub['Prediction'] == slide_sub['True_label']]
+        accu = accout.shape[0]
+        accur = round(accu / tott, 5)
+        outtl = slide_sub['True_label'].replace(bdict).to_frame()
+        pdx = slide_sub.filter(regex='_score')
+        ROC_PRC(outtl, pdx, path, str(tt+name), fdict, 'slide', accur, pmd)
+
+        tile_sub = tile[tile['Tumor'] == tt]
+        tott = tile_sub.shape[0]
+        accout = tile_sub.loc[tile_sub['Prediction'] == tile_sub['True_label']]
+        accu = accout.shape[0]
+        accur = round(accu / tott, 5)
+        outtl = tile_sub['True_label'].replace(bdict).to_frame()
+        pdx = tile_sub.filter(regex='_score')
+        ROC_PRC(outtl, pdx, path, str(tt+name), fdict, 'tile', accur, pmd)
+
+
 # tile level; need prediction scores, true labels, output path, and name of the files for metrics; accuracy, AUROC; PRC.
 def metrics(pdx, tl, path, name, pmd, ori_test=None):
     # format clean up
@@ -324,6 +349,7 @@ def metrics(pdx, tl, path, name, pmd, ori_test=None):
         ROC_PRC(outtlt, pdxt, path, name, lbdict, 'tile', accurw, pmd)
     except ValueError:
         print('Not able to generate plots based on this set!')
+    type_metrics(path, name, pmd, lbdict)
 
 
 # format activation and weight to get heatmap
