@@ -8,20 +8,18 @@ library(MLmetrics)
 library(boot)
 library(gmodels)
 
-
+inlist = c('tumor_9-9', 'tumor_7ex-7')
 # Check previously calculated trials
-previous=read.csv("~/Documents/CPTAC-UCEC/Results/Statistics_special.csv")
-existed=paste(previous$Tiles, paste(paste(previous$Architecture, previous$Feature, sep=''), previous$Positive, sep='_'), sep='/')
-sum=read_excel('~/documents/CPTAC-UCEC/Results/Summary.xlsx', sheet = 5)
-inlist = paste(sum$Tiles, paste(paste(sum$Architecture, sum$Feature, sep=''), sum$Positive, sep='_'), sep='/')
+previous=read.csv("~/Documents/pancan_imaging/Results/Statistics_tumor.csv")
+existed=paste(previous$Folder, previous$Type_number, sep='-')
 # Find the new trials to be calculated
 targets = inlist[which(!inlist %in% existed)]
-OUTPUT = setNames(data.frame(matrix(ncol = 51, nrow = 0)), c("Feature", "Architecture", "Tiles", "Patient_ROC.95.CI_lower", "Patient_ROC",                 
-                                                             "Patient_ROC.95.CI_upper",      "Patient_PRC.95.CI_lower",      "Patient_PRC",                  "Patient_PRC.95%CI_upper",      "Patient_Accuracy",            
-                                                             "Patient_Kappa",                "Patient_AccuracyLower",        "Patient_AccuracyUpper",        "Patient_AccuracyNull",         "Patient_AccuracyPValue",      
-                                                             "Patient_McnemarPValue",        "Patient_Sensitivity",          "Patient_Specificity",          "Patient_Pos.Pred.Value",       "Patient_Neg.Pred.Value",      
-                                                             "Patient_Precision",            "Patient_Recall",               "Patient_F1",                   "Patient_Prevalence",           "Patient_Detection.Rate",      
-                                                             "Patient_Detection.Prevalence", "Patient_Balanced.Accuracy",    "Tile_ROC.95.CI_lower",         "Tile_ROC",                     "Tile_ROC.95%CI_upper",        
+OUTPUT = setNames(data.frame(matrix(ncol = 50, nrow = 0)), c("Folder", "Type_number", "Slide_ROC.95.CI_lower", "Slide_ROC",                 
+                                                             "Slide_ROC.95.CI_upper",      "Slide_PRC.95.CI_lower",      "Slide_PRC",                  "Slide_PRC.95%CI_upper",      "Slide_Accuracy",            
+                                                             "Slide_Kappa",                "Slide_AccuracyLower",        "Slide_AccuracyUpper",        "Slide_AccuracyNull",         "Slide_AccuracyPValue",      
+                                                             "Slide_McnemarPValue",        "Slide_Sensitivity",          "Slide_Specificity",          "Slide_Pos.Pred.Value",       "Slide_Neg.Pred.Value",      
+                                                             "Slide_Precision",            "Slide_Recall",               "Slide_F1",                   "Slide_Prevalence",           "Slide_Detection.Rate",      
+                                                             "Slide_Detection.Prevalence", "Slide_Balanced.Accuracy",    "Tile_ROC.95.CI_lower",         "Tile_ROC",                     "Tile_ROC.95%CI_upper",        
                                                              "Tile_PRC.95.CI_lower",         "Tile_PRC",                     "Tile_PRC.95.CI_upper",         "Tile_Accuracy",                "Tile_Kappa",                  
                                                              "Tile_AccuracyLower",           "Tile_AccuracyUpper",           "Tile_AccuracyNull",            "Tile_AccuracyPValue",          "Tile_McnemarPValue",          
                                                              "Tile_Sensitivity",             "Tile_Specificity",             "Tile_Pos.Pred.Value",          "Tile_Neg.Pred.Value",          "Tile_Precision",              
@@ -38,18 +36,14 @@ OUTPUT = setNames(data.frame(matrix(ncol = 51, nrow = 0)), c("Feature", "Archite
 for (i in targets){
   tryCatch(
     {
-      pos = strsplit(i, '_')[[1]][2]  #get positive case name
-      xxx = strsplit(i, '_')[[1]][1]
-      print(xxx)
-      folder = strsplit(xxx, '-')[[1]][1]  #split replicated trials
-      tiles = strsplit(folder, '/')[[1]][1]  #get NL number
-      folder_name = strsplit(folder, '/')[[1]][2]  #get folder name
-      arch = substr(folder_name, 1, 2)  #get architecture used
-      feature = substr(folder_name, 3, nchar(folder_name)) 
-      Test_slide <- read.csv(paste("~/documents/CPTAC-UCEC/Results/", xxx, "/out/Test_slide.csv", sep=''))
-      Test_tile <- read.csv(paste("~/documents/CPTAC-UCEC/Results/", xxx, "/out/Test_tile.csv", sep=''))
+      pos = 'tumor'  #get positive case name
+      print(i)
+      folder = strsplit(i, '-')[[1]][1]  #split replicated trials
+      type_number = strsplit(i, '-')[[1]][2]
+      Test_slide <- read.csv(paste("~/documents/pancan_imaging/Results/", folder, "/out/Test_slide.csv", sep=''))
+      Test_tile <- read.csv(paste("~/documents/pancan_imaging/Results/", folder, "/out/Test_tile.csv", sep=''))
       
-      # per patient level
+      # per Slide level
       answers <- factor(Test_slide$True_label)
       results <- factor(Test_slide$Prediction)
       # statistical metrics
@@ -70,7 +64,7 @@ for (i in targets){
       Sprcdf = data.frame('PRC.95.CI_lower' = Sprcci[2], 'PRC' = SprcR, 'PRC.95.CI_upper' = Sprcci[3])
       # Combine and add prefix
       soverall = cbind(rocdf, Sprcdf, data.frame(t(CMP$overall)), data.frame(t(CMP$byClass)))
-      colnames(soverall) = paste('Patient', colnames(soverall), sep='_')
+      colnames(soverall) = paste('Slide', colnames(soverall), sep='_')
       
       # per tile level
       Tanswers <- factor(Test_tile$True_label)
@@ -95,7 +89,7 @@ for (i in targets){
       Toverall = cbind(Trocdf, Tprcdf, data.frame(t(CMT$overall)), data.frame(t(CMT$byClass)))
       colnames(Toverall) = paste('Tile', colnames(Toverall), sep='_')
       # Key names
-      keydf = data.frame("Feature" = feature, "Architecture" = arch, "Tiles" = tiles, "Positive" = pos)
+      keydf = data.frame("Folder" = folder, "Type_number" = type_number)
       # combine all df and reset row name
       tempdf = cbind(keydf, soverall, Toverall)
       rownames(tempdf) <- NULL
@@ -111,7 +105,7 @@ for (i in targets){
 
 # Bind old with new; sort; save
 New_OUTPUT = rbind(previous, OUTPUT)
-New_OUTPUT = New_OUTPUT[order(New_OUTPUT$Feature, New_OUTPUT$Tiles, New_OUTPUT$Architecture),]
-write.csv(New_OUTPUT, file = "~/documents/CPTAC-UCEC/Results/Statistics_special.csv", row.names=FALSE)
+New_OUTPUT = New_OUTPUT[order(New_OUTPUT$Folder, New_OUTPUT$Type_number),]
+write.csv(New_OUTPUT, file = "~/documents/pancan_imaging/Results/Statistics_tumor.csv", row.names=FALSE)
 
 
