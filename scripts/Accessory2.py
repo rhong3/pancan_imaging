@@ -236,6 +236,10 @@ def slide_metrics(inter_pd, path, name, fordict, pmd):
         print('Not able to generate plots based on this set!')
     inter_pd['Prediction'] = inter_pd['Prediction'].replace(fordict)
     inter_pd['True_label'] = inter_pd['True_label'].replace(fordict)
+
+    raw = pd.read_csv("../Results/{}/data/{}_sample_raw.csv".format(path, name), header=0, usecols=['Slide_ID', 'Tumor'])
+    inter_pd = inter_pd.join(raw.set_index('Slide_ID'), on='Slide_ID', how='left')
+
     inter_pd.to_csv("../Results/{}/out/{}_slide.csv".format(path, name), index=True)
 
 
