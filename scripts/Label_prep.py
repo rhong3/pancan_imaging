@@ -32,8 +32,16 @@ for i in os.listdir('../Case_ID/'):
         pass
 
 summ.columns = ['Patient_ID', '8q_gain_event', '8p_loss_event', 'Tumor']
+summ['Patient_ID'] = summ['Patient_ID'].str.replace('X', '')
 summ['8_change_event'] = ((summ['8q_gain_event']+summ['8p_loss_event']) > 0).astype(np.uint8)
-summ.to_csv('../Chrm8q_label.csv', index=False)
 
+tumor = pd.read_csv('../tumor_label.csv', header=0, usecols=['Patient_ID', 'Slide_ID', 'Tumor_normal'])
+tumor = tumor[tumor['Tumor_normal'] == 1]
+tumor = tumor.drop(columns=['Tumor_normal'])
+summ = summ.join(tumor.set_index('Patient_ID'), on='Patient_ID', how='left')
+summ = summ.dropna()
+summ = summ[['Slide_ID', 'Patient_ID', 'Tumor', '8q_gain_event', '8p_loss_event', '8_change_event']]
+
+summ.to_csv('../Chrm8q_label.csv', index=False)
 summ_df = summ[summ['Patient_ID'].isin(df_case)]
 summ_df.to_csv('../Chrm8q_label_df.csv', index=False)
