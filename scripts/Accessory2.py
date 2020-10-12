@@ -267,8 +267,8 @@ def realout(pdx, path, name, pmd):
 
 def type_metrics(path, name, pmd, fdict):
     bdict = {value: key for (key, value) in fdict.items()}
-    slide = pd.read_csv("../Results/{}/out/{}_slide.csv".format(path, name), header=0)
-    tile = pd.read_csv("../Results/{}/out/{}_tile.csv".format(path, name), header=0)
+    slide = pd.read_csv("../Results/{}/out/{}_slide.csv".format(path, name.lower()), header=0)
+    tile = pd.read_csv("../Results/{}/out/{}_tile.csv".format(path, name.lower()), header=0)
     unq = slide.Tumor.unique().tolist()
     for tt in unq:
         slide_sub = slide[slide['Tumor'] == tt]
