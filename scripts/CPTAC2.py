@@ -169,6 +169,8 @@ def combine(pdin):
 #
 # print(len(tumor_df[tumor_df['Tumor']=='CO'].Patient_ID.unique()))
 
-ims = pd.read_csv('../CPTAC2_images.csv', header=0)
-print(len(ims[ims['type'] == 'CO'].Patient_ID.unique()))
+# ims = pd.read_csv('../CPTAC2_images.csv', header=0)
+# print(len(ims[ims['type'] == 'CO'].Patient_ID.unique()))
 
+dff = pd.read_csv('../tumor_label_df.csv', header=0)
+print(len(dff[(dff['Tumor'] == 'BRCA') & (dff['Tumor_normal'] == 1)].Patient_ID.unique()))
