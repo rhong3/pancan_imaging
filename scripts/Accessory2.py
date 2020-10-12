@@ -284,7 +284,7 @@ def type_metrics(path, name, pmd, fdict):
             try:
                 ROC_PRC(outtl, pdx, path, str(tt+'_'+name), fdict, 'slide', accur, pmd)
             except ValueError:
-                print('Error: {} contains only 1 level of true label'.format(name))
+                print('Error: {} contains only 1 level of true label'.format(str(tt+'_'+name)))
 
             tile_sub = tile[tile['Tumor'] == tt]
             tott = tile_sub.shape[0]
@@ -296,7 +296,7 @@ def type_metrics(path, name, pmd, fdict):
             try:
                 ROC_PRC(outtl, pdx, path, str(tt+'_'+name), fdict, 'tile', accur, pmd)
             except ValueError:
-                print('Error: {} contains only 1 level of true label'.format(name))
+                print('Error: {} contains only 1 level of true label'.format(str(tt+'_'+name)))
 
 
 # tile level; need prediction scores, true labels, output path, and name of the files for metrics; accuracy, AUROC; PRC.
