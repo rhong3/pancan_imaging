@@ -104,7 +104,7 @@ def ROC_PRC(outtl, pdx, path, name, fdict, dm, accur, pmd):
         for i, color in zip(range(rdd), colors):
             plt.plot(fpr[i], tpr[i], color=color, lw=2,
                      label='ROC curve of {0} (area = {1:0.5f})'.format(fdict[i], roc_auc[i]))
-            print('{0} AUC of {1} = {2:0.5f}'.format(dm, fdict[i], roc_auc[i]))
+            print('{0} {1} AUC of {2} = {3:0.5f}'.format(name, dm, fdict[i], roc_auc[i]))
 
         plt.plot([0, 1], [0, 1], 'k--', lw=2)
         plt.xlim([0.0, 1.0])
@@ -115,7 +115,7 @@ def ROC_PRC(outtl, pdx, path, name, fdict, dm, accur, pmd):
         plt.legend(loc="lower right")
         plt.savefig("../Results/{}/out/{}_{}_ROC.png".format(path, name, dm))
 
-        print('Average precision score, micro-averaged over all classes: {0:0.5f}'.format(average_precision["micro"]))
+        print('{0} Average precision score, micro-averaged over all classes: {1:0.5f}'.format(name, average_precision["micro"]))
         # Plot all PRC curves
         colors = cycle(['navy', 'turquoise', 'darkorange', 'cornflowerblue', 'teal', 'red', 'blue'])
         plt.figure(figsize=(7, 9))
@@ -139,7 +139,7 @@ def ROC_PRC(outtl, pdx, path, name, fdict, dm, accur, pmd):
             l, = plt.plot(recall[i], precision[i], color=color, lw=2)
             lines.append(l)
             labels.append('Precision-recall for {0} (area = {1:0.5f})'.format(fdict[i], average_precision[i]))
-            print('{0} Average Precision of {1} = {2:0.5f}'.format(dm, fdict[i], average_precision[i]))
+            print('{0} {1} Average Precision of {2} = {3:0.5f}'.format(name, dm, fdict[i], average_precision[i]))
 
         fig = plt.gcf()
         fig.subplots_adjust(bottom=0.25)
@@ -156,7 +156,7 @@ def ROC_PRC(outtl, pdx, path, name, fdict, dm, accur, pmd):
         y_score = np.asarray(pdx[:, 1]).ravel()
         auc = sklearn.metrics.roc_auc_score(tl, y_score)
         auc = round(auc, 5)
-        print('{0} AUC = {1:0.5f}'.format(dm, auc))
+        print('{0} {1} AUC = {2:0.5f}'.format(name, dm, auc))
         fpr, tpr, _ = sklearn.metrics.roc_curve(tl, y_score)
         plt.figure()
         lw = 2
@@ -172,7 +172,7 @@ def ROC_PRC(outtl, pdx, path, name, fdict, dm, accur, pmd):
         plt.savefig("../Results/{}/out/{}_{}_ROC.png".format(path, name, dm))
 
         average_precision = sklearn.metrics.average_precision_score(tl, y_score)
-        print('Average precision-recall score: {0:0.5f}'.format(average_precision))
+        print('{0} Average precision-recall score: {1:0.5f}'.format(name, average_precision))
         plt.figure()
         f_scores = np.linspace(0.2, 0.8, num=4)
         for f_score in f_scores:
@@ -281,7 +281,10 @@ def type_metrics(path, name, pmd, fdict):
             accur = round(accu / tott, 5)
             outtl = slide_sub['True_label'].replace(bdict).to_frame()
             pdx = slide_sub.filter(regex='_score').values
-            ROC_PRC(outtl, pdx, path, str(tt+name), fdict, 'slide', accur, pmd)
+            try:
+                ROC_PRC(outtl, pdx, path, str(tt+'_'+name), fdict, 'slide', accur, pmd)
+            except ValueError:
+                print('Error: {} contains only 1 level of true label'.format(name))
 
             tile_sub = tile[tile['Tumor'] == tt]
             tott = tile_sub.shape[0]
@@ -290,7 +293,10 @@ def type_metrics(path, name, pmd, fdict):
             accur = round(accu / tott, 5)
             outtl = tile_sub['True_label'].replace(bdict).to_frame()
             pdx = tile_sub.filter(regex='_score').values
-            ROC_PRC(outtl, pdx, path, str(tt+name), fdict, 'tile', accur, pmd)
+            try:
+                ROC_PRC(outtl, pdx, path, str(tt+'_'+name), fdict, 'tile', accur, pmd)
+            except ValueError:
+                print('Error: {} contains only 1 level of true label'.format(name))
 
 
 # tile level; need prediction scores, true labels, output path, and name of the files for metrics; accuracy, AUROC; PRC.
