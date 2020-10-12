@@ -240,7 +240,7 @@ def slide_metrics(inter_pd, path, name, fordict, pmd):
     raw = pd.read_csv("../Results/{}/data/{}_sample_raw.csv".format(path, name[0:2].lower()),
                       header=0, usecols=['Slide_ID', 'Tumor', 'Patient_ID', 'path'])
     inter_pd = inter_pd.join(raw.set_index('Slide_ID'), on='Slide_ID', how='left')
-    inter_pd.to_csv("../Results/{}/out/{}_slide.csv".format(path, name[0:2].lower()), index=True)
+    inter_pd.to_csv("../Results/{}/out/{}_slide.csv".format(path, name), index=True)
 
 
 # for real image prediction, just output the prediction scores as csv
