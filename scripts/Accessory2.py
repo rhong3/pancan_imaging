@@ -280,7 +280,7 @@ def type_metrics(path, name, pmd, fdict):
             accu = accout.shape[0]
             accur = round(accu / tott, 5)
             outtl = slide_sub['True_label'].replace(bdict).to_frame()
-            pdx = slide_sub.filter(regex='_score')
+            pdx = slide_sub.filter(regex='_score').values
             ROC_PRC(outtl, pdx, path, str(tt+name), fdict, 'slide', accur, pmd)
 
             tile_sub = tile[tile['Tumor'] == tt]
@@ -289,7 +289,7 @@ def type_metrics(path, name, pmd, fdict):
             accu = accout.shape[0]
             accur = round(accu / tott, 5)
             outtl = tile_sub['True_label'].replace(bdict).to_frame()
-            pdx = tile_sub.filter(regex='_score')
+            pdx = tile_sub.filter(regex='_score').values
             ROC_PRC(outtl, pdx, path, str(tt+name), fdict, 'tile', accur, pmd)
 
 
