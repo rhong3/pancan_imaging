@@ -8,7 +8,7 @@ library(MLmetrics)
 library(boot)
 library(gmodels)
 
-inlist = c('tumor_9-9', 'tumor_7ex-7')
+inlist = c('tumor_8-8')
 # Check previously calculated trials
 previous=read.csv("~/Documents/pancan_imaging/Results/Statistics_tumor.csv")
 existed=paste(previous$Folder, previous$Type_number, sep='-')
