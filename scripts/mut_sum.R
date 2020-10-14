@@ -97,16 +97,65 @@ luad.t$Tumor = 'LUAD'
 luad.t <- luad.t %>% select(Tumor, everything())
 row.names(luad.t) = gsub('\\.', '-', row.names(luad.t))
 
-
 ccrcc <- read_delim("Somatic_mutation_wxs/ccRCC/AWG_data_freeze/ccrcc.somatic.consensus.gdc.umichigan.wu.112918.maf", 
                     "\t", escape_double = FALSE, trim_ws = TRUE)
 ccrcc$Tumor_Sample_Barcode = gsub('_T', '', ccrcc$Tumor_Sample_Barcode)
 samples = unique(ccrcc$Tumor_Sample_Barcode)
+genes = unique(ccrcc$Hugo_Symbol)
+ccrcc.t = data.frame(matrix(data=0, nrow=length(samples), ncol=length(genes)))
+row.names(ccrcc.t)=samples
+colnames(ccrcc.t)=genes
+for (n in 1:nrow(ccrcc)){
+  ccrcc.t[toString(ccrcc[n, 'Tumor_Sample_Barcode']), toString(ccrcc[n, 'Hugo_Symbol'])] = 1
+}
+ccrcc.t$Tumor = 'CCRCC'
+ccrcc.t <- ccrcc.t %>% select(Tumor, everything())
 
 gbm <- read_delim("Somatic_mutation_wxs/GBM/AWG_data_freeze/somaticwrapper_all_cases_filtered_dnp_manual_review.v4.0.20200430.maf", 
                   "\t", escape_double = FALSE, trim_ws = TRUE)
+gbm$Tumor_Sample_Barcode = gsub('_T', '', gbm$Tumor_Sample_Barcode)
+samples = unique(gbm$Tumor_Sample_Barcode)
+genes = unique(gbm$Hugo_Symbol)
+gbm.t = data.frame(matrix(data=0, nrow=length(samples), ncol=length(genes)))
+row.names(gbm.t)=samples
+colnames(gbm.t)=genes
+for (n in 1:nrow(gbm)){
+  gbm.t[toString(gbm[n, 'Tumor_Sample_Barcode']), toString(gbm[n, 'Hugo_Symbol'])] = 1
+}
+gbm.t$Tumor = 'GBM'
+gbm.t <- gbm.t %>% select(Tumor, everything())
+
 ov <- read_delim("Somatic_mutation_wxs/OV/AWG_data_freeze/CPTAC2_Prospective_OV.v1.5.hg38.somatic.2019-01-19.maf", 
                  "\t", escape_double = FALSE, trim_ws = TRUE)
+ov$Tumor_Sample_Barcode = gsub('_T', '', ov$Tumor_Sample_Barcode)
+samples = unique(ov$Tumor_Sample_Barcode)
+genes = unique(ov$Hugo_Symbol)
+ov.t = data.frame(matrix(data=0, nrow=length(samples), ncol=length(genes)))
+row.names(ov.t)=samples
+colnames(ov.t)=genes
+for (n in 1:nrow(ov)){
+  ov.t[toString(ov[n, 'Tumor_Sample_Barcode']), toString(ov[n, 'Hugo_Symbol'])] = 1
+}
+ov.t$Tumor = 'OV'
+ov.t <- ov.t %>% select(Tumor, everything())
 
+brca.t$Row.name = row.names(brca.t)
+ccrcc.t$Row.name = row.names(ccrcc.t)
+jdf = transform(merge(brca.t, ccrcc.t, all = TRUE), row.names=Row.name, Row.name=NULL)
+for (df in list(co.t, gbm.t, hnscc.t, lscc.t, luad.t, ov.t, pda.t, ucec.t)){
+  jdf$Row.name = row.names(jdf)
+  df$Row.name = row.names(df)
+  jdf = transform(merge(jdf, df, all = TRUE), row.names=Row.name, Row.name=NULL) 
+}
+write.csv(jdf, '~/documents/pancan_imaging/mutation_full.csv')
+
+
+# create label files
+mut = read_csv('~/documents/pancan_imaging/mutation_full.csv')
+colnames(mut)[1] = 'Patient_ID'
+slides = read_csv('~/documents/pancan_imaging/tumor_label.csv')
+slides = slides[slides$Tumor_normal==1, c('Patient_ID', 'Slide_ID')]
+jj = merge(slides, mut, by='Patient_ID')
+write.csv(jj, '~/documents/pancan_imaging/mutation_label.csv', row.names=FALSE)
 
 
