@@ -90,7 +90,6 @@ def big_image_sum(label_col, path, ref_file, exclude=None):
         big_images.append([row['Patient_ID'], row['Slide_ID'], row['Tumor'],
                            path + "/{}/{}/{}/".format(str(row['Tumor']), str(row['Patient_ID']),
                                                       row['Slide_ID'].split('-')[-1]), row[label_col]])
-
     datapd = pd.DataFrame(big_images, columns=['Patient_ID', 'Slide_ID', 'Tumor', 'path', 'label'])
     datapd = datapd.dropna()
     if exclude:
