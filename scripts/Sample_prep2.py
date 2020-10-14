@@ -56,7 +56,6 @@ def paired_tile_ids_in(patient, slide, tumor, label, root_dir):
                     x = int(float(id.split('x-', 1)[1].split('-', 1)[0]) / fac)
                     y = int(float(re.split('.p', id.split('y-', 1)[1])[0]) / fac)
                     ids.append([patient, slide, tumor, label, level, dirr + '/' + id, x, y])
-
         ids = pd.DataFrame(ids, columns=['Patient_ID', 'Slide_ID', 'Tumor', 'label', 'level', 'path', 'x', 'y'])
         idsa = ids.loc[ids['level'] == 1]
         idsa = idsa.drop(columns=['level'])
