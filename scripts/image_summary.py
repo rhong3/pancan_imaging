@@ -48,7 +48,7 @@ ps_pd_df.to_csv('../slide_summary_df.csv', index=False)
 st_pd = pd.DataFrame(slide_tiles, columns=['type', 'patient', 'slide', 'level1_count', 'level2_count', 'level3_count'])
 st_pd.to_csv('../tiles_summary.csv', index=False)
 st_pd_df = st_pd[st_pd['patient'].isin(df_patient)]
-st_pd_df.to_csv('../slide_summary_df.csv', index=False)
+st_pd_df.to_csv('../tiles_summary_df.csv', index=False)
 
 tp_pd = pd.DataFrame(type_patient, columns=['type', 'patient_count'])
 dfct = []
