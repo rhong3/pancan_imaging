@@ -36,10 +36,26 @@ for type in os.listdir('../tiles/'):
                    level3_num = 0
                 slide_tiles.append([type, patient, str(patient+'-'+slide), level1_num, level2_num, level3_num])
 
-tp_pd = pd.DataFrame(type_patient, columns=['type', 'patient_count'])
-tp_pd.to_csv('../patient_summary.csv', index=False)
+dff = pd.read_csv('../tumor_label_df.csv', header=0, usecols=['Patient_ID', 'Slide_ID', 'Tumor_normal'])
+dff.columns = ['patient', 'slide', 'Tumor_normal']
+df_patient = dff['patient'].tolist()
+
 ps_pd = pd.DataFrame(patient_slide, columns=['type', 'patient', 'slide_count'])
 ps_pd.to_csv('../slide_summary.csv', index=False)
+ps_pd_df = ps_pd[ps_pd['patient'].isin(df_patient)]
+ps_pd_df.to_csv('../slide_summary_df.csv', index=False)
+
 st_pd = pd.DataFrame(slide_tiles, columns=['type', 'patient', 'slide', 'level1_count', 'level2_count', 'level3_count'])
 st_pd.to_csv('../tiles_summary.csv', index=False)
+st_pd_df = st_pd[st_pd['patient'].isin(df_patient)]
+st_pd_df.to_csv('../slide_summary_df.csv', index=False)
+
+tp_pd = pd.DataFrame(type_patient, columns=['type', 'patient_count'])
+dfct = []
+for tp in tp_pd['type'].unique().tolist():
+    dfct.append(len(ps_pd_df[ps_pd_df['type'] == tp].patient.unique().tolist()))
+tp_pd['df_patient_count'] = dfct
+tp_pd.to_csv('../patient_summary.csv', index=False)
+
+
 
