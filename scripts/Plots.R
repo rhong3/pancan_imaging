@@ -43,3 +43,72 @@ dev.off()
 
 
 # box plot Wilcoxon test
+# tiles
+library(ggplot2)
+library(ggpubr)
+todolist = c('tumor_10', 'PTEN', 'STK11', 'TP53', 'PIK3CA', '8change', '8ploss', '8qgain')
+tile_all = data.frame(Prediction_score= numeric(0), True_label= character(0), feature = character(0))
+for (f in todolist){
+    pos = "POS_score"
+    if (f == 'tumor_10'){
+      lev = c('negative', 'tumor')
+      mm = f
+    } else{
+      lev = c('negative', f)
+      mm = f
+    }
+  Test_tile <- read.csv(paste("Results/", f, "/out/Test_tile.csv", sep=''))
+  Test_tile = Test_tile[, c(pos, "True_label")]
+  Test_tile['feature'] = mm
+  levels(Test_tile$True_label) <- c(levels(Test_tile$True_label), 'negative', 'positive')
+  Test_tile$True_label[Test_tile$True_label==lev[1]] = 'negative'
+  Test_tile$True_label[Test_tile$True_label==lev[2]] = 'positive'
+  colnames(Test_tile) = c('Prediction_score', 'True_label', 'feature')
+  tile_all = rbind(tile_all, Test_tile)
+}
+
+pp = ggboxplot(tile_all, x = "feature", y = "Prediction_score",
+               color = "black", fill = "True_label", palette = "grey")+ 
+  stat_compare_means(method.args = list(alternative = "less"), aes(group = True_label), label = "p.signif", label.y = 1.1) + 
+  stat_compare_means(method.args = list(alternative = "less"), aes(group = True_label), label = "p.format", label.y = 1.15) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+pdf(file=paste("Results/Wilcoxon_tiles.pdf", sep=''),
+    width=12,height=8)
+grid.arrange(pp,nrow=1)
+dev.off()
+
+# slides
+todolist = c('tumor_10', 'PTEN', 'STK11', 'TP53', 'PIK3CA', '8change', '8ploss', '8qgain')
+slide_all = data.frame(Prediction_score= numeric(0), True_label= character(0), feature = character(0))
+for (f in todolist){
+  pos = "POS_score"
+  if (f == 'tumor_10'){
+    lev = c('negative', 'tumor')
+    mm = f
+  } else{
+    lev = c('negative', f)
+    mm = f
+  }
+  Test_slide <- read.csv(paste("Results/", f, "/out/Test_slide.csv", sep=''))
+  Test_slide = Test_slide[, c(pos, "True_label")]
+  Test_slide['feature'] = mm
+  levels(Test_slide$True_label) <- c(levels(Test_slide$True_label), 'negative', 'positive')
+  Test_slide$True_label[Test_slide$True_label==lev[1]] = 'negative'
+  Test_slide$True_label[Test_slide$True_label==lev[2]] = 'positive'
+  colnames(Test_slide) = c('Prediction_score', 'True_label', 'feature')
+  slide_all = rbind(slide_all, Test_slide)
+}
+
+pp = ggboxplot(slide_all, x = "feature", y = "Prediction_score",
+               color = "black", fill = "True_label", palette = "grey")+ 
+  stat_compare_means(method.args = list(alternative = "less"), aes(group = True_label), label = "p.signif", label.y = 1.1) + 
+  stat_compare_means(method.args = list(alternative = "less"), aes(group = True_label), label = "p.format", label.y = 1.15) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+pdf(file=paste("Results/Wilcoxon_slides.pdf", sep=''),
+    width=12,height=8)
+grid.arrange(pp,nrow=1)
+dev.off()
+
+
