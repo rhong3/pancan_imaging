@@ -16,9 +16,10 @@ other = other[, c('Feature', 'Slide_ROC.95.CI_lower', 'Slide_ROC', 'Slide_ROC.95
                    'Tile_ROC.95.CI_lower', 'Tile_ROC', 'Tile_ROC.95.CI_upper')]
 all = rbind(mutation, tumor, other)
 all$Feature = gsub('tumor_10', 'tumor', all$Feature)
+all = all[order(-all$Slide_ROC),]
 
 # Default bar plot
-ps <- ggplot(all, aes(x=Feature, y=Slide_ROC)) + 
+ps <- ggplot(all, aes(x=reorder(Feature, -Slide_ROC), y=Slide_ROC)) + 
   geom_bar(stat="identity", color="black", 
            position=position_dodge()) +
   geom_errorbar(aes(ymin=Slide_ROC.95.CI_lower, ymax=Slide_ROC.95.CI_upper), width=.2,
@@ -27,7 +28,7 @@ ps <- ggplot(all, aes(x=Feature, y=Slide_ROC)) +
   theme_classic() +
   scale_fill_manual(values=c("#808080")) + theme(plot.title = element_text(hjust = 0.5))
 
-pt <- ggplot(all, aes(x=Feature, y=Tile_ROC)) + 
+pt <- ggplot(all, aes(x=reorder(Feature, -Tile_ROC), y=Tile_ROC)) + 
   geom_bar(stat="identity", color="black", 
            position=position_dodge()) +
   geom_errorbar(aes(ymin=Tile_ROC.95.CI_lower, ymax=Tile_ROC.95.CI_upper), width=.2,
@@ -46,7 +47,7 @@ dev.off()
 # tiles
 library(ggplot2)
 library(ggpubr)
-todolist = c('tumor_10', 'PTEN', 'STK11', 'TP53', 'PIK3CA', '8change', '8ploss', '8qgain')
+todolist = all$Feature
 tile_all = data.frame(Prediction_score= numeric(0), True_label= character(0), feature = character(0))
 for (f in todolist){
     pos = "POS_score"
@@ -79,7 +80,6 @@ grid.arrange(pp,nrow=1)
 dev.off()
 
 # slides
-todolist = c('tumor_10', 'PTEN', 'STK11', 'TP53', 'PIK3CA', '8change', '8ploss', '8qgain')
 slide_all = data.frame(Prediction_score= numeric(0), True_label= character(0), feature = character(0))
 for (f in todolist){
   pos = "POS_score"
