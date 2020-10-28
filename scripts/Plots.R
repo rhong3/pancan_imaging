@@ -4,9 +4,9 @@ library(ggplot2)
 library(ggpubr)
 library(gridExtra)
 mutation <- read_csv("Results/Statistics_mutation.csv")
-mutation = mutation[,c('Gene', 'Slide_ROC.95.CI_lower', 'Slide_ROC', 'Slide_ROC.95.CI_upper', 
+mutation = mutation[,c('Folder', 'Slide_ROC.95.CI_lower', 'Slide_ROC', 'Slide_ROC.95.CI_upper', 
                        'Tile_ROC.95.CI_lower', 'Tile_ROC', 'Tile_ROC.95.CI_upper')]
-colnames(mutation) = gsub('Gene', 'Feature', colnames(mutation))
+colnames(mutation) = gsub('Folder', 'Feature', colnames(mutation))
 tumor <- read_csv("Results/Statistics_tumor.csv")
 tumor = tumor[4, c('Folder', 'Slide_ROC.95.CI_lower', 'Slide_ROC', 'Slide_ROC.95.CI_upper', 
                        'Tile_ROC.95.CI_lower', 'Tile_ROC', 'Tile_ROC.95.CI_upper')]
