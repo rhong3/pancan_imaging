@@ -8,7 +8,7 @@ library(MLmetrics)
 library(boot)
 library(gmodels)
 
-inlist = c('ZFHX3-ZFHX3-10')
+inlist = c('BRCA2-BRCA2-9')
 # Check previously calculated trials
 previous=read.csv("~/Documents/pancan_imaging/Results/Statistics_mutation.csv")
 existed=paste(previous$Folder, previous$Gene, previous$Type_number, sep='-')
