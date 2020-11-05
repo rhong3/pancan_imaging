@@ -155,7 +155,7 @@ def main(trc, tec, vac, weight, testset=None, to_reload=None, test=None):
 
     if test:  # restore for testing only
         m = cnn5.INCEPTION(INPUT_DIM, HYPERPARAMS, meta_graph=to_reload, log_dir=LOG_DIR,
-                           meta_dir=LOG_DIR, weights=weight)
+                           meta_dir=METAGRAPH_DIR, weights=weight)
         print("Loaded! Ready for test!")
         if tec >= opt.bs:
             THE = tfreloader('test', 1, opt.bs, trc, tec, vac)
@@ -165,7 +165,7 @@ def main(trc, tec, vac, weight, testset=None, to_reload=None, test=None):
 
     elif to_reload:  # restore for further training and testing
         m = cnn5.INCEPTION(INPUT_DIM, HYPERPARAMS, meta_graph=to_reload, log_dir=LOG_DIR,
-                           meta_dir=LOG_DIR, weights=weight, transfer=opt.transfer)
+                           meta_dir=METAGRAPH_DIR, weights=weight, transfer=opt.transfer)
         print("Loaded! Restart training.")
         HE = tfreloader('train', opt.ep, opt.bs, trc, tec, vac)
         VHE = tfreloader('validation', opt.ep*100, opt.bs, trc, tec, vac)
