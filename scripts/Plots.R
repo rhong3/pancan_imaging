@@ -61,7 +61,7 @@ for (f in todolist){
     }
   Test_tile <- read.csv(paste("Results/", f, "/out/Test_tile.csv", sep=''))
   Test_tile = Test_tile[, c(pos, "True_label")]
-  Test_tile['feature'] = mm
+  Test_tile['feature'] = f
   levels(Test_tile$True_label) <- c(levels(Test_tile$True_label), 'negative', 'positive')
   Test_tile$True_label[Test_tile$True_label==lev[1]] = 'negative'
   Test_tile$True_label[Test_tile$True_label==lev[2]] = 'positive'
@@ -93,7 +93,7 @@ for (f in todolist){
   }
   Test_slide <- read.csv(paste("Results/", f, "/out/Test_slide.csv", sep=''))
   Test_slide = Test_slide[, c(pos, "True_label")]
-  Test_slide['feature'] = mm
+  Test_slide['feature'] = f
   levels(Test_slide$True_label) <- c(levels(Test_slide$True_label), 'negative', 'positive')
   Test_slide$True_label[Test_slide$True_label==lev[1]] = 'negative'
   Test_slide$True_label[Test_slide$True_label==lev[2]] = 'positive'
