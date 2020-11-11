@@ -12,8 +12,9 @@ tumor = tumor[4, c('Folder', 'Slide_ROC.95.CI_lower', 'Slide_ROC', 'Slide_ROC.95
                        'Tile_ROC.95.CI_lower', 'Tile_ROC', 'Tile_ROC.95.CI_upper')]
 colnames(tumor) = gsub('Folder', 'Feature', colnames(tumor))
 other <- read_csv("Results/Statistics_other.csv")
-other = other[, c('Feature', 'Slide_ROC.95.CI_lower', 'Slide_ROC', 'Slide_ROC.95.CI_upper', 
+other = other[, c('Folder', 'Slide_ROC.95.CI_lower', 'Slide_ROC', 'Slide_ROC.95.CI_upper', 
                    'Tile_ROC.95.CI_lower', 'Tile_ROC', 'Tile_ROC.95.CI_upper')]
+colnames(other) = gsub('Folder', 'Feature', colnames(other))
 all = rbind(mutation, tumor, other)
 all$Feature = gsub('tumor_10', 'tumor', all$Feature)
 all = all[order(-all$Slide_ROC),]
@@ -38,7 +39,7 @@ pt <- ggplot(all, aes(x=reorder(Feature, -Tile_ROC), y=Tile_ROC)) +
   scale_fill_manual(values=c("#808080")) + theme(plot.title = element_text(hjust = 0.5))
 
 pdf(file="Results/ROC_plot.pdf",
-    width=25,height=5)
+    width=30,height=5)
 grid.arrange(ps,pt,nrow=1, ncol=2)
 dev.off()
 
@@ -55,8 +56,8 @@ for (f in todolist){
       lev = c('negative', 'tumor')
       mm = f
     } else{
-      lev = c('negative', f)
-      mm = f
+      mm = strsplit(f, '_')[[1]][1]
+      lev = c('negative', mm)
     }
   Test_tile <- read.csv(paste("Results/", f, "/out/Test_tile.csv", sep=''))
   Test_tile = Test_tile[, c(pos, "True_label")]
@@ -87,8 +88,8 @@ for (f in todolist){
     lev = c('negative', 'tumor')
     mm = f
   } else{
-    lev = c('negative', f)
-    mm = f
+    mm = strsplit(f, '_')[[1]][1]
+    lev = c('negative', mm)
   }
   Test_slide <- read.csv(paste("Results/", f, "/out/Test_slide.csv", sep=''))
   Test_slide = Test_slide[, c(pos, "True_label")]
@@ -107,7 +108,7 @@ pp = ggboxplot(slide_all, x = "feature", y = "Prediction_score",
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 pdf(file=paste("Results/Wilcoxon_slides.pdf", sep=''),
-    width=25,height=8)
+    width=30,height=8)
 grid.arrange(pp,nrow=1)
 dev.off()
 
