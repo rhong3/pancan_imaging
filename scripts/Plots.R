@@ -39,7 +39,7 @@ pt <- ggplot(all, aes(x=reorder(Feature, -Tile_ROC), y=Tile_ROC)) +
   scale_fill_manual(values=c("#808080")) + theme(plot.title = element_text(hjust = 0.5))
 
 pdf(file="Results/ROC_plot.pdf",
-    width=30,height=5)
+    width=35,height=5)
 grid.arrange(ps,pt,nrow=1, ncol=2)
 dev.off()
 
@@ -76,7 +76,7 @@ pp = ggboxplot(tile_all, x = "feature", y = "Prediction_score",
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 pdf(file=paste("Results/Wilcoxon_tiles.pdf", sep=''),
-    width=25,height=8)
+    width=30,height=8)
 grid.arrange(pp,nrow=1)
 dev.off()
 
