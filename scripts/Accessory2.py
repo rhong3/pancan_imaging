@@ -23,6 +23,8 @@ from itertools import cycle
 def ROC_PRC(outtl, pdx, path, name, fdict, dm, accur, pmd):
     if pmd == 'stage':
         rdd = 5
+    elif pmd == 'origin':
+        rdd = 10
     else:
         rdd = 2
     if rdd > 2:
@@ -247,6 +249,9 @@ def slide_metrics(inter_pd, path, name, fordict, pmd):
 def realout(pdx, path, name, pmd):
     if pmd == 'stage':
         lbdict = {1: 'stage1', 2: 'stage2', 3: 'stage3', 4: 'stage4', 0: 'stage0'}
+    elif pmd == 'origin':
+        lbdict = {0: 'HNSCC', 1: 'CCRCC', 2: 'CO', 3: 'BRCA', 4: 'LUAD',
+                  5: 'LSCC', 6: 'PDA', 7: 'UCEC', 8: 'GBM', 9: 'OV'}
     else:
         lbdict = {0: 'negative', 1: pmd}
     pdx = np.asmatrix(pdx)
@@ -256,6 +261,10 @@ def realout(pdx, path, name, pmd):
     if pmd == 'stage':
         out = pd.DataFrame(pdx[:, 0:5],
                            columns=['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score'])
+    elif pmd == 'origin':
+        out = pd.DataFrame(pdx[:, 0:10],
+                           columns=['HNSCC_score', 'CCRCC_score', 'CO_score', 'BRCA_score', 'LUAD_score', 'LSCC_score',
+                                    'PDA_score', 'UCEC_score', 'GBM_score', 'OV_score'])
     else:
         out = pd.DataFrame(pdx[:, 0:2], columns=['NEG_score', 'POS_score'])
     out.reset_index(drop=True, inplace=True)
@@ -311,6 +320,12 @@ def metrics(pdx, tl, path, name, pmd, ori_test=None):
         lbdict = {1: 'stage1', 2: 'stage2', 3: 'stage3', 4: 'stage4', 0: 'stage0'}
         outt = pd.DataFrame(pdxt[:, 0:5],
                             columns=['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score'])
+    elif pmd == 'origin':
+        lbdict = {0: 'HNSCC', 1: 'CCRCC', 2: 'CO', 3: 'BRCA', 4: 'LUAD',
+                  5: 'LSCC', 6: 'PDA', 7: 'UCEC', 8: 'GBM', 9: 'OV'}
+        outt = pd.DataFrame(pdxt[:, 0:10],
+                           columns=['HNSCC_score', 'CCRCC_score', 'CO_score', 'BRCA_score', 'LUAD_score', 'LSCC_score',
+                                    'PDA_score', 'UCEC_score', 'GBM_score', 'OV_score'])
     else:
         lbdict = {0: 'negative', 1: pmd}
         outt = pd.DataFrame(pdxt[:, 0:2], columns=['NEG_score', 'POS_score'])
@@ -345,8 +360,17 @@ def metrics(pdx, tl, path, name, pmd, ori_test=None):
     accu = accout.shape[0]
     accurw = round(accu/tott, 5)
     print('Tile Total Accuracy: '+str(accurw))
-    if pmd == 'subtype':
-        for i in range(4):
+    if pmd == 'stage':
+        for i in range(5):
+            accua = accout[accout.True_label == i].shape[0]
+            tota = out[out.True_label == i].shape[0]
+            try:
+                accuar = round(accua / tota, 5)
+                print('Tile {} Accuracy: '.format(lbdict[i])+str(accuar))
+            except ZeroDivisionError:
+                print("No data for {}.".format(lbdict[i]))
+    elif pmd == 'origin':
+        for i in range(10):
             accua = accout[accout.True_label == i].shape[0]
             tota = out[out.True_label == i].shape[0]
             try:
@@ -404,6 +428,25 @@ def CAM(net, w, pred, x, y, path, name, bs, pmd, rd=0):
                 pass
         catdict = {1: 'stage1', 2: 'stage2', 3: 'stage3', 4: 'stage4', 0: 'stage0'}
         dirdict = {1: DIRB, 2: DIRC, 3: DIRD, 4: DIRE, 0: DIRA}
+    elif pmd == 'origin':
+        DIRA = "../Results/{}/out/{}_img/HNSCC".format(path, name)
+        DIRB = "../Results/{}/out/{}_img/CCRCC".format(path, name)
+        DIRC = "../Results/{}/out/{}_img/CO".format(path, name)
+        DIRD = "../Results/{}/out/{}_img/BRCA".format(path, name)
+        DIRE = "../Results/{}/out/{}_img/LUAD".format(path, name)
+        DIRF = "../Results/{}/out/{}_img/LSCC".format(path, name)
+        DIRG = "../Results/{}/out/{}_img/PDA".format(path, name)
+        DIRH = "../Results/{}/out/{}_img/UCEC".format(path, name)
+        DIRI = "../Results/{}/out/{}_img/GBM".format(path, name)
+        DIRJ = "../Results/{}/out/{}_img/OV".format(path, name)
+        for DIR in (DIRT, DIRA, DIRB, DIRC, DIRD, DIRE, DIRF, DIRG, DIRH, DIRI, DIRJ):
+            try:
+                os.mkdir(DIR)
+            except FileExistsError:
+                pass
+        catdict = {0: 'HNSCC', 1: 'CCRCC', 2: 'CO', 3: 'BRCA', 4: 'LUAD',
+                  5: 'LSCC', 6: 'PDA', 7: 'UCEC', 8: 'GBM', 9: 'OV'}
+        dirdict = {1: DIRB, 2: DIRC, 3: DIRD, 4: DIRE, 0: DIRA, 5: DIRF, 6: DIRG, 7: DIRH, 8: DIRI, 9: DIRJ}
     else:
         DIRA = "../Results/{}/out/{}_img/NEG".format(path, name)
         DIRB = "../Results/{}/out/{}_img/POS".format(path, name)
@@ -534,6 +577,10 @@ def tSNE_prep(flatnet, ori_test, y, pred, path, pmd):
     if pmd == 'stage':
         outt = pd.DataFrame(pdxt[:, 0:5],
                             columns=['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score'])
+    elif pmd == 'origin':
+        outt = pd.DataFrame(pdxt[:, 0:10],
+                           columns=['HNSCC_score', 'CCRCC_score', 'CO_score', 'BRCA_score', 'LUAD_score', 'LSCC_score',
+                                    'PDA_score', 'UCEC_score', 'GBM_score', 'OV_score'])
     else:
         outt = pd.DataFrame(pdxt[:, 0:2], columns=['NEG_score', 'POS_score'])
     outtlt = pd.DataFrame(tl, columns=['True_label'])
