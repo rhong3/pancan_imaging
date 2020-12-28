@@ -148,62 +148,40 @@ def set_sep(alll, path, cut=0.3):
 
 # TO KEEP SPLIT SAME AS BASELINES. seperate into training and testing; each type is the same separation
 # ratio on big images test and train csv files contain tiles' path.
-def set_sep_secondary(alll, path, cls, pmd, batchsize=24):
-    if pmd == 'subtype':
-        split = pd.read_csv('../split/ST.csv', header=0)
-    elif pmd == 'histology':
-        split = pd.read_csv('../split/his.csv', header=0)
-    elif pmd == 'Serous-like':
-        split = pd.read_csv('../split/CNVH.csv', header=0)
-    else:
-        split = pd.read_csv('../split/{}.csv'.format(pmd), header=0)
-    train = split.loc[split['set'] == 'train']['slide'].tolist()
-    validation = split.loc[split['set'] == 'validation']['slide'].tolist()
-    test = split.loc[split['set'] == 'test']['slide'].tolist()
+def set_sep_secondary(alll, path, cut=0.3, theme3path='../Theme3_split.csv'):
+    theme3 = pd.read_csv(theme3path, header=0)
 
-    trlist = []
-    telist = []
-    valist = []
+    test = theme3[theme3['set'] == 'test']
+    test = test.drop(columns=['set'])
+    train = theme3[theme3['set'] == 'train']
+    train = train.drop(columns=['set'])
+    validation = theme3[theme3['set'] == 'validation']
+    validation = validation.drop(columns=['set'])
 
-    subset = alll
-    valist.append(subset[subset['slide'].isin(validation)])
-    telist.append(subset[subset['slide'].isin(test)])
-    trlist.append(subset[subset['slide'].isin(train)])
+    test.to_csv(path + '/te_sample_raw.csv', header=True, index=False)
+    train.to_csv(path + '/tr_sample_raw.csv', header=True, index=False)
+    validation.to_csv(path + '/va_sample_raw.csv', header=True, index=False)
 
-    test = pd.concat(telist)
-    train = pd.concat(trlist)
-    validation = pd.concat(valist)
-
-    test_tiles = pd.DataFrame(columns=['slide', 'label', 'L0path', 'L1path', 'L2path', 'age', 'BMI'])
-    train_tiles = pd.DataFrame(columns=['slide', 'label', 'L0path', 'L1path', 'L2path', 'age', 'BMI'])
-    validation_tiles = pd.DataFrame(columns=['slide', 'label', 'L0path', 'L1path', 'L2path', 'age', 'BMI'])
+    test_tiles = pd.DataFrame(columns=['Patient_ID', 'Slide_ID', 'Tumor', 'label', 'L1path', 'L2path', 'L3path'])
+    train_tiles = pd.DataFrame(columns=['Patient_ID', 'Slide_ID', 'Tumor', 'label', 'L1path', 'L2path', 'L3path'])
+    validation_tiles = pd.DataFrame(columns=['Patient_ID', 'Slide_ID', 'Tumor', 'label', 'L1path', 'L2path', 'L3path'])
     for idx, row in test.iterrows():
-        tile_ids = paired_tile_ids_in(row['slide'], row['label'], row['path'], row['age'], row['BMI'])
+        tile_ids = paired_tile_ids_in(row['Patient_ID'], row['Slide_ID'], row['Tumor'], row['label'], row['path'])
         test_tiles = pd.concat([test_tiles, tile_ids])
     for idx, row in train.iterrows():
-        tile_ids = paired_tile_ids_in(row['slide'], row['label'], row['path'], row['age'], row['BMI'])
+        tile_ids = paired_tile_ids_in(row['Patient_ID'], row['Slide_ID'], row['Tumor'], row['label'], row['path'])
         train_tiles = pd.concat([train_tiles, tile_ids])
     for idx, row in validation.iterrows():
-        tile_ids = paired_tile_ids_in(row['slide'], row['label'], row['path'], row['age'], row['BMI'])
+        tile_ids = paired_tile_ids_in(row['Patient_ID'], row['Slide_ID'], row['Tumor'], row['label'], row['path'])
         validation_tiles = pd.concat([validation_tiles, tile_ids])
 
     # No shuffle on test set
     train_tiles = sku.shuffle(train_tiles)
     validation_tiles = sku.shuffle(validation_tiles)
-    if train_tiles.shape[0] > int(batchsize * 80000 / 3):
-        train_tiles = train_tiles.sample(int(batchsize * 80000 / 3), replace=False)
-        print('Truncate training set!')
-    if validation_tiles.shape[0] > int(batchsize * 80000 / 30):
-        validation_tiles = validation_tiles.sample(int(batchsize * 80000 / 30), replace=False)
-        print('Truncate validation set!')
-    if test_tiles.shape[0] > int(batchsize * 80000 / 3):
-        test_tiles = test_tiles.sample(int(batchsize * 80000 / 3), replace=False)
-        print('Truncate test set!')
+    test_tiles = test_tiles.sort_values(by=['Tumor', 'Slide_ID'], ascending=True)
 
-    test_tiles.to_csv(path + '/te_sample.csv', header=True, index=False)
-    train_tiles.to_csv(path + '/tr_sample.csv', header=True, index=False)
-    validation_tiles.to_csv(path + '/va_sample.csv', header=True, index=False)
-
-    return train_tiles, test_tiles, validation_tiles
+    test_tiles.to_csv(path + '/te_sample_full.csv', header=True, index=False)
+    train_tiles.to_csv(path + '/tr_sample_full.csv', header=True, index=False)
+    validation_tiles.to_csv(path + '/va_sample_full.csv', header=True, index=False)
 
 

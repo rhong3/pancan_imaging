@@ -218,7 +218,7 @@ if __name__ == "__main__":
         except FileNotFoundError:
             alll = Sample_prep2.big_image_sum(label_col=opt.label_column, path=opt.tile_path,
                                               ref_file=opt.reference, exclude=opt.exclude)
-            Sample_prep2.set_sep(alll, path=data_dir, cut=opt.cut)
+            Sample_prep2.set_sep_secondary(alll, path=data_dir, cut=opt.cut)
             tr = pd.read_csv(data_dir + '/tr_sample_full.csv', header=0)
             te = pd.read_csv(data_dir + '/te_sample_full.csv', header=0)
             va = pd.read_csv(data_dir + '/va_sample_full.csv', header=0)
