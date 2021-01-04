@@ -206,6 +206,13 @@ def slide_metrics(inter_pd, path, name, fordict, pmd):
             ['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score']].idxmax(axis=1)
         redict = {'stage1_score': int(1), 'stage2_score': int(2), 'stage3_score': int(3), 'stage4_score': int(4),
                   'stage0_score': int(0)}
+    elif pmd == 'origin':
+        inter_pd['Prediction'] = inter_pd[['HNSCC_score', 'CCRCC_score', 'CO_score', 'BRCA_score', 'LUAD_score',
+                                           'LSCC_score', 'PDA_score', 'UCEC_score', 'GBM_score',
+                                           'OV_score']].idxmax(axis=1)
+        redict = {'HNSCC_score': int(0), 'CCRCC_score': int(1), 'CO_score': int(2), 'BRCA_score': int(3),
+                  'LUAD_score': int(4), 'LSCC_score': int(5), 'PDA_score': int(6), 'UCEC_score': int(7),
+                  'GBM_score': int(8), 'OV_score': int(9)}
     else:
         inter_pd['Prediction'] = inter_pd[['NEG_score', 'POS_score']].idxmax(axis=1)
         redict = {'NEG_score': int(0), 'POS_score': int(1)}
