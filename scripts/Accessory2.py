@@ -233,11 +233,24 @@ def slide_metrics(inter_pd, path, name, fordict, pmd):
                 print('Slide {} Accuracy: '.format(fordict[i])+str(accuar))
             except ZeroDivisionError:
                 print("No data for {}.".format(fordict[i]))
+    elif pmd == 'origin':
+        for i in range(10):
+            accua = accout[accout.True_label == i].shape[0]
+            tota = inter_pd[inter_pd.True_label == i].shape[0]
+            try:
+                accuar = round(accua / tota, 5)
+                print('Slide {} Accuracy: '.format(fordict[i])+str(accuar))
+            except ZeroDivisionError:
+                print("No data for {}.".format(fordict[i]))
     try:
         outtl_slide = inter_pd['True_label'].to_frame(name='True_lable')
         if pmd == 'stage':
             pdx_slide = inter_pd[
                 ['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score']].values
+        elif pmd == 'origin':
+            pdx_slide = inter_pd[['HNSCC_score', 'CCRCC_score', 'CO_score', 'BRCA_score', 'LUAD_score',
+                                           'LSCC_score', 'PDA_score', 'UCEC_score', 'GBM_score',
+                                           'OV_score']].values
         else:
             pdx_slide = inter_pd[['NEG_score', 'POS_score']].values
         ROC_PRC(outtl_slide, pdx_slide, path, name, fordict, 'slide', accurr, pmd)
