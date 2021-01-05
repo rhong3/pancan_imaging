@@ -184,4 +184,3 @@ def set_sep_secondary(alll, path, cut=0.3, theme3path='../Theme3_split.csv'):
     train_tiles.to_csv(path + '/tr_sample_full.csv', header=True, index=False)
     validation_tiles.to_csv(path + '/va_sample_full.csv', header=True, index=False)
 
-
