@@ -242,10 +242,10 @@ if __name__ == "__main__":
     elif opt.mode == 'train':
         if not os.path.isfile(data_dir + '/test.tfrecords'):
             loader(data_dir, 'test')
-        if not os.path.isfile(data_dir + '/train.tfrecords'):
-            loader(data_dir, 'train')
         if not os.path.isfile(data_dir + '/validation.tfrecords'):
             loader(data_dir, 'validation')
+        if not os.path.isfile(data_dir + '/train.tfrecords'):
+            loader(data_dir, 'train')
         if opt.modeltoload == '':
             main(trc, tec, vac, weights, testset=tes)
         else:
