@@ -14,7 +14,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import Accessory2 as ac
-import Panoptes3
+import Panoptes4
 
 
 # Define an Inception
@@ -51,10 +51,10 @@ class INCEPTION:
          self.global_step, self.train_op, self.merged_summary) = handles
 
         vars = []
-        for mm in ['Panoptes3/loss3/classifier/kernel:0', 'Panoptes3/loss3/classifier/bias:0',
-                  'Panoptes3/loss2/classifier_1/kernel:0', 'Panoptes3/loss2/classifier_1/bias:0',
-                  'Panoptes3/loss2/classifier_2/kernel:0', 'Panoptes3/loss2/classifier_2/bias:0',
-                  'Panoptes3/loss2/classifier/kernel:0', 'Panoptes3/loss2/classifier/bias:0']:
+        for mm in ['Panoptes4/loss3/classifier/kernel:0', 'Panoptes4/loss3/classifier/bias:0',
+                  'Panoptes4/loss2/classifier_1/kernel:0', 'Panoptes4/loss2/classifier_1/bias:0',
+                  'Panoptes4/loss2/classifier_2/kernel:0', 'Panoptes4/loss2/classifier_2/bias:0',
+                  'Panoptes4/loss2/classifier/kernel:0', 'Panoptes4/loss2/classifier/bias:0']:
             vars.extend(tf.trainable_variables(scope=mm))
 
         if transfer:
@@ -105,11 +105,11 @@ class INCEPTION:
 
         # other features input
 
-        logits, nett, ww = Panoptes3.Panoptes3(xa_in_reshape, xb_in_reshape, xc_in_reshape,
+        logits, nett, ww = Panoptes4.Panoptes4(xa_in_reshape, xb_in_reshape, xc_in_reshape,
                                                    num_cls=classes,
                                                    is_train=is_train,
                                                    dropout=dropout,
-                                                   scope='Panoptes3')
+                                                   scope='Panoptes4')
 
         pred = tf.nn.softmax(logits, name="prediction")
 
