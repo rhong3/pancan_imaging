@@ -32,9 +32,9 @@ for(xx in inlist){
   # sp_ori_dat = rbind(P, N)
   # SAMPLE 20000 FOR LEVEL 1 & 2; NO SAMPLE FOR LEVEL 3
   sp_ori_dat=ori_dat[sample(nrow(ori_dat), 20000), ]
-  #sp_ori_dat=ori_dat
+
   write.table(sp_ori_dat, file=sampled_file, row.names = F, sep=',')
-  # sp_ori_dat=ori_dat
+
   X = as.matrix(sp_ori_dat[,start:dim(sp_ori_dat)[2]])
   res = Rtsne(X, initial_dims=100, check_duplicates = FALSE)
   Y=res$Y
