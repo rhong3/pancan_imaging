@@ -174,8 +174,8 @@ for(xx in inlist){
   ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
     geom_point(aes(col=Tumor),alpha=0.5, size=3)+
     geom_mark_hull(expand=0.01, concavity = 0, aes(fill=Tumor, label=Tumor))+
-    xlim(-15,15)+
-    ylim(-15,15)+ 
+    xlim(-40,40)+
+    ylim(-40,40)+ 
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                        panel.grid.minor = element_blank(), 
                        axis.line = element_line(colour = "black"), legend.position='bottom')
