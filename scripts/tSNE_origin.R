@@ -168,9 +168,6 @@ for(xx in inlist){
   
   dev.off()
   
-  pdf(file=out_fig2,
-      width=7,height=7)
-  
   ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
     geom_point(aes(col=Tumor),alpha=0.5, size=3)+
     geom_mark_hull(expand=0.01, concavity = 0, aes(fill=Tumor, label=Tumor))+
@@ -179,8 +176,9 @@ for(xx in inlist){
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                        panel.grid.minor = element_blank(), 
                        axis.line = element_line(colour = "black"), legend.position='bottom')
-  dev.off()
   
+  ggsave(out_fig2, width=7,height=7)
+
 }
 
 
@@ -262,8 +260,6 @@ for(xx in inlist){
   
   dev.off()
   
-  pdf(file=out_fig2,
-      width=7,height=7)
   
   ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
     geom_point(aes(col=Tumor),alpha=0.5, size=3)+
@@ -273,5 +269,8 @@ for(xx in inlist){
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                        panel.grid.minor = element_blank(), 
                        axis.line = element_line(colour = "black"), legend.position='bottom')
-  dev.off()
+  
+  ggsave(out_fig2, width=7,height=7)
+
 }
+
