@@ -98,6 +98,7 @@ for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')
   output_file=paste('~/documents/pancan_imaging/',xx,'/out/slide_tSNE_P_N.csv',sep='')
   out_fig=paste('~/documents/pancan_imaging/',xx,'/out/slide_P_N.pdf',sep='')
+  out_fig2=paste('~/documents/pancan_imaging/',xx,'/out/slide_circle_P_N.pdf',sep='')
   start=15
   bins=50
   POS_score=c('HNSCC_score',	'CCRCC_score',	'CO_score',	'BRCA_score',	'LUAD_score',
@@ -135,6 +136,8 @@ for(xx in inlist){
   ## plot the manifold with probability
   library(ggplot2)
   library(gridExtra)
+  library(ggalt)
+  library(ggforce)
   palist <- list()
   pblist <- list()
   for(i in 1:length(POS_score)){
@@ -165,6 +168,19 @@ for(xx in inlist){
   
   dev.off()
   
+  pdf(file=out_fig2,
+      width=7,height=7)
+  
+  ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
+    geom_point(aes(col=Tumor),alpha=0.5, size=3)+
+    geom_mark_hull(expand=0.01, concavity = 0, aes(fill=Tumor, label=Tumor))+
+    xlim(-15,15)+
+    ylim(-15,15)+ 
+    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                       panel.grid.minor = element_blank(), 
+                       axis.line = element_line(colour = "black"), legend.position='bottom')
+  dev.off()
+  
 }
 
 
@@ -175,6 +191,7 @@ for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')
   output_file=paste('~/documents/pancan_imaging/',xx,'/out/patient_tSNE_P_N.csv',sep='')
   out_fig=paste('~/documents/pancan_imaging/',xx,'/out/patient_P_N.pdf',sep='')
+  out_fig2=paste('~/documents/pancan_imaging/',xx,'/out/patient_circle_P_N.pdf',sep='')
   start=15
   bins=50
   POS_score=c('HNSCC_score',	'CCRCC_score',	'CO_score',	'BRCA_score',	'LUAD_score',
@@ -213,6 +230,8 @@ for(xx in inlist){
   ## plot the manifold with probability
   library(ggplot2)
   library(gridExtra)
+  library(ggalt)
+  library(ggforce)
   palist <- list()
   pblist <- list()
   for(i in 1:length(POS_score)){
@@ -243,4 +262,16 @@ for(xx in inlist){
   
   dev.off()
   
+  pdf(file=out_fig2,
+      width=7,height=7)
+  
+  ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
+    geom_point(aes(col=Tumor),alpha=0.5, size=3)+
+    geom_mark_hull(expand=0.01, concavity = 0, aes(fill=Tumor, label=Tumor))+
+    xlim(-15,15)+
+    ylim(-15,15)+ 
+    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                       panel.grid.minor = element_blank(), 
+                       axis.line = element_line(colour = "black"), legend.position='bottom')
+  dev.off()
 }
