@@ -42,22 +42,24 @@ def image_ids_in_2(root_dir, can, dict_path='../CPTAC2_images.csv', ignore=['.DS
             try:
                 strip = id.split('.')[0]
                 dirname = dict_file.loc[dict_file['Stripped Label'] == strip]['Patient_ID'].values[0]
+                scan = dict_file.loc[dict_file['Stripped Label'] == strip]['Comments'].values[0]
             except IndexError:
                 print('Exception 1: '+id)
                 try:
                     dirname = dict_file.loc[dict_file['Filename'] == id]['Patient_ID'].values[0]
+                    scan = dict_file.loc[dict_file['Stripped Label'] == id]['Comments'].values[0]
                 except IndexError:
                     print('Exception 2; File not found in dict: ' + id)
                     continue
             sldnum = 21
             while (dirname, sldnum) in ck_ids:
                 sldnum += 1
-            ids.append((id, dirname, sldnum))
+            ids.append((id, dirname, sldnum, scan))
             ck_ids.append((dirname, sldnum))
         else:
             continue
-    temp_sum = pd.DataFrame(ids, columns=['image_path', 'Patient_ID', 'Slide_ID'])
-    dict_file = dict_file.join(temp_sum.set_index('Patient_ID'), on='Patient_ID', how='left')
+    temp_sum = pd.DataFrame(ids, columns=['image_path', 'Patient_ID', 'Slide_ID', 'scan_by'])
+    dict_file = dict_file.join(temp_sum[['image_path', 'Patient_ID', 'Slide_ID']].set_index('Patient_ID'), on='Patient_ID', how='left')
     dict_file.to_csv('../CPTAC2_images_{}.csv'.format(can), index=False)
 
     return ids
@@ -76,10 +78,12 @@ def cut(impath, outdir, cancer, cptac2=False):
     start_time = time.time()
     if cptac2:
         CPTAClist = image_ids_in_2(impath, can=cancer)
+        CPTACpp = pd.DataFrame(CPTAClist, columns=['id', 'dir', 'sld', 'scan'])
+        CPTACpp[['id', 'dir', 'sld']].to_csv(outdir+'/sum.csv', index=False)
     else:
         CPTAClist = image_ids_in(impath)
-    CPTACpp = pd.DataFrame(CPTAClist, columns=['id', 'dir', 'sld'])
-    CPTACpp.to_csv(outdir+'/sum.csv', index=False)
+        CPTACpp = pd.DataFrame(CPTAClist, columns=['id', 'dir', 'sld'])
+        CPTACpp.to_csv(outdir+'/sum.csv', index=False)
 
     for i in CPTAClist:
         try:
@@ -92,18 +96,33 @@ def cut(impath, outdir, cancer, cptac2=False):
             continue
         outfolder = "{}/{}/{}".format(outdir, i[1], i[2])
         for m in range(1, 4):
-            if m == 0:
-                tff = 1
-                level = 0
-            elif m == 1:
-                tff = 2
-                level = 0
-            elif m == 2:
-                tff = 1
-                level = 1
-            elif m == 3:
-                tff = 2
-                level = 1
+            if cptac2 and i[3] == "Scanned by WashU":
+                print("Alert: 40X")
+                if m == 0:
+                    tff = 2
+                    level = 0
+                elif m == 1:
+                    tff = 1
+                    level = 1
+                elif m == 2:
+                    tff = 2
+                    level = 1
+                elif m == 3:
+                    tff = 1
+                    level = 2
+            else:
+                if m == 0:
+                    tff = 1
+                    level = 0
+                elif m == 1:
+                    tff = 2
+                    level = 0
+                elif m == 2:
+                    tff = 1
+                    level = 1
+                elif m == 3:
+                    tff = 2
+                    level = 1
             otdir = "{}/level{}".format(outfolder, str(m))
             try:
                 os.mkdir(otdir)
