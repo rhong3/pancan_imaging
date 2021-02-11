@@ -59,7 +59,6 @@ def image_ids_in_2(root_dir, can, dict_path='../CPTAC2_images.csv', ignore=['.DS
         else:
             continue
     temp_sum = pd.DataFrame(ids, columns=['image_path', 'Patient_ID', 'Slide_ID', 'scan_by'])
-    print(temp_sum)
     dict_file = dict_file.join(temp_sum[['image_path', 'Patient_ID', 'Slide_ID']].set_index('Patient_ID'), on='Patient_ID', how='left')
     dict_file.to_csv('../CPTAC2_images_{}.csv'.format(can), index=False)
 
