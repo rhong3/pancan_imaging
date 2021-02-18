@@ -31,7 +31,7 @@ parser.add_argument('--cut', type=float, default=0.3, help='train and test+valid
 parser.add_argument('--pdmd', type=str, default='tumor', help='feature to predict')
 parser.add_argument('--mode', type=str, default='train', help='train or test')
 parser.add_argument('--modeltoload', type=str, default='', help='reload trained model')
-parser.add_argument('--reference', type=str, default='../tumor_label.csv', help='reference label file')
+parser.add_argument('--reference', type=str, default='../tumor_label_df.csv', help='reference label file')
 parser.add_argument('--label_column', type=str, default='Tumor_normal', help='label column name in reference file')
 parser.add_argument('--tile_path', type=str, default='../tiles', help='directory to tiles')
 parser.add_argument('--transfer', type=bool, default=False, help='reload for transfer learning (True or False)')
