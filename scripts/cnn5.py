@@ -136,7 +136,7 @@ class INCEPTION:
 
         return (xa_in, xb_in, xc_in, is_train,
                 y_in, logits, nett, ww, pred, pred_loss,
-                global_step, train_op, merged_summary)
+                global_step, train_op, merged_summary, tumor)
 
     # inference using trained models
     def inference(self, X, dirr, testset=None, pmd=None, train_status=False, realtest=False):
