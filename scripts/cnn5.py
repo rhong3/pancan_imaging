@@ -250,7 +250,8 @@ class INCEPTION:
                                self.pred_loss, self.global_step, self.train_op]
 
                     summary, logits, pred, loss, i, _ = self.sesh.run(fetches, feed_dict)
-                    i = i - init_i
+                    if self.transfer:
+                        i = i - init_i
                     self.train_logger.add_summary(summary, i)
                     err_train += loss
 
