@@ -106,7 +106,6 @@ class INCEPTION:
         classes = 20
 
         # other features input
-
         logits, nett, ww = Panoptes1.Panoptes1(xa_in_reshape, xb_in_reshape, xc_in_reshape,
                                                    num_cls=classes,
                                                    is_train=is_train,
