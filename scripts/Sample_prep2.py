@@ -13,7 +13,7 @@ import re
 
 
 # get all full paths of images
-def image_ids_in(root_dir, ignore=['.DS_Store','dict.csv', 'all.csv']):
+def image_ids_in(root_dir, ignore=['.DS_Store', 'dict.csv', 'all.csv']):
     ids = []
     for id in os.listdir(root_dir):
         if id in ignore:
