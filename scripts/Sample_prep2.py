@@ -81,7 +81,7 @@ def paired_tile_ids_in(patient, slide, tumor, label, root_dir):
 
 
 # Prepare label at per patient level
-def big_image_sum(label_col, path, ref_file, exclude=None):
+def big_image_sum(label_col, path, ref_file, pdmd='tumor', exclude=None):
     ref = pd.read_csv(ref_file, header=0)
     big_images = []
     ref = ref.loc[ref[label_col].notna()]
@@ -93,12 +93,14 @@ def big_image_sum(label_col, path, ref_file, exclude=None):
     datapd = datapd.dropna()
     if exclude:
         datapd = datapd[~datapd['Tumor'].isin(exclude)]
-    rm = []
-    for tu in datapd['Tumor'].unique():
-        if datapd[datapd['Tumor'] == tu]['label'].unique().size < 2:
-            rm.append(tu)
-    datapd = datapd[~datapd['Tumor'].isin(rm)]
-    print('Remove 1-level samples if any: ', rm, flush=True)
+    if pdmd != 'origin':
+        rm = []
+        for tu in list(datapd.Tumor.unique()):
+            for lb in list(datapd.label.unique()):
+                if datapd[datapd['Tumor'] == tu & datapd['label'] == lb].label.size < 3:
+                    rm.append(tu)
+        datapd = datapd[~datapd['Tumor'].isin(rm)]
+        print('Remove rare case cancer types if any: ', rm, flush=True)
 
     return datapd
 
