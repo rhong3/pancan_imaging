@@ -93,6 +93,12 @@ def big_image_sum(label_col, path, ref_file, exclude=None):
     datapd = datapd.dropna()
     if exclude:
         datapd = datapd[~datapd['Tumor'].isin(exclude)]
+    rm = []
+    for tu in datapd['Tumor'].unique():
+        if datapd[datapd['Tumor'] == tu]['label'].unique().size < 2:
+            rm.append(tu)
+    datapd = datapd[~datapd['Tumor'].isin(rm)]
+    print('Remove 1-level samples if any: ', rm, flush=True)
 
     return datapd
 

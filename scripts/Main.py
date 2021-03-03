@@ -77,7 +77,7 @@ def counters(trlist, telist, valist, cls, tumor_d):
         for i in range(cls):
             ccct = len(trlist_x.loc[trlist_x['label'] == i])+len(valist_x.loc[valist_x['label'] == i])\
                    + len(telist_x.loc[telist_x['label'] == i])
-            wt = ((trcc+tecc+vacc)/cls)/(ccct+0.000000001)
+            wt = ((trcc+tecc+vacc)/cls)/(ccct+1)
             wee.append(wt)
         weigh.append(wee)
     weigh = tf.constant(np.array(weigh))
