@@ -92,23 +92,28 @@ for(xx in inlist){
 
 
 ### Slide-level tSNE ###
-inlist=c('Theme3/Results/origin_p3')
+inlist=c('Theme3/Results/origin_p2', 'Theme3/Results/origin_p3')
 
 for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')
   output_file=paste('~/documents/pancan_imaging/',xx,'/out/slide_tSNE_P_N.csv',sep='')
   out_fig=paste('~/documents/pancan_imaging/',xx,'/out/slide_P_N.pdf',sep='')
   out_fig2=paste('~/documents/pancan_imaging/',xx,'/out/slide_circle_P_N.pdf',sep='')
+  out_fig3=paste('~/documents/pancan_imaging/',xx,'/out/pred_slide_P_N.pdf',sep='')
+  out_fig4=paste('~/documents/pancan_imaging/',xx,'/out/pred_slide_circle_P_N.pdf',sep='')
   start=15
   bins=50
   POS_score=c('HNSCC_score',	'CCRCC_score',	'CO_score',	'BRCA_score',	'LUAD_score',
               'LSCC_score',	'PDA_score',	'UCEC_score',	'GBM_score',	'OV_score')
+  tumor_dict = c('HNSCC', 'CCRCC', 'CO', 'BRCA', 'LUAD', 'LSCC', 'PDA', 'UCEC', 'GBM', 'OV')
   TLB = 1 # ST is 2, others 1
   MDP = 0.5 # 0.5 for binary; 1/length(POS_score)
   
   library(dplyr)
   library(Rtsne)
   ori_dat = read.table(file=input_file,header=T,sep=',')
+  ori_dat['Prediction'] = tumor_dict[ori_dat$Prediction+1]
+  ori_dat['True_label'] = tumor_dict[ori_dat$True_label+1]
   ori_dat = ori_dat[, c(2,3,8:ncol(ori_dat))]
   sp_ori_dat = ori_dat %>%
     group_by(Slide_ID, Tumor) %>%
@@ -179,27 +184,79 @@ for(xx in inlist){
   
   ggsave(out_fig2, width=7,height=7)
 
+  
+  ## plot the manifold with probability
+  library(ggplot2)
+  library(gridExtra)
+  library(ggalt)
+  library(ggforce)
+  palist <- list()
+  pblist <- list()
+  for(i in 1:length(POS_score)){
+    palist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2',col=POS_score[i]))+
+      scale_color_gradient2(high='red',mid='gray',low='steelblue',midpoint=MDP)+
+      geom_point(alpha=1, size=2)+ scale_shape(solid = TRUE)+
+      xlim(-30,30)+
+      ylim(-30,30)+
+      theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                         panel.grid.minor = element_blank(),
+                         axis.line = element_line(colour = "black"), legend.position='bottom')
+    
+    pblist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
+      geom_point(aes(col=Prediction),alpha=0.5, size=2)+
+      xlim(-30,30)+
+      ylim(-30,30)+ 
+      theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                         panel.grid.minor = element_blank(), 
+                         axis.line = element_line(colour = "black"), legend.position='bottom')
+  }
+  
+  pdf(file=out_fig3,
+      width=14,height=7)
+  
+  for(i in 1:length(palist)){
+    grid.arrange(palist[[i]],pblist[[i]],nrow=1)
+  }
+  
+  dev.off()
+  
+  ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
+    geom_point(aes(col=Prediction),alpha=0.5, size=3)+
+    geom_mark_hull(expand=0.01, concavity = 0, aes(fill=Prediction, label=Prediction))+
+    xlim(-30,30)+
+    ylim(-30,30)+ 
+    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                       panel.grid.minor = element_blank(), 
+                       axis.line = element_line(colour = "black"), legend.position='bottom')
+  
+  ggsave(out_fig4, width=7,height=7)
+  
 }
 
 
 ### patient-level tSNE ###
-inlist=c('Theme3/Results/origin_p3')
+inlist=c('Theme3/Results/origin_p2')
 
 for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')
   output_file=paste('~/documents/pancan_imaging/',xx,'/out/patient_tSNE_P_N.csv',sep='')
   out_fig=paste('~/documents/pancan_imaging/',xx,'/out/patient_P_N.pdf',sep='')
   out_fig2=paste('~/documents/pancan_imaging/',xx,'/out/patient_circle_P_N.pdf',sep='')
+  out_fig3=paste('~/documents/pancan_imaging/',xx,'/out/pred_patient_P_N.pdf',sep='')
+  out_fig4=paste('~/documents/pancan_imaging/',xx,'/out/pred_patient_circle_P_N.pdf',sep='')
   start=15
   bins=50
   POS_score=c('HNSCC_score',	'CCRCC_score',	'CO_score',	'BRCA_score',	'LUAD_score',
               'LSCC_score',	'PDA_score',	'UCEC_score',	'GBM_score',	'OV_score')
+  tumor_dict = c('HNSCC', 'CCRCC', 'CO', 'BRCA', 'LUAD', 'LSCC', 'PDA', 'UCEC', 'GBM', 'OV')
   TLB = 1 # ST is 2, others 1
   MDP = 0.5 # 0.5 for binary; 1/length(POS_score)
   
   library(Rtsne)
   library(dplyr)
   ori_dat = read.table(file=input_file,header=T,sep=',')
+  ori_dat['Prediction'] = tumor_dict[ori_dat$Prediction+1]
+  ori_dat['True_label'] = tumor_dict[ori_dat$True_label+1]
   ori_dat = ori_dat[, c(1,3,8:ncol(ori_dat))]
   sp_ori_dat = ori_dat %>%
     group_by(Patient_ID, Tumor) %>%
@@ -271,6 +328,54 @@ for(xx in inlist){
                        axis.line = element_line(colour = "black"), legend.position='bottom')
   
   ggsave(out_fig2, width=7,height=7)
-
+  
+  
+  ## plot the manifold with probability
+  library(ggplot2)
+  library(gridExtra)
+  library(ggalt)
+  library(ggforce)
+  palist <- list()
+  pblist <- list()
+  for(i in 1:length(POS_score)){
+    palist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2',col=POS_score[i]))+
+      scale_color_gradient2(high='red',mid='gray',low='steelblue',midpoint=MDP)+
+      geom_point(alpha=1, size=3)+ scale_shape(solid = TRUE)+
+      xlim(-15,15)+
+      ylim(-15,15)+
+      theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                         panel.grid.minor = element_blank(),
+                         axis.line = element_line(colour = "black"), legend.position='bottom')
+    
+    pblist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
+      geom_point(aes(col=Prediction),alpha=0.5, size=3)+
+      xlim(-15,15)+
+      ylim(-15,15)+ 
+      theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                         panel.grid.minor = element_blank(), 
+                         axis.line = element_line(colour = "black"), legend.position='bottom')
+  }
+  
+  pdf(file=out_fig3,
+      width=14,height=7)
+  
+  for(i in 1:length(palist)){
+    grid.arrange(palist[[i]],pblist[[i]],nrow=1)
+  }
+  
+  dev.off()
+  
+  
+  ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
+    geom_point(aes(col=Prediction),alpha=0.5, size=3)+
+    geom_mark_hull(expand=0.025, concavity = 0, aes(fill=Prediction, label=Prediction))+
+    xlim(-15,15)+
+    ylim(-15,15)+ 
+    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                       panel.grid.minor = element_blank(), 
+                       axis.line = element_line(colour = "black"), legend.position='bottom')
+  
+  ggsave(out_fig4, width=7,height=7)
+  
 }
 
