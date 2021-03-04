@@ -112,14 +112,13 @@ for(xx in inlist){
   library(dplyr)
   library(Rtsne)
   ori_dat = read.table(file=input_file,header=T,sep=',')
-  ori_dat['Prediction'] = tumor_dict[ori_dat$Prediction+1]
-  ori_dat['True_label'] = tumor_dict[ori_dat$True_label+1]
   ori_dat = ori_dat[, c(2,3,8:ncol(ori_dat))]
   sp_ori_dat = ori_dat %>%
     group_by(Slide_ID, Tumor) %>%
     summarise_all(mean) %>%
     mutate(Prediction=round(Prediction))
-  
+  sp_ori_dat['Prediction'] = tumor_dict[sp_ori_dat$Prediction+1]
+  sp_ori_dat['True_label'] = tumor_dict[sp_ori_dat$True_label+1]
   X = as.matrix(sp_ori_dat[,start:ncol(sp_ori_dat)])
   res = Rtsne(X, initial_dims=100, check_duplicates = FALSE)
   Y=res$Y
@@ -173,16 +172,16 @@ for(xx in inlist){
   
   dev.off()
   
-  ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
-    geom_point(aes(col=Tumor),alpha=0.5, size=3)+
-    geom_mark_hull(expand=0.01, concavity = 0, aes(fill=Tumor, label=Tumor))+
-    xlim(-30,30)+
-    ylim(-30,30)+ 
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-                       panel.grid.minor = element_blank(), 
-                       axis.line = element_line(colour = "black"), legend.position='bottom')
-  
-  ggsave(out_fig2, width=7,height=7)
+  # ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
+  #   geom_point(aes(col=Tumor),alpha=0.5, size=3)+
+  #   geom_mark_hull(expand=0.03, concavity = 0, aes(fill=Tumor, label=Tumor))+
+  #   xlim(-30,30)+
+  #   ylim(-30,30)+ 
+  #   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+  #                      panel.grid.minor = element_blank(), 
+  #                      axis.line = element_line(colour = "black"), legend.position='bottom')
+  # 
+  # ggsave(out_fig2, width=7,height=7)
 
   
   ## plot the manifold with probability
@@ -220,22 +219,22 @@ for(xx in inlist){
   
   dev.off()
   
-  ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
-    geom_point(aes(col=Prediction),alpha=0.5, size=3)+
-    geom_mark_hull(expand=0.01, concavity = 0, aes(fill=Prediction, label=Prediction))+
-    xlim(-30,30)+
-    ylim(-30,30)+ 
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-                       panel.grid.minor = element_blank(), 
-                       axis.line = element_line(colour = "black"), legend.position='bottom')
-  
-  ggsave(out_fig4, width=7,height=7)
+  # ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
+  #   geom_point(aes(col=Prediction),alpha=0.5, size=3)+
+  #   geom_mark_hull(expand=0.03, concavity = 0, aes(fill=Prediction, label=Prediction))+
+  #   xlim(-30,30)+
+  #   ylim(-30,30)+ 
+  #   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+  #                      panel.grid.minor = element_blank(), 
+  #                      axis.line = element_line(colour = "black"), legend.position='bottom')
+  # 
+  # ggsave(out_fig4, width=7,height=7)
   
 }
 
 
 ### patient-level tSNE ###
-inlist=c('Theme3/Results/origin_p2')
+inlist=c('Theme3/Results/origin_p2', 'Theme3/Results/origin_p3')
 
 for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')
@@ -255,14 +254,13 @@ for(xx in inlist){
   library(Rtsne)
   library(dplyr)
   ori_dat = read.table(file=input_file,header=T,sep=',')
-  ori_dat['Prediction'] = tumor_dict[ori_dat$Prediction+1]
-  ori_dat['True_label'] = tumor_dict[ori_dat$True_label+1]
   ori_dat = ori_dat[, c(1,3,8:ncol(ori_dat))]
   sp_ori_dat = ori_dat %>%
     group_by(Patient_ID, Tumor) %>%
     summarise_all(mean) %>%
     mutate(Prediction=round(Prediction))
-  
+  sp_ori_dat['Prediction'] = tumor_dict[sp_ori_dat$Prediction+1]
+  sp_ori_dat['True_label'] = tumor_dict[sp_ori_dat$True_label+1]
   X = as.matrix(sp_ori_dat[,start:dim(sp_ori_dat)[2]])
   res = Rtsne(X, initial_dims=100, check_duplicates = FALSE)
   Y=res$Y
@@ -318,16 +316,16 @@ for(xx in inlist){
   dev.off()
   
   
-  ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
-    geom_point(aes(col=Tumor),alpha=0.5, size=3)+
-    geom_mark_hull(expand=0.025, concavity = 0, aes(fill=Tumor, label=Tumor))+
-    xlim(-15,15)+
-    ylim(-15,15)+ 
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-                       panel.grid.minor = element_blank(), 
-                       axis.line = element_line(colour = "black"), legend.position='bottom')
-  
-  ggsave(out_fig2, width=7,height=7)
+  # ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
+  #   geom_point(aes(col=Tumor),alpha=0.5, size=3)+
+  #   geom_mark_hull(expand=0.03, concavity = 0, aes(fill=Tumor, label=Tumor))+
+  #   xlim(-15,15)+
+  #   ylim(-15,15)+ 
+  #   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+  #                      panel.grid.minor = element_blank(), 
+  #                      axis.line = element_line(colour = "black"), legend.position='bottom')
+  # 
+  # ggsave(out_fig2, width=7,height=7)
   
   
   ## plot the manifold with probability
@@ -366,16 +364,16 @@ for(xx in inlist){
   dev.off()
   
   
-  ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
-    geom_point(aes(col=Prediction),alpha=0.5, size=3)+
-    geom_mark_hull(expand=0.025, concavity = 0, aes(fill=Prediction, label=Prediction))+
-    xlim(-15,15)+
-    ylim(-15,15)+ 
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-                       panel.grid.minor = element_blank(), 
-                       axis.line = element_line(colour = "black"), legend.position='bottom')
-  
-  ggsave(out_fig4, width=7,height=7)
+  # ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
+  #   geom_point(aes(col=Prediction),alpha=0.5, size=3)+
+  #   geom_mark_hull(expand=0.03, concavity = 0, aes(fill=Prediction, label=Prediction))+
+  #   xlim(-15,15)+
+  #   ylim(-15,15)+ 
+  #   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+  #                      panel.grid.minor = element_blank(), 
+  #                      axis.line = element_line(colour = "black"), legend.position='bottom')
+  # 
+  # ggsave(out_fig4, width=7,height=7)
   
 }
 
