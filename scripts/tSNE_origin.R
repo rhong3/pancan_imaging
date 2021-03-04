@@ -11,7 +11,7 @@
 
 ### Tile-level tSNE ###
 # I START AT 9, X START AT 12; ST start I at 11, X at 14
-inlist=c('Theme3/Results/origin_p1', 'Theme3/Results/origin_p3', 'Theme3/Results/origin_p4')
+inlist=c('Theme3/Results/origin_p3')
 
 for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')
@@ -92,7 +92,7 @@ for(xx in inlist){
 
 
 ### Slide-level tSNE ###
-inlist=c('Theme3/Results/origin_p1', 'Theme3/Results/origin_p2', 'Theme3/Results/origin_p3', 'Theme3/Results/origin_p4')
+inlist=c('Theme3/Results/origin_p3')
 
 for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')
@@ -144,16 +144,16 @@ for(xx in inlist){
     palist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2',col=POS_score[i]))+
       scale_color_gradient2(high='red',mid='gray',low='steelblue',midpoint=MDP)+
       geom_point(alpha=1, size=2)+ scale_shape(solid = TRUE)+
-      xlim(-40,40)+
-      ylim(-40,40)+
+      xlim(-30,30)+
+      ylim(-30,30)+
       theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                          panel.grid.minor = element_blank(),
                          axis.line = element_line(colour = "black"), legend.position='bottom')
     
     pblist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
       geom_point(aes(col=Tumor),alpha=0.5, size=2)+
-      xlim(-40,40)+
-      ylim(-40,40)+ 
+      xlim(-30,30)+
+      ylim(-30,30)+ 
       theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                          panel.grid.minor = element_blank(), 
                          axis.line = element_line(colour = "black"), legend.position='bottom')
@@ -171,8 +171,8 @@ for(xx in inlist){
   ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
     geom_point(aes(col=Tumor),alpha=0.5, size=3)+
     geom_mark_hull(expand=0.01, concavity = 0, aes(fill=Tumor, label=Tumor))+
-    xlim(-40,40)+
-    ylim(-40,40)+ 
+    xlim(-30,30)+
+    ylim(-30,30)+ 
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                        panel.grid.minor = element_blank(), 
                        axis.line = element_line(colour = "black"), legend.position='bottom')
@@ -183,7 +183,7 @@ for(xx in inlist){
 
 
 ### patient-level tSNE ###
-inlist=c('Theme3/Results/origin_p1','Theme3/Results/origin_p2', 'Theme3/Results/origin_p3', 'Theme3/Results/origin_p4')
+inlist=c('Theme3/Results/origin_p3')
 
 for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')
@@ -263,7 +263,7 @@ for(xx in inlist){
   
   ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
     geom_point(aes(col=Tumor),alpha=0.5, size=3)+
-    geom_mark_hull(expand=0.01, concavity = 0, aes(fill=Tumor, label=Tumor))+
+    geom_mark_hull(expand=0.025, concavity = 0, aes(fill=Tumor, label=Tumor))+
     xlim(-15,15)+
     ylim(-15,15)+ 
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
