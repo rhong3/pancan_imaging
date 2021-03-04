@@ -92,7 +92,7 @@ for(xx in inlist){
 
 
 ### Slide-level tSNE ###
-inlist=c('Theme3/Results/origin_p2', 'Theme3/Results/origin_p3')
+inlist=c('Theme3/Results/origin_p4')
 
 for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')
@@ -234,7 +234,7 @@ for(xx in inlist){
 
 
 ### patient-level tSNE ###
-inlist=c('Theme3/Results/origin_p2', 'Theme3/Results/origin_p3')
+inlist=c('Theme3/Results/origin_p4')
 
 for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')
