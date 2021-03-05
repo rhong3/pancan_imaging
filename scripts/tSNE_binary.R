@@ -51,25 +51,25 @@ for(xx in inlist){
   pa=ggplot(data=dat,aes_string(x='tsne1',y='tsne2',col=POS_score))+
     scale_color_gradient2(high='red',mid='gray',low='steelblue',midpoint=MDP)+
     geom_point(alpha=1, size=2)+ scale_shape(solid = TRUE)+
-    xlim(-30,30)+
-    ylim(-30,30)+
+    xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
+    ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                        panel.grid.minor = element_blank(),
                        axis.line = element_line(colour = "black"), legend.position='bottom')
     
   pb=ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
-      geom_point(aes(col=Tumor),alpha=0.5, size=2)+
-      xlim(-30,30)+
-      ylim(-30,30)+ 
-      theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+    geom_point(aes(col=Tumor),alpha=0.5, size=2)+
+    xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
+    ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
+    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                          panel.grid.minor = element_blank(), 
                          axis.line = element_line(colour = "black"), legend.position='bottom')
   
   pc=ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
     geom_point(aes(col=True_label),alpha=0.5, size=2)+
     scale_color_manual(values=c('steelblue', 'red')) +
-    xlim(-30,30)+
-    ylim(-30,30)+ 
+    xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
+    ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                        panel.grid.minor = element_blank(), 
                        axis.line = element_line(colour = "black"), legend.position='bottom')
@@ -77,8 +77,8 @@ for(xx in inlist){
   pd=ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
     geom_point(aes(col=Prediction),alpha=0.5, size=2)+
     scale_color_manual(values=c('steelblue', 'red')) +
-    xlim(-30,30)+
-    ylim(-30,30)+ 
+    xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
+    ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                        panel.grid.minor = element_blank(), 
                        axis.line = element_line(colour = "black"), legend.position='bottom')
@@ -142,16 +142,16 @@ for(xx in inlist){
   pa=ggplot(data=dat,aes_string(x='tsne1',y='tsne2',col=POS_score))+
     scale_color_gradient2(high='red',mid='gray',low='steelblue',midpoint=MDP)+
     geom_point(alpha=1, size=2)+ scale_shape(solid = TRUE)+
-    xlim(-30,30)+
-    ylim(-30,30)+
+    xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
+    ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                        panel.grid.minor = element_blank(),
                        axis.line = element_line(colour = "black"), legend.position='bottom')
   
   pb=ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
     geom_point(aes(col=Tumor),alpha=0.5, size=2)+
-    xlim(-30,30)+
-    ylim(-30,30)+ 
+    xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
+    ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                        panel.grid.minor = element_blank(), 
                        axis.line = element_line(colour = "black"), legend.position='bottom')
@@ -159,8 +159,8 @@ for(xx in inlist){
   pc=ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
     geom_point(aes(col=True_label),alpha=0.5, size=2)+
     scale_color_manual(values=c('steelblue', 'red')) +
-    xlim(-30,30)+
-    ylim(-30,30)+ 
+    xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
+    ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                        panel.grid.minor = element_blank(), 
                        axis.line = element_line(colour = "black"), legend.position='bottom')
@@ -168,8 +168,8 @@ for(xx in inlist){
   pd=ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
     geom_point(aes(col=Prediction),alpha=0.5, size=2)+
     scale_color_manual(values=c('steelblue', 'red')) +
-    xlim(-30,30)+
-    ylim(-30,30)+ 
+    xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
+    ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                        panel.grid.minor = element_blank(), 
                        axis.line = element_line(colour = "black"), legend.position='bottom')
