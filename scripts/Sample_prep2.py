@@ -13,7 +13,7 @@ import re
 
 
 # get all full paths of images
-def image_ids_in(root_dir, ignore=['.DS_Store','dict.csv', 'all.csv']):
+def image_ids_in(root_dir, ignore=['.DS_Store', 'dict.csv', 'all.csv']):
     ids = []
     for id in os.listdir(root_dir):
         if id in ignore:
@@ -81,7 +81,7 @@ def paired_tile_ids_in(patient, slide, tumor, label, root_dir):
 
 
 # Prepare label at per patient level
-def big_image_sum(label_col, path, ref_file, exclude=None):
+def big_image_sum(label_col, path, ref_file, pdmd='tumor', exclude=None):
     ref = pd.read_csv(ref_file, header=0)
     big_images = []
     ref = ref.loc[ref[label_col].notna()]
@@ -93,6 +93,14 @@ def big_image_sum(label_col, path, ref_file, exclude=None):
     datapd = datapd.dropna()
     if exclude:
         datapd = datapd[~datapd['Tumor'].isin(exclude)]
+    if pdmd != 'origin':
+        rm = []
+        for tu in list(datapd.Tumor.unique()):
+            for lb in list(datapd.label.unique()):
+                if datapd[datapd['Tumor'] == tu & datapd['label'] == lb].label.size < 3:
+                    rm.append(tu)
+        datapd = datapd[~datapd['Tumor'].isin(rm)]
+        print('Remove rare case cancer types if any: ', rm, flush=True)
 
     return datapd
 
