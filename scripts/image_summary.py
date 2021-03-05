@@ -57,3 +57,5 @@ for tp in tp_pd['type'].unique().tolist():
 tp_pd['df_patient_count'] = dfct
 tp_pd.to_csv('../patient_summary.csv', index=False)
 
+
+

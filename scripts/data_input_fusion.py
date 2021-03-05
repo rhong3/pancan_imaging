@@ -32,8 +32,7 @@ class DataSet(object):
             features={self._mode + '/imageL1': tf.FixedLenFeature([], tf.string),
                       self._mode + '/imageL2': tf.FixedLenFeature([], tf.string),
                       self._mode + '/imageL3': tf.FixedLenFeature([], tf.string),
-                      self._mode + '/label': tf.FixedLenFeature([], tf.int64),
-                      self._mode + '/tumor': tf.FixedLenFeature([], tf.int64)})
+                      self._mode + '/label': tf.FixedLenFeature([], tf.int64), })
 
         imagea = tf.decode_raw(features[self._mode + '/imageL1'], tf.float32)
         imagea = tf.reshape(imagea, [-1, 299, 299, 3])
@@ -42,11 +41,9 @@ class DataSet(object):
         imagec = tf.decode_raw(features[self._mode + '/imageL3'], tf.float32)
         imagec = tf.reshape(imagec, [-1, 299, 299, 3])
 
-        # Convert label and tumor from a scalar uint8 tensor to an int32 scalar.
+        # Convert label from a scalar uint8 tensor to an int32 scalar.
         label = tf.cast(features[self._mode + '/label'], tf.int32)
-        tumor = tf.cast(features[self._mode + '/tumor'], tf.int32)
-
-        return imagea, imageb, imagec, label, tumor
+        return imagea, imageb, imagec, label
 
     # decoding tfrecords for real test
     def Real_decode(self, serialized_example):
@@ -67,7 +64,7 @@ class DataSet(object):
         return imagea, imageb, imagec
 
     # augmentation including onehot encoding
-    def augment(self, imagea, imageb, imagec, labels, tumors):
+    def augment(self, imagea, imageb, imagec, labels):
 
         angles = tf.cast(tf.random_uniform([], 0, 4), tf.int32)
         imagea = tf.image.rot90(imagea, k=angles)
@@ -95,16 +92,14 @@ class DataSet(object):
         imagec = tf.image.random_saturation(imagec, 0.9, 1.1)
 
         labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=self._classes)
-        tumors = tf.one_hot(indices=tf.cast(tumors, tf.int32), depth=self._classes)
 
-        return imagea, imageb, imagec, labels, tumors
+        return imagea, imageb, imagec, labels
 
     # onehot encoding only; for test set
-    def onehot_only(self, imagea, imageb, imagec, labels, tumors):
+    def onehot_only(self, imagea, imageb, imagec, labels):
         with tf.name_scope('onehot_only'):
             labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=self._classes)
-            tumors = tf.one_hot(indices=tf.cast(tumors, tf.int32), depth=self._classes)
-        return imagea, imageb, imagec, labels, tumors
+        return imagea, imageb, imagec, labels
 
     # dataset preparation; batching; Real test or not; train or test
     def data(self, realtest=False, train=True):
