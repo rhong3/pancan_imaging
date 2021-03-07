@@ -8,7 +8,7 @@ library(MLmetrics)
 library(boot)
 library(gmodels)
 
-inlist = c('PTEN-PTEN-8', 'PTEN_t-PTEN-8', 'STK11-STK11-7', 'STK11_t-STK11-7')
+inlist = c('KRAS-KRAS-7', 'KRAS_t-KRAS-7', 'EGFR-EGFR-7', 'EGFR_t-EGFR-7')
 # Check previously calculated trials
 previous=read.csv("~/Documents/pancan_imaging/Results/Statistics_mutation.csv")
 existed=paste(previous$Folder, previous$Gene, previous$Type_number, sep='-')
