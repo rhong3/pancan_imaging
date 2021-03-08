@@ -97,7 +97,7 @@ def big_image_sum(label_col, path, ref_file, pdmd='tumor', exclude=None):
         rm = []
         for tu in list(datapd.Tumor.unique()):
             for lb in list(datapd.label.unique()):
-                if datapd[datapd['Tumor'] == tu & datapd['label'] == lb].shape[0] < 3:
+                if datapd.loc[(datapd['Tumor'] == tu) & (datapd['label'] == lb)].shape[0] < 3:
                     rm.append(tu)
         datapd = datapd[~datapd['Tumor'].isin(rm)]
         print('Remove rare case cancer types if any: ', rm, flush=True)
