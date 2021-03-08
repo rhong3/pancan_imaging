@@ -116,11 +116,11 @@ def set_sep(alll, path, cut=0.3):
         sub = alll[alll['Tumor'] == tm]
         unq = list(sub.Patient_ID.unique())
         np.random.shuffle(unq)
-        validation = unq[:np.max(int(len(unq) * cut / 2), 1)]
+        validation = unq[:np.max([int(len(unq) * cut / 2), 1])]
         valist.append(sub[sub['Patient_ID'].isin(validation)])
-        test = unq[np.max(int(len(unq) * cut / 2), 1):np.max(int(len(unq) * cut), 2)]
+        test = unq[np.max([int(len(unq) * cut / 2), 1]):np.max([int(len(unq) * cut), 2])]
         telist.append(sub[sub['Patient_ID'].isin(test)])
-        train = unq[np.max(int(len(unq) * cut), 2):]
+        train = unq[np.max([int(len(unq) * cut), 2]):]
         trlist.append(sub[sub['Patient_ID'].isin(train)])
 
     test = pd.concat(telist)
