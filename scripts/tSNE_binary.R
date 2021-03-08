@@ -2,7 +2,7 @@
 ## visualize the manifold
 ### Slide-level tSNE ###
 
-inlist=c('Results/EGFR', 'Results/EGFR_t')
+inlist=c('Results/CTNNB1', 'Results/CTNNB1_t')
 
 for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')

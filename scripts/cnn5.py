@@ -57,19 +57,19 @@ class INCEPTION:
                   'Panoptes1/loss2/classifier/kernel:0', 'Panoptes1/loss2/classifier/bias:0']:
             vars.extend(tf.trainable_variables(scope=mm))
 
-        if transfer:
-            self.train_op = tf.train.AdamOptimizer(
-                learning_rate=self.learning_rate, name='trans_Adam').minimize(
-                loss=self.pred_loss, global_step=self.global_step,
-                var_list=vars)
-
-            uninitialized_vars = []
-            for var in tf.global_variables():
-                try:
-                    self.sesh.run(var)
-                except tf.errors.FailedPreconditionError:
-                    uninitialized_vars.append(var)
-            self.sesh.run(tf.variables_initializer(uninitialized_vars))
+        # if transfer:
+        #     self.train_op = tf.train.AdamOptimizer(
+        #         learning_rate=self.learning_rate, name='trans_Adam').minimize(
+        #         loss=self.pred_loss, global_step=self.global_step,
+        #         var_list=vars)
+        #
+        #     uninitialized_vars = []
+        #     for var in tf.global_variables():
+        #         try:
+        #             self.sesh.run(var)
+        #         except tf.errors.FailedPreconditionError:
+        #             uninitialized_vars.append(var)
+        #     self.sesh.run(tf.variables_initializer(uninitialized_vars))
 
         if save_graph_def:  # tensorboard
             try:
