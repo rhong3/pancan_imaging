@@ -50,12 +50,12 @@ class INCEPTION:
          self.net, self.w, self.pred, self.pred_loss,
          self.global_step, self.train_op, self.merged_summary, self.tumor) = handles
 
-        vars = []
-        for mm in ['Panoptes1/loss3/classifier/kernel:0', 'Panoptes1/loss3/classifier/bias:0',
-                  'Panoptes1/loss2/classifier_1/kernel:0', 'Panoptes1/loss2/classifier_1/bias:0',
-                  'Panoptes1/loss2/classifier_2/kernel:0', 'Panoptes1/loss2/classifier_2/bias:0',
-                  'Panoptes1/loss2/classifier/kernel:0', 'Panoptes1/loss2/classifier/bias:0']:
-            vars.extend(tf.trainable_variables(scope=mm))
+        # vars = []
+        # for mm in ['Panoptes1/loss3/classifier/kernel:0', 'Panoptes1/loss3/classifier/bias:0',
+        #           'Panoptes1/loss2/classifier_1/kernel:0', 'Panoptes1/loss2/classifier_1/bias:0',
+        #           'Panoptes1/loss2/classifier_2/kernel:0', 'Panoptes1/loss2/classifier_2/bias:0',
+        #           'Panoptes1/loss2/classifier/kernel:0', 'Panoptes1/loss2/classifier/bias:0']:
+        #     vars.extend(tf.trainable_variables(scope=mm))
 
         # if transfer:
         #     self.train_op = tf.train.AdamOptimizer(
