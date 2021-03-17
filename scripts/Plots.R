@@ -8,16 +8,17 @@ mutation = mutation[,c('Folder', 'Slide_ROC.95.CI_lower', 'Slide_ROC', 'Slide_RO
                        'Tile_ROC.95.CI_lower', 'Tile_ROC', 'Tile_ROC.95.CI_upper')]
 colnames(mutation) = gsub('Folder', 'Feature', colnames(mutation))
 tumor <- read_csv("Results/Statistics_tumor.csv")
-tumor = tumor[4, c('Folder', 'Slide_ROC.95.CI_lower', 'Slide_ROC', 'Slide_ROC.95.CI_upper', 
+tumor = tumor[, c('Folder', 'Slide_ROC.95.CI_lower', 'Slide_ROC', 'Slide_ROC.95.CI_upper', 
                        'Tile_ROC.95.CI_lower', 'Tile_ROC', 'Tile_ROC.95.CI_upper')]
 colnames(tumor) = gsub('Folder', 'Feature', colnames(tumor))
 other <- read_csv("Results/Statistics_other.csv")
-other = other[, c('Folder', 'Slide_ROC.95.CI_lower', 'Slide_ROC', 'Slide_ROC.95.CI_upper', 
+other = other[, c('Folder', 'Slide_ROC.95.CI_lower', 'Slide_ROC', 'Slide_ROC.95.CI_upper',
                    'Tile_ROC.95.CI_lower', 'Tile_ROC', 'Tile_ROC.95.CI_upper')]
 colnames(other) = gsub('Folder', 'Feature', colnames(other))
 all = rbind(mutation, tumor, other)
-all$Feature = gsub('tumor_10', 'tumor', all$Feature)
+# all$Feature = gsub('tumor_6', 'tumor', all$Feature)
 all = all[order(-all$Slide_ROC),]
+all = na.omit(all)
 
 # Default bar plot
 ps <- ggplot(all, aes(x=reorder(Feature, -Slide_ROC), y=Slide_ROC)) + 
@@ -52,7 +53,7 @@ todolist = all$Feature
 tile_all = data.frame(Prediction_score= numeric(0), True_label= character(0), feature = character(0))
 for (f in todolist){
     pos = "POS_score"
-    if (f == 'tumor_10'){
+    if (f == 'tumor_6'){
       lev = c('negative', 'tumor')
       mm = f
     } else{
@@ -71,8 +72,8 @@ for (f in todolist){
 
 pp = ggboxplot(tile_all, x = "feature", y = "Prediction_score",
                color = "black", fill = "True_label", palette = "grey")+ 
-  stat_compare_means(method.args = list(alternative = "less"), aes(group = True_label), label = "p.signif", label.y = 1.1) + 
-  stat_compare_means(method.args = list(alternative = "less"), aes(group = True_label), label = "p.format", label.y = 1.15) + 
+  stat_compare_means(method.args = list(alternative = "greater"), aes(group = True_label), label = "p.signif", label.y = 1.1) + 
+  stat_compare_means(method.args = list(alternative = "greater"), aes(group = True_label), label = "p.format", label.y = 1.15) + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 pdf(file=paste("Results/Wilcoxon_tiles.pdf", sep=''),
@@ -84,7 +85,7 @@ dev.off()
 slide_all = data.frame(Prediction_score= numeric(0), True_label= character(0), feature = character(0))
 for (f in todolist){
   pos = "POS_score"
-  if (f == 'tumor_10'){
+  if (f == 'tumor_6'){
     lev = c('negative', 'tumor')
     mm = f
   } else{
@@ -103,8 +104,8 @@ for (f in todolist){
 
 pp = ggboxplot(slide_all, x = "feature", y = "Prediction_score",
                color = "black", fill = "True_label", palette = "grey")+ 
-  stat_compare_means(method.args = list(alternative = "less"), aes(group = True_label), label = "p.signif", label.y = 1.1) + 
-  stat_compare_means(method.args = list(alternative = "less"), aes(group = True_label), label = "p.format", label.y = 1.15) + 
+  stat_compare_means(method.args = list(alternative = "greater"), aes(group = True_label), label = "p.signif", label.y = 1.1) + 
+  stat_compare_means(method.args = list(alternative = "greater"), aes(group = True_label), label = "p.format", label.y = 1.15) + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 pdf(file=paste("Results/Wilcoxon_slides.pdf", sep=''),

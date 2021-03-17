@@ -4,7 +4,7 @@
 
 inlist=c('Results/CTNNB1', 'Results/CTNNB1_t', 'Results/CTNNB1_t6', 'Results/EGFR', 'Results/EGFR_t', 'Results/EGFR_t6',
          'Results/PTEN', 'Results/PTEN_t', 'Results/PTEN_t6', 'Results/STK11', 'Results/STK11_t', 'Results/STK11_t6', 
-         'Results/KRAS', 'Results/KRAS_t', 'Results/KRAS_t6', 'Results/TP53', 'Results/TP53_t', 'Results/TP53_t6')
+         'Results/KRAS', 'Results/KRAS_t', 'Results/KRAS_t6', 'Results/TP53', 'Results/TP53_t', 'Results/TP53_t6', 'Results/tumor_6')
 
 for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')
@@ -117,7 +117,7 @@ for(xx in inlist){
     mutate(Prediction=round(Prediction))
   
   X = as.matrix(sp_ori_dat[,start:ncol(sp_ori_dat)])
-  res = Rtsne(X, initial_dims=100, check_duplicates = FALSE)
+  res = Rtsne(X, initial_dims=100, check_duplicates = FALSE, perplexity=20)
   Y=res$Y
   out_dat = cbind.data.frame(sp_ori_dat[,1:start-1],Y)
   dat = cbind(out_dat,x_bin=cut(out_dat[,start],bins),

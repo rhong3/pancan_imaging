@@ -39,10 +39,9 @@ for (i in targets){
       pos = 'tumor'  #get positive case name
       print(i)
       folder = strsplit(i, '-')[[1]][1]  #split replicated trials
-      type_number
       Test_slide <- read.csv(paste("~/documents/pancan_imaging/Results/", folder, "/out/Test_slide.csv", sep=''))
       Test_tile <- read.csv(paste("~/documents/pancan_imaging/Results/", folder, "/out/Test_tile.csv", sep=''))
-      type_number <- length(unique(Test_slide['Tumor']))
+      type_number <- nrow(unique(Test_slide['Tumor']))
       # per Slide level
       answers <- factor(Test_slide$True_label)
       results <- factor(Test_slide$Prediction)
