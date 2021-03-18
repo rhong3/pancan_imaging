@@ -56,7 +56,8 @@ dev.off()
 
 # mutation rate
 mutation = read.csv('~/documents/pancan_imaging/mutation_label.csv')
-mutation = mutation[, c('Patient_ID', 'Tumor', 'STK11', 'KRAS', 'EGFR', 'TP53', 'PTEN', 'CTNNB1', 'ARID1A', 'PIK3CA', 'NOTCH1', 'ZFHX3')]
+mutation = mutation[, c('Patient_ID', 'Tumor', 'STK11', 'KRAS', 'EGFR', 'TP53', 'PTEN', 'CTNNB1', 'ARID1A', 'PIK3CA', 'NOTCH1', 
+                        'ZFHX3', 'ARID2', 'BRCA2', 'JAK1', 'MAP3K1', 'MTOR', 'NOTCH3')]
 mutation = unique(mutation)
 mutation = mutation[,-1]
 
@@ -74,7 +75,7 @@ for (i in 3:ncol(mutation.tab)){
   mut = rbind.data.frame(mut, mutx)
 }
 
-mut$`mutation rate` = as.numeric(as.character(mut$`mutation rate`))
+mut$`mutation rate` = as.numeric(as.character(mut$`mutation rate`))*100
 mut = na.omit(mut)
 # mut$`mutation rate`=replace_na(mut$`mutation rate`, 0)
 
@@ -82,6 +83,8 @@ pdf(file='~/documents/pancan_imaging/key_mutation_summary.pdf',
     width=12,height=4)
 ggplot(mut, aes(x=gene, y=`mutation rate`, fill=type))+
   geom_bar(stat="identity", color="black", position=position_dodge())+
+  geom_text(aes(label=round(mut$`mutation rate`)), vjust=0, color="black",
+            position = position_dodge(1), size=2) +
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                      panel.grid.minor = element_blank(), 
                      axis.line = element_line(colour = "black"), legend.position='bottom')
