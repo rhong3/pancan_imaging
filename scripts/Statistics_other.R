@@ -8,7 +8,7 @@ library(MLmetrics)
 library(boot)
 library(gmodels)
 
-inlist = c('8qgain-8qgain-6')
+inlist = c('8change-8change', '8change_t6-8change', '8p_loss-8p_loss', '8p_loss_t6-8p_loss', '8q_gain-8q_gain', '8q_gain_t6-8q_gain')
 # Check previously calculated trials
 previous=read.csv("~/Documents/pancan_imaging/Results/Statistics_other.csv")
 existed=paste(previous$Folder, previous$Feature, previous$Type_number, sep='-')
@@ -41,7 +41,7 @@ for (i in targets){
       folder = strsplit(i, '-')[[1]][1]  #split replicated trials
       Test_slide <- read.csv(paste("~/documents/pancan_imaging/Results/", folder, "/out/Test_slide.csv", sep=''))
       Test_tile <- read.csv(paste("~/documents/pancan_imaging/Results/", folder, "/out/Test_tile.csv", sep=''))
-      type_number <- length(unique(Test_slide['Tumor']))
+      type_number <- nrow(unique(Test_slide['Tumor']))
       # per Slide level
       answers <- factor(Test_slide$True_label)
       results <- factor(Test_slide$Prediction)
