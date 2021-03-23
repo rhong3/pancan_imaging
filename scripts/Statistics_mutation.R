@@ -8,7 +8,7 @@ library(MLmetrics)
 library(boot)
 library(gmodels)
 
-inlist = c('ARID1A', 'ARID1A_t6', 'BRCA2', 'BRCA2_t6')
+inlist = c('ARID2-ARID2', 'ARID2_t6-ARID2')
 # Check previously calculated trials
 previous=read.csv("~/Documents/pancan_imaging/Results/Statistics_mutation.csv")
 existed=paste(previous$Folder, previous$Gene, previous$Type_number, sep='-')

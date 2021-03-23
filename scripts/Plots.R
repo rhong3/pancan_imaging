@@ -39,11 +39,15 @@ pt <- ggplot(all, aes(x=reorder(Feature, -Tile_ROC), y=Tile_ROC)) +
   theme_classic() +
   scale_fill_manual(values=c("#808080")) + theme(plot.title = element_text(hjust = 0.5))
 
-pdf(file="Results/ROC_plot.pdf",
-    width=35,height=5)
-grid.arrange(ps,pt,nrow=1, ncol=2)
+pdf(file="Results/ROC_plot_slide.pdf",
+    width=20,height=5)
+grid.arrange(ps,nrow=1, ncol=1)
 dev.off()
 
+pdf(file="Results/ROC_plot_tile.pdf",
+    width=20,height=5)
+grid.arrange(pt,nrow=1, ncol=1)
+dev.off()
 
 # box plot Wilcoxon test
 # tiles
@@ -69,6 +73,9 @@ for (f in todolist){
   colnames(Test_tile) = c('Prediction_score', 'True_label', 'feature')
   tile_all = rbind(tile_all, Test_tile)
 }
+
+tile_all$True_label = gsub("8p_loss", "positive", tile_all$True_label)
+tile_all$True_label = gsub("8q_gain", "positive", tile_all$True_label)
 
 pp = ggboxplot(tile_all, x = "feature", y = "Prediction_score",
                color = "black", fill = "True_label", palette = "grey")+ 
@@ -101,6 +108,9 @@ for (f in todolist){
   colnames(Test_slide) = c('Prediction_score', 'True_label', 'feature')
   slide_all = rbind(slide_all, Test_slide)
 }
+
+slide_all$True_label = gsub("8p_loss", "positive", slide_all$True_label)
+slide_all$True_label = gsub("8q_gain", "positive", slide_all$True_label)
 
 pp = ggboxplot(slide_all, x = "feature", y = "Prediction_score",
                color = "black", fill = "True_label", palette = "grey")+ 

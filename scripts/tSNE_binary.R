@@ -2,7 +2,7 @@
 ## visualize the manifold
 ### Slide-level tSNE ###
 
-inlist=c('Results/8change', 'Results/8change_t6', 'Results/8p_loss', 'Results/8p_loss_t6', 'Results/8q_gain', 'Results/8q_gain_t6')
+inlist=c('Results/ARID2', 'Results/ARID2_t6')
 
 for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')
