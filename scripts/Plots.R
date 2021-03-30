@@ -26,18 +26,18 @@ ps <- ggplot(all, aes(x=reorder(Feature, -Slide_ROC), y=Slide_ROC)) +
            position=position_dodge()) +
   geom_errorbar(aes(ymin=Slide_ROC.95.CI_lower, ymax=Slide_ROC.95.CI_upper), width=.2,
                 position=position_dodge(.9)) +
-  geom_text(aes(label=round(Slide_ROC, 2)), vjust=-0.5, size=3.5) +labs(title="Per Slide AUROC", x="Features", y = "Per Slide AUROC")+
+  geom_text(aes(label=round(Slide_ROC, 2)), vjust=-0.1, size=5) +labs(title="Per Slide AUROC", x="Features", y = "Per Slide AUROC")+
   theme_classic() +
-  scale_fill_manual(values=c("#808080")) + theme(plot.title = element_text(hjust = 0.5))
+  scale_fill_manual(values=c("#808080")) + theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 45, hjust = 1, size=15, face="bold"))
 
 pt <- ggplot(all, aes(x=reorder(Feature, -Tile_ROC), y=Tile_ROC)) + 
   geom_bar(stat="identity", color="black", 
            position=position_dodge()) +
   geom_errorbar(aes(ymin=Tile_ROC.95.CI_lower, ymax=Tile_ROC.95.CI_upper), width=.2,
                 position=position_dodge(.9)) +
-  geom_text(aes(label=round(Tile_ROC, 2)), vjust=-0.5, size=3.5) +labs(title="Per Tile AUROC", x="Features", y = "Per Tile AUROC")+
+  geom_text(aes(label=round(Tile_ROC, 2)), vjust=-0.1, size=5) +labs(title="Per Tile AUROC", x="Features", y = "Per Tile AUROC", size=5)+
   theme_classic() +
-  scale_fill_manual(values=c("#808080")) + theme(plot.title = element_text(hjust = 0.5))
+  scale_fill_manual(values=c("#808080")) + theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 45, hjust = 1, size=15, face="bold"))
 
 pdf(file="Results/ROC_plot_slide.pdf",
     width=30,height=5)
@@ -81,7 +81,7 @@ pp = ggboxplot(tile_all, x = "feature", y = "Prediction_score",
                color = "black", fill = "True_label", palette = "grey")+ 
   stat_compare_means(method.args = list(alternative = "greater"), aes(group = True_label), label = "p.signif", label.y = 1.1) + 
   stat_compare_means(method.args = list(alternative = "greater"), aes(group = True_label), label = "p.format", label.y = 1.15) + 
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size=15, face="bold"))
 
 pdf(file=paste("Results/Wilcoxon_tiles.pdf", sep=''),
     width=35,height=8)
@@ -116,7 +116,7 @@ pp = ggboxplot(slide_all, x = "feature", y = "Prediction_score",
                color = "black", fill = "True_label", palette = "grey")+ 
   stat_compare_means(method.args = list(alternative = "greater"), aes(group = True_label), label = "p.signif", label.y = 1.1) + 
   stat_compare_means(method.args = list(alternative = "greater"), aes(group = True_label), label = "p.format", label.y = 1.15) + 
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size=15, face="bold"))
 
 pdf(file=paste("Results/Wilcoxon_slides.pdf", sep=''),
     width=35,height=8)
