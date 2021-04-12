@@ -24,7 +24,7 @@ for(xx in inlist){
               'LSCC_score',	'PDA_score',	'UCEC_score',	'GBM_score',	'OV_score')
   TLB = 1 # ST is 2, others 1
   MDP = 0.5 # 0.5 for binary; 1/length(POS_score)
-  
+
   library(Rtsne)
   ori_dat = read.table(file=input_file,header=T,sep=',')
   # P = ori_dat[which(ori_dat$Prediction==1),]
@@ -40,21 +40,21 @@ for(xx in inlist){
   res = Rtsne(X, initial_dims=100, check_duplicates = FALSE)
   Y=res$Y
   out_dat = cbind(sp_ori_dat[,1:(start-1)],Y)
-  
+
   dat = cbind(out_dat,x_bin=cut(out_dat[,start],bins),
               y_bin=cut(out_dat[,(start+1)],bins))
-  
+
   dat = cbind(dat, x_int = as.numeric(dat$x_bin),
               y_int = as.numeric(dat$y_bin))
-  
+
   colnames(dat)[start:(start+1)]=c('tsne1','tsne2')
-  
+
   dat$True_label=as.factor(dat$True_label)
   dat$Slide_ID=as.factor(dat$Slide_ID)
-  
+
   write.table(dat, file=output_file, row.names = F, sep=',')
-  
-  
+
+
   ## plot the manifold with probability
   library(ggplot2)
   library(gridExtra)
@@ -75,19 +75,19 @@ for(xx in inlist){
       xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
       ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
       theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-                         panel.grid.minor = element_blank(), 
+                         panel.grid.minor = element_blank(),
                          axis.line = element_line(colour = "black"), legend.position='bottom')
   }
 
   pdf(file=out_fig,
       width=14,height=7)
-  
+
   for(i in 1:length(palist)){
     grid.arrange(palist[[i]],pblist[[i]],nrow=1)
   }
-  
+
   dev.off()
-  
+
 }
 
 
@@ -108,7 +108,7 @@ for(xx in inlist){
   tumor_dict = c('HNSCC', 'CCRCC', 'CO', 'BRCA', 'LUAD', 'LSCC', 'PDA', 'UCEC', 'GBM', 'OV')
   TLB = 1 # ST is 2, others 1
   MDP = 0.5 # 0.5 for binary; 1/length(POS_score)
-  
+
   library(dplyr)
   library(Rtsne)
   ori_dat = read.table(file=input_file,header=T,sep=',')
@@ -125,18 +125,18 @@ for(xx in inlist){
   out_dat = cbind.data.frame(sp_ori_dat[,1:start-1],Y)
   dat = cbind(out_dat,x_bin=cut(out_dat[,start],bins),
               y_bin=cut(out_dat[,(start+1)],bins))
-  
+
   dat = cbind(dat, x_int = as.numeric(dat$x_bin),
               y_int = as.numeric(dat$y_bin))
-  
+
   colnames(dat)[start:(start+1)]=c('tsne1','tsne2')
-  
+
   dat$True_label=as.factor(dat$True_label)
   dat$Slide_ID=as.factor(dat$Slide_ID)
-  
+
   write.table(dat, file=output_file, row.names = F, sep=',')
-  
-  
+
+
   ## plot the manifold with probability
   library(ggplot2)
   library(gridExtra)
@@ -153,37 +153,37 @@ for(xx in inlist){
       theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                          panel.grid.minor = element_blank(),
                          axis.line = element_line(colour = "black"), legend.position='bottom')
-    
+
     pblist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
       geom_point(aes(col=Tumor),alpha=0.5, size=2)+
       xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
       ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
       theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-                         panel.grid.minor = element_blank(), 
+                         panel.grid.minor = element_blank(),
                          axis.line = element_line(colour = "black"), legend.position='bottom')
   }
-  
+
   pdf(file=out_fig,
       width=14,height=7)
-  
+
   for(i in 1:length(palist)){
     grid.arrange(palist[[i]],pblist[[i]],nrow=1)
   }
-  
+
   dev.off()
-  
+
   # ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
   #   geom_point(aes(col=Tumor),alpha=0.5, size=3)+
   #   geom_mark_hull(expand=0.03, concavity = 0, aes(fill=Tumor, label=Tumor))+
       # xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
-      # ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+ 
+      # ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
   #   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-  #                      panel.grid.minor = element_blank(), 
+  #                      panel.grid.minor = element_blank(),
   #                      axis.line = element_line(colour = "black"), legend.position='bottom')
-  # 
+  #
   # ggsave(out_fig2, width=7,height=7)
 
-  
+
   ## plot the manifold with probability
   library(ggplot2)
   library(gridExtra)
@@ -200,36 +200,36 @@ for(xx in inlist){
       theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                          panel.grid.minor = element_blank(),
                          axis.line = element_line(colour = "black"), legend.position='bottom')
-    
+
     pblist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
       geom_point(aes(col=Prediction),alpha=0.5, size=2)+
       xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
       ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
       theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-                         panel.grid.minor = element_blank(), 
+                         panel.grid.minor = element_blank(),
                          axis.line = element_line(colour = "black"), legend.position='bottom')
   }
-  
+
   pdf(file=out_fig3,
       width=14,height=7)
-  
+
   for(i in 1:length(palist)){
     grid.arrange(palist[[i]],pblist[[i]],nrow=1)
   }
-  
+
   dev.off()
-  
+
   # ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
   #   geom_point(aes(col=Prediction),alpha=0.5, size=3)+
   #   geom_mark_hull(expand=0.03, concavity = 0, aes(fill=Prediction, label=Prediction))+
   # xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
   #   ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
   #   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-  #                      panel.grid.minor = element_blank(), 
+  #                      panel.grid.minor = element_blank(),
   #                      axis.line = element_line(colour = "black"), legend.position='bottom')
-  # 
+  #
   # ggsave(out_fig4, width=7,height=7)
-  
+
 }
 
 
@@ -250,7 +250,7 @@ for(xx in inlist){
   tumor_dict = c('HNSCC', 'CCRCC', 'CO', 'BRCA', 'LUAD', 'LSCC', 'PDA', 'UCEC', 'GBM', 'OV')
   TLB = 1 # ST is 2, others 1
   MDP = 0.5 # 0.5 for binary; 1/length(POS_score)
-  
+
   library(Rtsne)
   library(dplyr)
   ori_dat = read.table(file=input_file,header=T,sep=',')
@@ -265,21 +265,21 @@ for(xx in inlist){
   res = Rtsne(X, initial_dims=100, check_duplicates = FALSE)
   Y=res$Y
   out_dat = cbind.data.frame(sp_ori_dat[,1:(start-1)],Y)
-  
+
   dat = cbind(out_dat,x_bin=cut(out_dat[,start],bins),
               y_bin=cut(out_dat[,(start+1)],bins))
-  
+
   dat = cbind(dat, x_int = as.numeric(dat$x_bin),
               y_int = as.numeric(dat$y_bin))
-  
+
   colnames(dat)[start:(start+1)]=c('tsne1','tsne2')
-  
+
   dat$True_label=as.factor(dat$True_label)
   dat$Patient_ID=as.factor(dat$Patient_ID)
-  
+
   write.table(dat, file=output_file, row.names = F, sep=',')
-  
-  
+
+
   ## plot the manifold with probability
   library(ggplot2)
   library(gridExtra)
@@ -296,38 +296,38 @@ for(xx in inlist){
       theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                          panel.grid.minor = element_blank(),
                          axis.line = element_line(colour = "black"), legend.position='bottom')
-    
+
     pblist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
       geom_point(aes(col=Tumor),alpha=0.5, size=3)+
       xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
       ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
       theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-                         panel.grid.minor = element_blank(), 
+                         panel.grid.minor = element_blank(),
                          axis.line = element_line(colour = "black"), legend.position='bottom')
   }
-  
+
   pdf(file=out_fig,
       width=14,height=7)
-  
+
   for(i in 1:length(palist)){
     grid.arrange(palist[[i]],pblist[[i]],nrow=1)
   }
-  
+
   dev.off()
-  
-  
+
+
   # ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
   #   geom_point(aes(col=Tumor),alpha=0.5, size=3)+
   #   geom_mark_hull(expand=0.03, concavity = 0, aes(fill=Tumor, label=Tumor))+
   # xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
   #   ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
   #   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-  #                      panel.grid.minor = element_blank(), 
+  #                      panel.grid.minor = element_blank(),
   #                      axis.line = element_line(colour = "black"), legend.position='bottom')
-  # 
+  #
   # ggsave(out_fig2, width=7,height=7)
-  
-  
+
+
   ## plot the manifold with probability
   library(ggplot2)
   library(gridExtra)
@@ -344,36 +344,36 @@ for(xx in inlist){
       theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                          panel.grid.minor = element_blank(),
                          axis.line = element_line(colour = "black"), legend.position='bottom')
-    
+
     pblist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
       geom_point(aes(col=Prediction),alpha=0.5, size=3)+
       xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
       ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
       theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-                         panel.grid.minor = element_blank(), 
+                         panel.grid.minor = element_blank(),
                          axis.line = element_line(colour = "black"), legend.position='bottom')
   }
-  
+
   pdf(file=out_fig3,
       width=14,height=7)
-  
+
   for(i in 1:length(palist)){
     grid.arrange(palist[[i]],pblist[[i]],nrow=1)
   }
-  
+
   dev.off()
-  
-  
+
+
   # ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
   #   geom_point(aes(col=Prediction),alpha=0.5, size=3)+
   #   geom_mark_hull(expand=0.03, concavity = 0, aes(fill=Prediction, label=Prediction))+
   # xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
   #   ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
   #   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-  #                      panel.grid.minor = element_blank(), 
+  #                      panel.grid.minor = element_blank(),
   #                      axis.line = element_line(colour = "black"), legend.position='bottom')
-  # 
+  #
   # ggsave(out_fig4, width=7,height=7)
-  
+
 }
 

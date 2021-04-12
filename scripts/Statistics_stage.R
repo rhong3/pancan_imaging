@@ -10,7 +10,7 @@ library(gmodels)
 
 inlist = c('stage_10-10')
 # Check previously calculated trials
-previous=read.csv("~/Documents/pancan_imaging/Results/Statistics_stage.csv") 
+previous=read.csv("~/Documents/pancan_imaging/Results/Statistics_stage.csv")
 existed=paste(previous$Folder, previous$Type_number, sep='-')
 # Find the new trials to be calculated
 targets = inlist[which(!inlist %in% existed)]
