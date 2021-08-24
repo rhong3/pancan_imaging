@@ -21,10 +21,12 @@ from itertools import cycle
 
 # Plot ROC and PRC plots
 def ROC_PRC(outtl, pdx, path, name, fdict, dm, accur, pmd):
-    if pmd == 'stage':
+    if pmd == 'stage' or pmd == 'grade':
         rdd = 5
     elif pmd == 'origin':
         rdd = 10
+    elif pmd == 'cellularity' or pmd == 'nuclei' or pmd == 'necrosis':
+        rdd = 3
     else:
         rdd = 2
     if rdd > 2:
@@ -206,6 +208,23 @@ def slide_metrics(inter_pd, path, name, fordict, pmd):
             ['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score']].idxmax(axis=1)
         redict = {'stage1_score': int(1), 'stage2_score': int(2), 'stage3_score': int(3), 'stage4_score': int(4),
                   'stage0_score': int(0)}
+    elif pmd == "grade":
+        inter_pd['Prediction'] = inter_pd[
+            ['grade0_score', 'grade1_score', 'grade2_score', 'grade3_score', 'grade4_score']].idxmax(axis=1)
+        redict = {'grade1_score': int(1), 'grade2_score': int(2), 'grade3_score': int(3), 'grade4_score': int(4),
+                  'grade0_score': int(0)}
+    elif pmd == "cellularity":
+        inter_pd['Prediction'] = inter_pd[
+            ['0_79_score', '80_89_score', '90_100_score']].idxmax(axis=1)
+        redict = {'0_79_score': int(0), '80_89_score': int(1), '90_100_score': int(2)}
+    elif pmd == "nuclei":
+        inter_pd['Prediction'] = inter_pd[
+            ['0_49_score', '50_79_score', '80_100_score']].idxmax(axis=1)
+        redict = {'0_49_score': int(0), '50_79_score': int(1), '80_100_score': int(2)}
+    elif pmd == "necrosis":
+        inter_pd['Prediction'] = inter_pd[
+            ['0_score', '1_9_score', '10_100_score']].idxmax(axis=1)
+        redict = {'0_score': int(0), '1_9_score': int(1), '10_100_score': int(2)}
     elif pmd == 'origin':
         inter_pd['Prediction'] = inter_pd[['HNSCC_score', 'CCRCC_score', 'CO_score', 'BRCA_score', 'LUAD_score',
                                            'LSCC_score', 'PDA_score', 'UCEC_score', 'GBM_score',
@@ -224,7 +243,7 @@ def slide_metrics(inter_pd, path, name, fordict, pmd):
     accu = accout.shape[0]
     accurr = round(accu/tott, 5)
     print('Slide Total Accuracy: '+str(accurr))
-    if pmd == 'stage':
+    if pmd == 'stage' or pmd == 'grade':
         for i in range(5):
             accua = accout[accout.True_label == i].shape[0]
             tota = inter_pd[inter_pd.True_label == i].shape[0]
@@ -242,11 +261,32 @@ def slide_metrics(inter_pd, path, name, fordict, pmd):
                 print('Slide {} Accuracy: '.format(fordict[i])+str(accuar))
             except ZeroDivisionError:
                 print("No data for {}.".format(fordict[i]))
+    elif pmd == 'cellularity' or pmd == 'nuclei' or pmd == 'necrosis':
+        for i in range(3):
+            accua = accout[accout.True_label == i].shape[0]
+            tota = inter_pd[inter_pd.True_label == i].shape[0]
+            try:
+                accuar = round(accua / tota, 5)
+                print('Slide {} Accuracy: '.format(fordict[i])+str(accuar))
+            except ZeroDivisionError:
+                print("No data for {}.".format(fordict[i]))
     try:
         outtl_slide = inter_pd['True_label'].to_frame(name='True_lable')
         if pmd == 'stage':
             pdx_slide = inter_pd[
                 ['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score']].values
+        elif pmd == "grade":
+            inter_pd['Prediction'] = inter_pd[
+                ['grade0_score', 'grade1_score', 'grade2_score', 'grade3_score', 'grade4_score']].values
+        elif pmd == "cellularity":
+            inter_pd['Prediction'] = inter_pd[
+                ['0_79_score', '80_89_score', '90_100_score']].values
+        elif pmd == "nuclei":
+            inter_pd['Prediction'] = inter_pd[
+                ['0_49_score', '50_79_score', '80_100_score']].values
+        elif pmd == "necrosis":
+            inter_pd['Prediction'] = inter_pd[
+                ['0_score', '1_9_score', '10_100_score']].values
         elif pmd == 'origin':
             pdx_slide = inter_pd[['HNSCC_score', 'CCRCC_score', 'CO_score', 'BRCA_score', 'LUAD_score',
                                            'LSCC_score', 'PDA_score', 'UCEC_score', 'GBM_score',
@@ -269,6 +309,14 @@ def slide_metrics(inter_pd, path, name, fordict, pmd):
 def realout(pdx, path, name, pmd):
     if pmd == 'stage':
         lbdict = {1: 'stage1', 2: 'stage2', 3: 'stage3', 4: 'stage4', 0: 'stage0'}
+    elif pmd == "grade":
+        lbdict = {1: 'grade1', 2: 'grade2', 3: 'grade3', 4: 'grade4', 0: 'grade0'}
+    elif pmd == "cellularity":
+        lbdict = {0: '0_79_score', 1: '80_89_score', 2: '90_100_score'}
+    elif pmd == "nuclei":
+        lbdict = {0: '0_49_score', 1: '50_79_score', 2: '80_100_score'}
+    elif pmd == "necrosis":
+        lbdict = {0: '0_score', 1: '1_9_score', 2: '10_100_score'}
     elif pmd == 'origin':
         lbdict = {0: 'HNSCC', 1: 'CCRCC', 2: 'CO', 3: 'BRCA', 4: 'LUAD',
                   5: 'LSCC', 6: 'PDA', 7: 'UCEC', 8: 'GBM', 9: 'OV'}
@@ -281,6 +329,18 @@ def realout(pdx, path, name, pmd):
     if pmd == 'stage':
         out = pd.DataFrame(pdx[:, 0:5],
                            columns=['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score'])
+    elif pmd == 'grade':
+        out = pd.DataFrame(pdx[:, 0:5],
+                           columns=['grade0_score', 'grade1_score', 'grade2_score', 'grade3_score', 'grade4_score'])
+    elif pmd == 'cellularity':
+        out = pd.DataFrame(pdx[:, 0:3],
+                           columns=['0_79_score', '80_89_score', '90_100_score'])
+    elif pmd == 'nuclei':
+        out = pd.DataFrame(pdx[:, 0:3],
+                           columns=['0_49_score', '50_79_score', '80_100_score'])
+    elif pmd == 'necrosis':
+        out = pd.DataFrame(pdx[:, 0:3],
+                           columns=['0_score', '1_9_score', '10_100_score'])
     elif pmd == 'origin':
         out = pd.DataFrame(pdx[:, 0:10],
                            columns=['HNSCC_score', 'CCRCC_score', 'CO_score', 'BRCA_score', 'LUAD_score', 'LSCC_score',
@@ -340,6 +400,22 @@ def metrics(pdx, tl, path, name, pmd, ori_test=None):
         lbdict = {1: 'stage1', 2: 'stage2', 3: 'stage3', 4: 'stage4', 0: 'stage0'}
         outt = pd.DataFrame(pdxt[:, 0:5],
                             columns=['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score'])
+    elif pmd == "grade":
+        lbdict = {1: 'grade1', 2: 'grade2', 3: 'grade3', 4: 'grade4', 0: 'grade0'}
+        outt = pd.DataFrame(pdxt[:, 0:5],
+                           columns=['grade0_score', 'grade1_score', 'grade2_score', 'grade3_score', 'grade4_score'])
+    elif pmd == "cellularity":
+        lbdict = {0: '0_79_score', 1: '80_89_score', 2: '90_100_score'}
+        outt = pd.DataFrame(pdxt[:, 0:3],
+                           columns=['0_79_score', '80_89_score', '90_100_score'])
+    elif pmd == "nuclei":
+        lbdict = {0: '0_49_score', 1: '50_79_score', 2: '80_100_score'}
+        outt = pd.DataFrame(pdxt[:, 0:3],
+                           columns=['0_49_score', '50_79_score', '80_100_score'])
+    elif pmd == "necrosis":
+        lbdict = {0: '0_score', 1: '1_9_score', 2: '10_100_score'}
+        outt = pd.DataFrame(pdxt[:, 0:3],
+                           columns=['0_score', '1_9_score', '10_100_score'])
     elif pmd == 'origin':
         lbdict = {0: 'HNSCC', 1: 'CCRCC', 2: 'CO', 3: 'BRCA', 4: 'LUAD',
                   5: 'LSCC', 6: 'PDA', 7: 'UCEC', 8: 'GBM', 9: 'OV'}
@@ -380,8 +456,17 @@ def metrics(pdx, tl, path, name, pmd, ori_test=None):
     accu = accout.shape[0]
     accurw = round(accu/tott, 5)
     print('Tile Total Accuracy: '+str(accurw))
-    if pmd == 'stage':
+    if pmd == 'stage' or pmd == 'grade':
         for i in range(5):
+            accua = accout[accout.True_label == i].shape[0]
+            tota = out[out.True_label == i].shape[0]
+            try:
+                accuar = round(accua / tota, 5)
+                print('Tile {} Accuracy: '.format(lbdict[i])+str(accuar))
+            except ZeroDivisionError:
+                print("No data for {}.".format(lbdict[i]))
+    if pmd == 'cellularity' or pmd == 'nuclei' or pmd == 'necrosis':
+        for i in range(3):
             accua = accout[accout.True_label == i].shape[0]
             tota = out[out.True_label == i].shape[0]
             try:
@@ -448,6 +533,52 @@ def CAM(net, w, pred, x, y, path, name, bs, pmd, rd=0):
                 pass
         catdict = {1: 'stage1', 2: 'stage2', 3: 'stage3', 4: 'stage4', 0: 'stage0'}
         dirdict = {1: DIRB, 2: DIRC, 3: DIRD, 4: DIRE, 0: DIRA}
+    elif pmd == 'grade':
+        DIRA = "../Results/{}/out/{}_img/grade0".format(path, name)
+        DIRB = "../Results/{}/out/{}_img/grade1".format(path, name)
+        DIRC = "../Results/{}/out/{}_img/grade2".format(path, name)
+        DIRD = "../Results/{}/out/{}_img/grade3".format(path, name)
+        DIRE = "../Results/{}/out/{}_img/grade4".format(path, name)
+        for DIR in (DIRT, DIRA, DIRB, DIRC, DIRD, DIRE):
+            try:
+                os.mkdir(DIR)
+            except FileExistsError:
+                pass
+        catdict = {1: 'grade1', 2: 'grade2', 3: 'grade3', 4: 'grade4', 0: 'grade0'}
+        dirdict = {1: DIRB, 2: DIRC, 3: DIRD, 4: DIRE, 0: DIRA}
+    elif pmd == 'cellularity':
+        DIRA = "../Results/{}/out/{}_img/0_79".format(path, name)
+        DIRB = "../Results/{}/out/{}_img/80_89".format(path, name)
+        DIRC = "../Results/{}/out/{}_img/90_100".format(path, name)
+        for DIR in (DIRT, DIRA, DIRB, DIRC):
+            try:
+                os.mkdir(DIR)
+            except FileExistsError:
+                pass
+        catdict = {0: '0_79', 1: '80_89', 2: '90_100'}
+        dirdict = {0: DIRA, 1: DIRB, 2: DIRC}
+    elif pmd == 'nuclei':
+        DIRA = "../Results/{}/out/{}_img/0_49".format(path, name)
+        DIRB = "../Results/{}/out/{}_img/50_79".format(path, name)
+        DIRC = "../Results/{}/out/{}_img/80_100".format(path, name)
+        for DIR in (DIRT, DIRA, DIRB, DIRC):
+            try:
+                os.mkdir(DIR)
+            except FileExistsError:
+                pass
+        catdict = {0: '0_49', 1: '50_79', 2: '80_100'}
+        dirdict = {0: DIRA, 1: DIRB, 2: DIRC}
+    elif pmd == 'necrosis':
+        DIRA = "../Results/{}/out/{}_img/0".format(path, name)
+        DIRB = "../Results/{}/out/{}_img/1_9".format(path, name)
+        DIRC = "../Results/{}/out/{}_img/10_100".format(path, name)
+        for DIR in (DIRT, DIRA, DIRB, DIRC):
+            try:
+                os.mkdir(DIR)
+            except FileExistsError:
+                pass
+        catdict = {0: '0', 1: '1_9', 2: '10_100'}
+        dirdict = {0: DIRA, 1: DIRB, 2: DIRC}
     elif pmd == 'origin':
         DIRA = "../Results/{}/out/{}_img/HNSCC".format(path, name)
         DIRB = "../Results/{}/out/{}_img/CCRCC".format(path, name)
@@ -597,6 +728,18 @@ def tSNE_prep(flatnet, ori_test, y, pred, path, pmd):
     if pmd == 'stage':
         outt = pd.DataFrame(pdxt[:, 0:5],
                             columns=['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score'])
+    elif pmd == "grade":
+        outt = pd.DataFrame(pdxt[:, 0:5],
+                           columns=['grade0_score', 'grade1_score', 'grade2_score', 'grade3_score', 'grade4_score'])
+    elif pmd == "cellularity":
+        outt = pd.DataFrame(pdxt[:, 0:3],
+                           columns=['0_79_score', '80_89_score', '90_100_score'])
+    elif pmd == "nuclei":
+        outt = pd.DataFrame(pdxt[:, 0:3],
+                           columns=['0_49_score', '50_79_score', '80_100_score'])
+    elif pmd == "necrosis":
+        outt = pd.DataFrame(pdxt[:, 0:3],
+                           columns=['0_score', '1_9_score', '10_100_score'])
     elif pmd == 'origin':
         outt = pd.DataFrame(pdxt[:, 0:10],
                            columns=['HNSCC_score', 'CCRCC_score', 'CO_score', 'BRCA_score', 'LUAD_score', 'LSCC_score',
