@@ -35,6 +35,10 @@ test['set'] = 'test'
 
 DLCCA = pd.concat([train, validation, test])
 DLCCA.columns = ['Patient_ID', 'Slide_ID', 'Tumor', 'RNA_ID', "grade", "set"]
+paths = []
+for idx, row in DLCCA.iterrows():
+    paths.append(str('../tiles/'+row['Tumor']+'/'+row['Patient_ID']+'/'+row['Slide_ID'].split('-')[-1]+'/'))
+DLCCA['path'] = paths
 DLCCA.to_csv('../DLCCA/grade.csv', index=False)
 
 DLCCA = DLCCA.drop(['grade'], axis=1)
@@ -53,3 +57,44 @@ mutations = mutations.drop(['Patient_ID', 'Tumor'], axis=1)
 mutations = DLCCA.join(mutations.set_index('Slide_ID'), on='Slide_ID', how='inner')
 mutations.to_csv('../DLCCA/mutations.csv', index=False)
 
+nuclei = pd.read_csv('../stage_label_df.csv', header=0, usecols=['Slide_ID', 'Percent_Tumor_Nuclei'])
+nuclei = nuclei[nuclei['Percent_Tumor_Nuclei'] >= 0]
+nuclei = DLCCA.join(nuclei.set_index('Slide_ID'), on='Slide_ID', how='inner')
+label = []
+for idx, row in nuclei.iterrows():
+    if row["Percent_Tumor_Nuclei"] < 50:
+        label.append(0)
+    elif row["Percent_Tumor_Nuclei"] >= 80:
+        label.append(2)
+    else:
+        label.append(1)
+nuclei['label'] = label
+nuclei.to_csv('../DLCCA/tumor_nuclei.csv', index=False)
+
+cellularity = pd.read_csv('../stage_label_df.csv', header=0, usecols=['Slide_ID', 'Percent_Total_Cellularity'])
+cellularity = cellularity[cellularity['Percent_Total_Cellularity'] >= 0]
+cellularity = DLCCA.join(cellularity.set_index('Slide_ID'), on='Slide_ID', how='inner')
+label = []
+for idx, row in cellularity.iterrows():
+    if row["Percent_Total_Cellularity"] < 80:
+        label.append(0)
+    elif row["Percent_Total_Cellularity"] >= 90:
+        label.append(2)
+    else:
+        label.append(1)
+cellularity['label'] = label
+cellularity.to_csv('../DLCCA/cellularity.csv', index=False)
+
+necrosis = pd.read_csv('../stage_label_df.csv', header=0, usecols=['Slide_ID', 'Percent_Necrosis'])
+necrosis = necrosis[necrosis['Percent_Necrosis'] >= 0]
+necrosis = DLCCA.join(necrosis.set_index('Slide_ID'), on='Slide_ID', how='inner')
+label = []
+for idx, row in necrosis.iterrows():
+    if row["Percent_Necrosis"] == 0:
+        label.append(0)
+    elif row["Percent_Necrosis"] >= 10:
+        label.append(2)
+    else:
+        label.append(1)
+necrosis['label'] = label
+necrosis.to_csv('../DLCCA/necrosis.csv', index=False)

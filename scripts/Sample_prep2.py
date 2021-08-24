@@ -156,14 +156,14 @@ def set_sep(alll, path, cut=0.3):
 
 # TO KEEP SPLIT SAME AS BASELINES. seperate into training and testing; each type is the same separation
 # ratio on big images test and train csv files contain tiles' path.
-def set_sep_secondary(alll, path, cut=0.3, theme3path='../Theme3_split.csv'):
-    theme3 = pd.read_csv(theme3path, header=0)
+def set_sep_secondary(path, label_col, splitfile='../DLCCA/tumor_normal.csv'):
+    split = pd.read_csv(splitfile, header=0)
 
-    test = theme3[theme3['set'] == 'test']
+    test = split[split['set'] == 'test']
     test = test.drop(columns=['set'])
-    train = theme3[theme3['set'] == 'train']
+    train = split[split['set'] == 'train']
     train = train.drop(columns=['set'])
-    validation = theme3[theme3['set'] == 'validation']
+    validation = split[split['set'] == 'validation']
     validation = validation.drop(columns=['set'])
 
     test.to_csv(path + '/te_sample_raw.csv', header=True, index=False)
@@ -174,13 +174,13 @@ def set_sep_secondary(alll, path, cut=0.3, theme3path='../Theme3_split.csv'):
     train_tiles = pd.DataFrame(columns=['Patient_ID', 'Slide_ID', 'Tumor', 'label', 'L1path', 'L2path', 'L3path'])
     validation_tiles = pd.DataFrame(columns=['Patient_ID', 'Slide_ID', 'Tumor', 'label', 'L1path', 'L2path', 'L3path'])
     for idx, row in test.iterrows():
-        tile_ids = paired_tile_ids_in(row['Patient_ID'], row['Slide_ID'], row['Tumor'], row['label'], row['path'])
+        tile_ids = paired_tile_ids_in(row['Patient_ID'], row['Slide_ID'], row['Tumor'], row[label_col], row['path'])
         test_tiles = pd.concat([test_tiles, tile_ids])
     for idx, row in train.iterrows():
-        tile_ids = paired_tile_ids_in(row['Patient_ID'], row['Slide_ID'], row['Tumor'], row['label'], row['path'])
+        tile_ids = paired_tile_ids_in(row['Patient_ID'], row['Slide_ID'], row['Tumor'], row[label_col], row['path'])
         train_tiles = pd.concat([train_tiles, tile_ids])
     for idx, row in validation.iterrows():
-        tile_ids = paired_tile_ids_in(row['Patient_ID'], row['Slide_ID'], row['Tumor'], row['label'], row['path'])
+        tile_ids = paired_tile_ids_in(row['Patient_ID'], row['Slide_ID'], row['Tumor'], row[label_col], row['path'])
         validation_tiles = pd.concat([validation_tiles, tile_ids])
 
     # No shuffle on test set
