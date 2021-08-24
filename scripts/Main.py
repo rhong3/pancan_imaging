@@ -30,6 +30,7 @@ parser.add_argument('--lr', type=float, default=0.0001, help='initial learning r
 parser.add_argument('--cut', type=float, default=0.3, help='train and test+validation split (default 0.3)')
 parser.add_argument('--pdmd', type=str, default='tumor', help='feature to predict')
 parser.add_argument('--mode', type=str, default='train', help='train or test')
+parser.add_argument('--presplit', type=str, default=None, help='pre-defined data split file')
 parser.add_argument('--modeltoload', type=str, default='', help='reload trained model')
 parser.add_argument('--reference', type=str, default='../tumor_label_df.csv', help='reference label file')
 parser.add_argument('--label_column', type=str, default='Tumor_normal', help='label column name in reference file')
@@ -231,10 +232,12 @@ if __name__ == "__main__":
             te = pd.read_csv(data_dir + '/te_sample_full.csv', header=0)
             va = pd.read_csv(data_dir + '/va_sample_full.csv', header=0)
         except FileNotFoundError:
-            alll = Sample_prep2.big_image_sum(label_col=opt.label_column, path=opt.tile_path,
-                                              ref_file=opt.reference, pdmd=opt.pdmd, exclude=opt.exclude)
-            Sample_prep2.set_sep(alll, path=data_dir, cut=opt.cut)
-            # Sample_prep2.set_sep_secondary(path=data_dir, label_col=opt.label_column)
+            if opt.presplit:
+                Sample_prep2.set_sep_secondary(path=data_dir, label_col=opt.label_column, splitfile=opt.presplit)
+            else:
+                alll = Sample_prep2.big_image_sum(label_col=opt.label_column, path=opt.tile_path,
+                                                  ref_file=opt.reference, pdmd=opt.pdmd, exclude=opt.exclude)
+                Sample_prep2.set_sep(alll, path=data_dir, cut=opt.cut)
             tr = pd.read_csv(data_dir + '/tr_sample_full.csv', header=0)
             te = pd.read_csv(data_dir + '/te_sample_full.csv', header=0)
             va = pd.read_csv(data_dir + '/va_sample_full.csv', header=0)

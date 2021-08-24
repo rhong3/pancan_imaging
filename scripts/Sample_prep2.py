@@ -156,7 +156,7 @@ def set_sep(alll, path, cut=0.3):
 
 # TO KEEP SPLIT SAME AS BASELINES. seperate into training and testing; each type is the same separation
 # ratio on big images test and train csv files contain tiles' path.
-def set_sep_secondary(path, label_col, splitfile='../DLCCA/tumor_normal.csv'):
+def set_sep_secondary(path, label_col, splitfile):
     split = pd.read_csv(splitfile, header=0)
 
     test = split[split['set'] == 'test']
