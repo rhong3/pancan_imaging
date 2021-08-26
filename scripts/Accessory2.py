@@ -6,7 +6,6 @@ Created on 04/26/2019
 
 @author: RH
 """
-
 import matplotlib
 matplotlib.use('Agg')
 import os
