@@ -275,16 +275,16 @@ def slide_metrics(inter_pd, path, name, fordict, pmd):
             pdx_slide = inter_pd[
                 ['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score']].values
         elif pmd == "grade":
-            inter_pd['Prediction'] = inter_pd[
+            pdx_slide = inter_pd[
                 ['grade0_score', 'grade1_score', 'grade2_score', 'grade3_score', 'grade4_score']].values
         elif pmd == "cellularity":
-            inter_pd['Prediction'] = inter_pd[
+            pdx_slide = inter_pd[
                 ['0_79_score', '80_89_score', '90_100_score']].values
         elif pmd == "nuclei":
-            inter_pd['Prediction'] = inter_pd[
+            pdx_slide = inter_pd[
                 ['0_49_score', '50_79_score', '80_100_score']].values
         elif pmd == "necrosis":
-            inter_pd['Prediction'] = inter_pd[
+            pdx_slide = inter_pd[
                 ['0_score', '1_9_score', '10_100_score']].values
         elif pmd == 'origin':
             pdx_slide = inter_pd[['HNSCC_score', 'CCRCC_score', 'CO_score', 'BRCA_score', 'LUAD_score',
