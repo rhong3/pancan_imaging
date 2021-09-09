@@ -8,7 +8,7 @@ library(MLmetrics)
 library(boot)
 library(gmodels)
 
-inlist = c('stage_10-10')
+inlist = c('stage_CCA-6')
 # Check previously calculated trials
 previous=read.csv("~/Documents/pancan_imaging/Results/Statistics_stage.csv")
 existed=paste(previous$Folder, previous$Type_number, sep='-')

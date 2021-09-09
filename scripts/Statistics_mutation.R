@@ -8,9 +8,7 @@ library(MLmetrics)
 library(boot)
 library(gmodels)
 
-inlist = c('JAK1-JAK1', 'JAK1_t6-JAK1', 'MAP3K1-MAP3K1', 'MAP3K1_t6-MAP3K1', 'MTOR-MTOR', 'MTOR_t6-MTOR',
-           'NOTCH1-NOTCH1', 'NOTCH1_t6-NOTCH1', 'NOTCH3-NOTCH3', 'NOTCH3_t6-NOTCH3', 'PIK3CA-PIK3CA', 'PIK3CA_t6-PIK3CA',
-           'ZFHX3-ZFHX3', 'ZFHX3_t6-ZFHX3')
+inlist = c('TP53_CCA-TP53')
 # Check previously calculated trials
 previous=read.csv("~/Documents/pancan_imaging/Results/Statistics_mutation.csv")
 existed=paste(previous$Folder, previous$Gene, previous$Type_number, sep='-')
