@@ -60,7 +60,7 @@ for(xx in inlist){
   palist <- list()
   pblist <- list()
   for(i in 1:length(POS_score)){
-    palist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2',col=POS_score[i]))+
+    palist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2',col=paste("X", POS_score[i], sep="")))+
       scale_color_gradient2(high='red',mid='gray',low='steelblue',midpoint=MDP)+
       geom_point(alpha=1, size=1)+ scale_shape(solid = TRUE)+
       xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
@@ -143,7 +143,7 @@ for(xx in inlist){
   palist <- list()
   pblist <- list()
   for(i in 1:length(POS_score)){
-    palist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2',col=POS_score[i]))+
+    palist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2',col=paste("X", POS_score[i], sep="")))+
       scale_color_gradient2(high='red',mid='gray',low='steelblue',midpoint=MDP)+
       geom_point(alpha=1, size=2)+ scale_shape(solid = TRUE)+
       xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
@@ -190,7 +190,7 @@ for(xx in inlist){
   palist <- list()
   pblist <- list()
   for(i in 1:length(POS_score)){
-    palist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2',col=POS_score[i]))+
+    palist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2',col=paste("X", POS_score[i], sep="")))+
       scale_color_gradient2(high='red',mid='gray',low='steelblue',midpoint=MDP)+
       geom_point(alpha=1, size=2)+ scale_shape(solid = TRUE)+
       xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
@@ -285,7 +285,7 @@ for(xx in inlist){
   palist <- list()
   pblist <- list()
   for(i in 1:length(POS_score)){
-    palist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2',col=POS_score[i]))+
+    palist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2',col=paste("X", POS_score[i], sep="")))+
       scale_color_gradient2(high='red',mid='gray',low='steelblue',midpoint=MDP)+
       geom_point(alpha=1, size=3)+ scale_shape(solid = TRUE)+
       xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
@@ -333,7 +333,7 @@ for(xx in inlist){
   palist <- list()
   pblist <- list()
   for(i in 1:length(POS_score)){
-    palist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2',col=POS_score[i]))+
+    palist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2',col=paste("X", POS_score[i], sep="")))+
       scale_color_gradient2(high='red',mid='gray',low='steelblue',midpoint=MDP)+
       geom_point(alpha=1, size=3)+ scale_shape(solid = TRUE)+
       xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
