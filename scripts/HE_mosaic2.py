@@ -23,10 +23,10 @@ outim = sys.argv[6]
 def sample(dat, md, bins):
     if md == 'stage':
         classes = 5
-        redict = {1: 'stage1', 2: 'stage2', 3: 'stage3', 4: 'stage4', 0: 'stage0'}
+        redict = {1: 'stage1_score', 2: 'stage2_score', 3: 'stage3_score', 4: 'stage4_score', 0: 'stage0_score'}
         cutoff = 0.25
     elif md == "grade":
-        redict = {1: 'grade1', 2: 'grade2', 3: 'grade3', 4: 'grade4', 0: 'grade0'}
+        redict = {1: 'grade1_score', 2: 'grade2_score', 3: 'grade3_score', 4: 'grade4_score', 0: 'grade0_score'}
         classes = 5
         cutoff = 0.25
     elif md == "cellularity":
