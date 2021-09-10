@@ -30,15 +30,15 @@ def sample(dat, md, bins):
         classes = 5
         cutoff = 0.25
     elif md == "cellularity":
-        redict = {0: '0_79_score', 1: '80_89_score', 2: '90_100_score'}
+        redict = {0: 'X0_79_score', 1: 'X80_89_score', 2: 'X90_100_score'}
         classes = 3
         cutoff = 0.5
     elif md == "nuclei":
-        redict = {0: '0_49_score', 1: '50_79_score', 2: '80_100_score'}
+        redict = {0: 'X0_49_score', 1: 'X50_79_score', 2: 'X80_100_score'}
         classes = 3
         cutoff = 0.5
     elif md == "necrosis":
-        redict = {0: '0_score', 1: '1_9_score', 2: '10_100_score'}
+        redict = {0: 'X0_score', 1: 'X1_9_score', 2: 'X10_100_score'}
         classes = 3
         cutoff = 0.5
     else:
