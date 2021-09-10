@@ -6,7 +6,7 @@ inlist=c('Results/TP53_CCA', 'Results/Tumor_CCA')
 
 for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')
-  output_file=paste('~/documents/pancan_imaging/',xx,'/out/tSNE_P_N.csv.csv',sep='')
+  output_file=paste('~/documents/pancan_imaging/',xx,'/out/tSNE_P_N.csv',sep='')
   sampled_file=paste('~/documents/pancan_imaging/',xx,'/out/tSNE_sampled.csv',sep='')
   out_fig=paste('~/documents/pancan_imaging/',xx,'/out/P_N.pdf',sep='')
   start=7
