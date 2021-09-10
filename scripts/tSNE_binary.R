@@ -9,7 +9,7 @@ for(xx in inlist){
   output_file=paste('~/documents/pancan_imaging/',xx,'/out/tSNE_P_N.csv',sep='')
   sampled_file=paste('~/documents/pancan_imaging/',xx,'/out/tSNE_sampled.csv',sep='')
   out_fig=paste('~/documents/pancan_imaging/',xx,'/out/P_N.pdf',sep='')
-  start=7
+  start=12
   bins=50
   POS_score='POS_score'
   TLB = 1 # ST is 2, others 1
@@ -18,7 +18,6 @@ for(xx in inlist){
   library(dplyr)
   library(Rtsne)
   ori_dat = read.table(file=input_file,header=T,sep=',')
-  ori_dat = ori_dat[, c(2,3,8:ncol(ori_dat))]
   sp_ori_dat=ori_dat[sample(nrow(ori_dat), 20000), ]
   write.table(sp_ori_dat, file=sampled_file, row.names = F, sep=',')
   
