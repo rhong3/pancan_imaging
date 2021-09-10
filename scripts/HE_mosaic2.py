@@ -54,7 +54,7 @@ def sample(dat, md, bins):
                                     & (dat[redict[m]] > cutoff) & (dat['True_label'] == m)]
                     picked = sub.sample(1, replace=False)
                     for idx, row in picked.iterrows():
-                        sampledls.append([row['L0path'], row['L1path'], row['L2path'], row['x_int'], row['y_int']])
+                        sampledls.append([row['L1path'], row['L2path'], row['L3path'], row['x_int'], row['y_int']])
                 except ValueError:
                     pass
     samples = pd.DataFrame(sampledls, columns=['L0impath', 'L1impath', 'L2impath', 'x_int', 'y_int'])
