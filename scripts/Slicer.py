@@ -137,4 +137,3 @@ def tile(image_file, outdir, level, std_img, dp=None, ft=1):
 
     return n_x, n_y, lowres, ct
 
-
