@@ -519,94 +519,25 @@ def py_map2jpg(imgmap):
 # y are labels; path is output folder, name is test/validation; rd is current batch number
 def CAM(net, w, pred, x, y, path, name, bs, pmd, rd=0):
     DIRT = "../Results/{}/out/{}_img".format(path, name)
+    try:
+        os.mkdir(DIRT)
+    except FileExistsError:
+        pass
     if pmd == 'stage':
-        DIRA = "../Results/{}/out/{}_img/stage0".format(path, name)
-        DIRB = "../Results/{}/out/{}_img/stage1".format(path, name)
-        DIRC = "../Results/{}/out/{}_img/stage2".format(path, name)
-        DIRD = "../Results/{}/out/{}_img/stage3".format(path, name)
-        DIRE = "../Results/{}/out/{}_img/stage4".format(path, name)
-        for DIR in (DIRT, DIRA, DIRB, DIRC, DIRD, DIRE):
-            try:
-                os.mkdir(DIR)
-            except FileExistsError:
-                pass
         catdict = {1: 'stage1', 2: 'stage2', 3: 'stage3', 4: 'stage4', 0: 'stage0'}
-        dirdict = {1: DIRB, 2: DIRC, 3: DIRD, 4: DIRE, 0: DIRA}
     elif pmd == 'grade':
-        DIRA = "../Results/{}/out/{}_img/grade0".format(path, name)
-        DIRB = "../Results/{}/out/{}_img/grade1".format(path, name)
-        DIRC = "../Results/{}/out/{}_img/grade2".format(path, name)
-        DIRD = "../Results/{}/out/{}_img/grade3".format(path, name)
-        DIRE = "../Results/{}/out/{}_img/grade4".format(path, name)
-        for DIR in (DIRT, DIRA, DIRB, DIRC, DIRD, DIRE):
-            try:
-                os.mkdir(DIR)
-            except FileExistsError:
-                pass
         catdict = {1: 'grade1', 2: 'grade2', 3: 'grade3', 4: 'grade4', 0: 'grade0'}
-        dirdict = {1: DIRB, 2: DIRC, 3: DIRD, 4: DIRE, 0: DIRA}
     elif pmd == 'cellularity':
-        DIRA = "../Results/{}/out/{}_img/0_79".format(path, name)
-        DIRB = "../Results/{}/out/{}_img/80_89".format(path, name)
-        DIRC = "../Results/{}/out/{}_img/90_100".format(path, name)
-        for DIR in (DIRT, DIRA, DIRB, DIRC):
-            try:
-                os.mkdir(DIR)
-            except FileExistsError:
-                pass
         catdict = {0: '0_79', 1: '80_89', 2: '90_100'}
-        dirdict = {0: DIRA, 1: DIRB, 2: DIRC}
     elif pmd == 'nuclei':
-        DIRA = "../Results/{}/out/{}_img/0_49".format(path, name)
-        DIRB = "../Results/{}/out/{}_img/50_79".format(path, name)
-        DIRC = "../Results/{}/out/{}_img/80_100".format(path, name)
-        for DIR in (DIRT, DIRA, DIRB, DIRC):
-            try:
-                os.mkdir(DIR)
-            except FileExistsError:
-                pass
         catdict = {0: '0_49', 1: '50_79', 2: '80_100'}
-        dirdict = {0: DIRA, 1: DIRB, 2: DIRC}
     elif pmd == 'necrosis':
-        DIRA = "../Results/{}/out/{}_img/0".format(path, name)
-        DIRB = "../Results/{}/out/{}_img/1_9".format(path, name)
-        DIRC = "../Results/{}/out/{}_img/10_100".format(path, name)
-        for DIR in (DIRT, DIRA, DIRB, DIRC):
-            try:
-                os.mkdir(DIR)
-            except FileExistsError:
-                pass
         catdict = {0: '0', 1: '1_9', 2: '10_100'}
-        dirdict = {0: DIRA, 1: DIRB, 2: DIRC}
     elif pmd == 'origin':
-        DIRA = "../Results/{}/out/{}_img/HNSCC".format(path, name)
-        DIRB = "../Results/{}/out/{}_img/CCRCC".format(path, name)
-        DIRC = "../Results/{}/out/{}_img/CO".format(path, name)
-        DIRD = "../Results/{}/out/{}_img/BRCA".format(path, name)
-        DIRE = "../Results/{}/out/{}_img/LUAD".format(path, name)
-        DIRF = "../Results/{}/out/{}_img/LSCC".format(path, name)
-        DIRG = "../Results/{}/out/{}_img/PDA".format(path, name)
-        DIRH = "../Results/{}/out/{}_img/UCEC".format(path, name)
-        DIRI = "../Results/{}/out/{}_img/GBM".format(path, name)
-        DIRJ = "../Results/{}/out/{}_img/OV".format(path, name)
-        for DIR in (DIRT, DIRA, DIRB, DIRC, DIRD, DIRE, DIRF, DIRG, DIRH, DIRI, DIRJ):
-            try:
-                os.mkdir(DIR)
-            except FileExistsError:
-                pass
         catdict = {0: 'HNSCC', 1: 'CCRCC', 2: 'CO', 3: 'BRCA', 4: 'LUAD',
                   5: 'LSCC', 6: 'PDA', 7: 'UCEC', 8: 'GBM', 9: 'OV'}
-        dirdict = {1: DIRB, 2: DIRC, 3: DIRD, 4: DIRE, 0: DIRA, 5: DIRF, 6: DIRG, 7: DIRH, 8: DIRI, 9: DIRJ}
     else:
-        DIRA = "../Results/{}/out/{}_img/NEG".format(path, name)
-        DIRB = "../Results/{}/out/{}_img/POS".format(path, name)
-        for DIR in (DIRT, DIRA, DIRB):
-            try:
-                os.mkdir(DIR)
-            except FileExistsError:
-                pass
         catdict = {0: 'negative', 1: pmd}
-        dirdict = {0: DIRA, 1: DIRB}
 
     y = np.asmatrix(y)
     y = y.argmax(axis=1).astype('uint8')
@@ -631,7 +562,6 @@ def CAM(net, w, pred, x, y, path, name, bs, pmd, rd=0):
         topNum = 1  # generate heatmap for top X prediction results
         prdd = prl[ij, 0]
         curCAMmapAll = py_returnCAMmap(activation_lastconv, weights_LR[[prdd], :])
-        DIRR = dirdict[prdd]
         catt = catdict[prdd]
         for kk in range(topNum):
             curCAMmap_crops = curCAMmapAll[:, :, kk]
@@ -652,13 +582,13 @@ def CAM(net, w, pred, x, y, path, name, bs, pmd, rd=0):
             curHeatMap = a * 0.6 + b * 0.4
             ab = np.hstack((a,b))
             full = np.hstack((curHeatMap, ab))
-            # imname = DIRR + '/' + id + ddt + '_' + catt + '.png'
-            # imname1 = DIRR + '/' + id + ddt + '_' + catt + '_img.png'
-            # imname2 = DIRR + '/' + id + ddt + '_' + catt + '_hm.png'
-            imname3 = DIRR + '/' + id + ddt + '_' + catt + '_full.png'
-            # cv2.imwrite(imname, curHeatMap)
+            imname = DIRT + '/' + id + '_' + ddt + '_' + catt + '_ol.png'
+            # imname1 = DIRT + '/' + id + '_' + ddt + '_' + catt + '_img.png'
+            imname2 = DIRT + '/' + id + '_' + ddt + '_' + catt + '_hm.png'
+            imname3 = DIRT + '/' + id + '_' + ddt + '_' + catt + '_full.png'
+            cv2.imwrite(imname, curHeatMap)
             # cv2.imwrite(imname1, a)
-            # cv2.imwrite(imname2, b)
+            cv2.imwrite(imname2, b)
             cv2.imwrite(imname3, full)
 
 
@@ -704,7 +634,7 @@ def CAM_R(net, w, pred, x, path, name, bs, rd=0):
             curHeatMap = a * 0.6 + b * 0.4
             ab = np.hstack((a,b))
             full = np.hstack((curHeatMap, ab))
-            # imname = DIRR + '/' + id + '.png'
+            # imname = DIRR + '/' + id + '_ol.png'
             # imname1 = DIRR + '/' + id + '_img.png'
             # imname2 = DIRR + '/' + id +'_hm.png'
             imname3 = DIRR + '/' + id + '_full.png'

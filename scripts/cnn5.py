@@ -143,7 +143,7 @@ class INCEPTION:
                 global_step, train_op, merged_summary, tumor)
 
     # inference using trained models
-    def inference(self, X, dirr, testset=None, pmd=None, train_status=False, realtest=False):
+    def inference(self, X, dirr, bs, testset=None, pmd=None, train_status=False, realtest=False):
         now = datetime.now().isoformat()[11:]
         print("------- Testing begin: {} -------\n".format(now))
         rd = 0
@@ -191,16 +191,16 @@ class INCEPTION:
                                      self.is_train: train_status}
                         fetches = [self.pred, self.net, self.w]
                         pred, net, w = self.sesh.run(fetches, feed_dict)
-                        # for i in range(3):
-                        # neta = net[:, :, :, :int(np.shape(net)[3] / 3)]
-                        # netb = net[:, :, :, int(np.shape(net)[3] / 3):2 * int(np.shape(net)[3] / 3)]
-                        # netc = net[:, :, :, 2 * int(np.shape(net)[3] / 3):]
-                        # wa = w[:int(np.shape(net)[3] / 3), :]
-                        # wb = w[int(np.shape(net)[3] / 3):2 * int(np.shape(net)[3] / 3), :]
-                        # wc = w[2 * int(np.shape(net)[3] / 3):, :]
-                        #     ac.CAM(neta, wa, pred, xa, y, dirr, 'Test_level1', bs, pmd, rd)
-                        #     ac.CAM(netb, wb, pred, xb, y, dirr, 'Test_level2', bs, pmd, rd)
-                        #     ac.CAM(netc, wc, pred, xc, y, dirr, 'Test_level3', bs, pmd, rd)
+                        for i in range(3):
+                            neta = net[:, :, :, :int(np.shape(net)[3] / 3)]
+                            netb = net[:, :, :, int(np.shape(net)[3] / 3):2 * int(np.shape(net)[3] / 3)]
+                            netc = net[:, :, :, 2 * int(np.shape(net)[3] / 3):]
+                            wa = w[:int(np.shape(net)[3] / 3), :]
+                            wb = w[int(np.shape(net)[3] / 3):2 * int(np.shape(net)[3] / 3), :]
+                            wc = w[2 * int(np.shape(net)[3] / 3):, :]
+                            ac.CAM(neta, wa, pred, xa, y, dirr, 'Test_level1', bs, pmd, rd)
+                            ac.CAM(netb, wb, pred, xb, y, dirr, 'Test_level2', bs, pmd, rd)
+                            ac.CAM(netc, wc, pred, xc, y, dirr, 'Test_level3', bs, pmd, rd)
                         net = np.mean(net, axis=(1, 2))
                         if rd == 0:
                             pdx = pred
