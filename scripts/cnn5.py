@@ -131,7 +131,7 @@ class INCEPTION:
 
         tf.summary.tensor_summary("pred", pred)
 
-        # optimizer based on TensorFlow version
+        # optimizer
         train_op = tf.train.AdamOptimizer(
         learning_rate=self.learning_rate).minimize(
         loss=pred_loss, global_step=global_step)
