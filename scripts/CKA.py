@@ -64,7 +64,6 @@ def calculate_CKA_for_two_matrices(activationA, activationB):
   return cka_score
 
 
-
 grade = pd.read_csv("../Results/grade_CCA/out/For_tSNE.csv")
 grade = np.asmatrix(grade.iloc[:, 14:])
 
