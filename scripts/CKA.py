@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 
 def unbiased_HSIC(K, L):
@@ -61,5 +62,16 @@ def calculate_CKA_for_two_matrices(activationA, activationB):
   del activationB
 
   return cka_score
+
+
+
+grade = pd.read_csv("../Results/grade_CCA/out/For_tSNE.csv")
+grade = np.asmatrix(grade.iloc[:, 14:])
+
+tumor = pd.read_csv("../Results/tumor_CCA/out/For_tSNE.csv")
+tumor = np.asmatrix(tumor.iloc[:, 11:])
+
+
+print(calculate_CKA_for_two_matrices(tumor, grade))
 
 
