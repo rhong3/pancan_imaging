@@ -24,7 +24,7 @@ def unbiased_HSIC(K, L):
 
     # third part in the square brackets
     multiplier1 = 2 / (n - 2)
-    multiplier2 = np.dot(np.dot(ones.T, K), np.dot(L, ones))
+    multiplier2 = np.dot(np.dot(ones.T, K), np.dot(L, ones).T)
     last = multiplier1 * multiplier2
 
     # complete equation
