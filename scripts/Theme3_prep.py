@@ -98,3 +98,21 @@ for idx, row in necrosis.iterrows():
         label.append(1)
 necrosis['label'] = label
 necrosis.to_csv('../DLCCA/necrosis.csv', index=False)
+
+
+# # Get common CCA test slides for all tasks
+# tumor = pd.read_csv('../Results/tumor_CCA/data/te_sample_raw.csv', header=0)
+# tumor = tumor.drop(['Tumor_normal'], axis=1)
+#
+# stage = pd.read_csv('../Results/stage_CCA/data/te_sample_raw.csv', header=0, usecols=['Slide_ID', 'Stage'])
+# TP53 = pd.read_csv('../Results/TP53_CCA/data/te_sample_raw.csv', header=0, usecols=['Slide_ID', 'TP53'])
+# nuclei = pd.read_csv('../Results/nuclei_CCA/data/te_sample_raw.csv', header=0, usecols=['Slide_ID', 'Percent_Tumor_Nuclei'])
+# necrosis = pd.read_csv('../Results/necrosis_CCA/data/te_sample_raw.csv', header=0, usecols=['Slide_ID', 'Percent_Necrosis'])
+# cellularity = pd.read_csv('../Results/cellularity_CCA/data/te_sample_raw.csv', header=0, usecols=['Slide_ID', 'Percent_Total_Cellularity'])
+# grade = pd.read_csv('../Results/grade_CCA/data/te_sample_raw.csv', header=0, usecols=['Slide_ID', 'grade'])
+#
+# for i in [stage, grade, nuclei, necrosis, TP53, cellularity]:
+#     tumor = tumor.join(i.set_index('Slide_ID'), on='Slide_ID', how='inner')
+#
+#
+# tumor.to_csv('../CCA_test_raw_common.csv', index=False)
