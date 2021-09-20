@@ -16,12 +16,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dirr', type=str, default='trial', help='output directory')
 parser.add_argument('--mode', type=str, default='ol', help='heatmap only or overlay')
 parser.add_argument('--slides', nargs='+', type=str, default=None, help='slides to plot')
-parser.add_argument('--filter', type=bool, default=True, help='plot only correct tiles')
+parser.add_argument('--filter', type=str, default=None, help='plot only Correct/Wrong tiles')
 
 opt = parser.parse_args()
 dirr = opt.dirr
 mode = opt.mode
-
 
 # Map output CAMs to dict
 hm = []
@@ -55,8 +54,8 @@ for slide in opt.slides:
         tdict = oltiles
     print(slide)
     if opt.filter:
-        tdict = tdict[(tdict['bool'] == 'Correct') & (tdict['Slide_ID'] == slide)]
-        filt = "correct"
+        tdict = tdict[(tdict['bool'] == opt.filter) & (tdict['Slide_ID'] == slide)]
+        filt = opt.filter
     else:
         tdict = tdict[tdict['Slide_ID'] == slide]
         filt = ""
@@ -65,7 +64,7 @@ for slide in opt.slides:
 
     for j in range(1, 4):
         idict = pd.read_csv('../tiles/'+tm+'/'+pt+'/'+slide.split('-')[-1]+'/level'+str(j)+'/dict.csv', header=0)
-        canvas = np.full(((idict['X_pos'].max()*500+2000)*(2**(j-1)), (idict['Y_pos'].max()*500+2000)*(2**(j-1)), 3), 0)
+        canvas = np.full(((idict['X_pos'].max()*500+1000)*(2**(j-1)), (idict['Y_pos'].max()*500+1000)*(2**(j-1)), 3), 0)
         for idx, row in tdict.iterrows():
             x = int(int(row['L1path'].split('x-')[1].split('-y')[0]))
             y = int(int(row['L1path'].split('y-')[1].split('.pn')[0]))
