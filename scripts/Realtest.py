@@ -289,14 +289,19 @@ def main(imgfile, bs, cls, modeltoload, pdmd, img_dir, data_dir, out_dir, LOG_DI
 
     ### CAM ###
     for pre in ['ol', 'hm']:
-        for j in range(1, 4):
-            campath = pre+'l' + str(j) + 'path'
-            canvas = np.full(((np.shape(opt)[0], np.shape(opt)[1]), 3), 0)
-            for idx, row in joined_dict.iterrows():
-                imm = cv2.imread(row[campath])[25:275, 25:275, :]
-                imm = cv2.resize(imm, (50, 50))
-                canvas[int(row["X_pos"])*50:int(row["X_pos"])*50+50, int(row["Y_pos"])*50:int(row["Y_pos"])*50+50, :] = imm
-            cv2.imwrite(out_dir + '/' + pre + '_level' + str(j) + '.png', canvas)
+        fac = 50
+        campath = pre+'l1path'
+        canvas = np.full(((np.shape(opt)[0], np.shape(opt)[1]), 3), 0)
+        for idx, row in joined_dict.iterrows():
+            imm = cv2.imread(row[campath])[25:275, 25:275, :]
+            imm = cv2.resize(imm, (fac, fac))
+            canvas[int(row["X_pos"])*fac:int(row["X_pos"])*fac+fac,
+            int(row["Y_pos"])*fac:int(row["Y_pos"])*fac+fac, :] = imm
+        cv2.imwrite(out_dir + '/' + pre + '.png', canvas)
+        if pre == 'hm':
+            # superimpose heatmap on scaled original image
+            overlayhm = ori_img * 0.5 + canvas * 0.5
+            cv2.imwrite(out_dir + '/cam_Overlay.png', overlayhm)
 
 
 if __name__ == "__main__":
