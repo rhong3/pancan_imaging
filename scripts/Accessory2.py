@@ -326,26 +326,32 @@ def realout(pdx, path, name, pmd):
     prl = pd.DataFrame(prl, columns=['Prediction'])
     prl = prl.replace(lbdict)
     if pmd == 'stage':
-        out = pd.DataFrame(pdx[:, 0:5],
-                           columns=['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score'])
+        out = pd.DataFrame(pdx[:, 0:8],
+                           columns=['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score',
+                                    'caml1path', 'caml2path', 'caml3path'])
     elif pmd == 'grade':
-        out = pd.DataFrame(pdx[:, 0:5],
-                           columns=['grade0_score', 'grade1_score', 'grade2_score', 'grade3_score', 'grade4_score'])
+        out = pd.DataFrame(pdx[:, 0:8],
+                           columns=['grade0_score', 'grade1_score', 'grade2_score', 'grade3_score', 'grade4_score',
+                                    'caml1path', 'caml2path', 'caml3path'])
     elif pmd == 'cellularity':
-        out = pd.DataFrame(pdx[:, 0:3],
-                           columns=['0_79_score', '80_89_score', '90_100_score'])
+        out = pd.DataFrame(pdx[:, 0:6],
+                           columns=['0_79_score', '80_89_score', '90_100_score',
+                                    'caml1path', 'caml2path', 'caml3path'])
     elif pmd == 'nuclei':
-        out = pd.DataFrame(pdx[:, 0:3],
-                           columns=['0_49_score', '50_79_score', '80_100_score'])
+        out = pd.DataFrame(pdx[:, 0:6],
+                           columns=['0_49_score', '50_79_score', '80_100_score',
+                                    'caml1path', 'caml2path', 'caml3path'])
     elif pmd == 'necrosis':
-        out = pd.DataFrame(pdx[:, 0:3],
-                           columns=['0_score', '1_9_score', '10_100_score'])
+        out = pd.DataFrame(pdx[:, 0:6],
+                           columns=['0_score', '1_9_score', '10_100_score',
+                                    'caml1path', 'caml2path', 'caml3path'])
     elif pmd == 'origin':
-        out = pd.DataFrame(pdx[:, 0:10],
+        out = pd.DataFrame(pdx[:, 0:13],
                            columns=['HNSCC_score', 'CCRCC_score', 'CO_score', 'BRCA_score', 'LUAD_score', 'LSCC_score',
-                                    'PDA_score', 'UCEC_score', 'GBM_score', 'OV_score'])
+                                    'PDA_score', 'UCEC_score', 'GBM_score', 'OV_score',
+                                    'caml1path', 'caml2path', 'caml3path'])
     else:
-        out = pd.DataFrame(pdx[:, 0:2], columns=['NEG_score', 'POS_score'])
+        out = pd.DataFrame(pdx[:, 0:5], columns=['NEG_score', 'POS_score', 'caml1path', 'caml2path', 'caml3path'])
     out.reset_index(drop=True, inplace=True)
     prl.reset_index(drop=True, inplace=True)
     out = pd.concat([out, prl], axis=1)
@@ -605,7 +611,7 @@ def CAM_R(net, w, pred, x, path, name, bs, rd=0):
     pdx = np.asmatrix(pred)
 
     prl = pdx.argmax(axis=1).astype('uint8')
-
+    camls = []
     for ij in range(len(prl)):
         id = str(ij + rd)
         weights_LR = w
@@ -642,6 +648,10 @@ def CAM_R(net, w, pred, x, path, name, bs, rd=0):
             # cv2.imwrite(imname1, a)
             cv2.imwrite(imname2, b)
             # cv2.imwrite(imname3, full)
+            camls.append([imname, imname2])
+
+    return np.asarray(camls)
+
 
 
 # Output activation for tSNE

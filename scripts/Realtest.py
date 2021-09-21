@@ -215,7 +215,7 @@ def main(imgfile, bs, cls, modeltoload, pdmd, img_dir, data_dir, out_dir, LOG_DI
 
         print("Loaded! Ready for test!")
         HE = tfreloader(bs, None)
-        m.inference(HE, str(imgfile.split('.')[0]), realtest=True, pmd=pdmd)
+        m.inference(HE, str(imgfile.split('.')[0]), bs=bs, realtest=True, pmd=pdmd)
     if not os.path.isfile(out_dir + '/Overlay.png'):
         slist = pd.read_csv(data_dir + '/te_sample.csv', header=0)
         # load dictionary of predictions on tiles
