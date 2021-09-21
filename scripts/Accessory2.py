@@ -585,11 +585,11 @@ def CAM(net, w, pred, x, y, path, name, bs, pmd, rd=0):
             imname = DIRT + '/' + id + '_' + ddt + '_' + catt + '_ol.png'
             # imname1 = DIRT + '/' + id + '_' + ddt + '_' + catt + '_img.png'
             imname2 = DIRT + '/' + id + '_' + ddt + '_' + catt + '_hm.png'
-            imname3 = DIRT + '/' + id + '_' + ddt + '_' + catt + '_full.png'
+            # imname3 = DIRT + '/' + id + '_' + ddt + '_' + catt + '_full.png'
             cv2.imwrite(imname, curHeatMap)
             # cv2.imwrite(imname1, a)
             cv2.imwrite(imname2, b)
-            cv2.imwrite(imname3, full)
+            # cv2.imwrite(imname3, full)
 
 
 # CAM for real test; no need to determine correct or wrong
@@ -634,14 +634,14 @@ def CAM_R(net, w, pred, x, path, name, bs, rd=0):
             curHeatMap = a * 0.6 + b * 0.4
             ab = np.hstack((a,b))
             full = np.hstack((curHeatMap, ab))
-            # imname = DIRR + '/' + id + '_ol.png'
+            imname = DIRR + '/' + id + '_ol.png'
             # imname1 = DIRR + '/' + id + '_img.png'
-            # imname2 = DIRR + '/' + id +'_hm.png'
-            imname3 = DIRR + '/' + id + '_full.png'
-            # cv2.imwrite(imname, curHeatMap)
+            imname2 = DIRR + '/' + id +'_hm.png'
+            # imname3 = DIRR + '/' + id + '_full.png'
+            cv2.imwrite(imname, curHeatMap)
             # cv2.imwrite(imname1, a)
-            # cv2.imwrite(imname2, b)
-            cv2.imwrite(imname3, full)
+            cv2.imwrite(imname2, b)
+            # cv2.imwrite(imname3, full)
 
 
 # Output activation for tSNE
