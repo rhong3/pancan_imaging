@@ -9,7 +9,6 @@ Modified on 09/21/2021
 """
 import argparse
 import Slicer
-import time
 import matplotlib
 matplotlib.use('Agg')
 import os
@@ -126,9 +125,9 @@ import data_input_fusion as data_input
 
 
 # load tfrecords and prepare datasets
-def tfreloader(bs, cls, ct):
+def tfreloader(bs, ct):
     filename = data_dir + '/test.tfrecords'
-    datasets = data_input.DataSet(bs, ct, ep=1, cls=cls, mode='test', filename=filename)
+    datasets = data_input.DataSet(bs, ct, mode='test', filename=filename)
 
     return datasets
 
@@ -154,11 +153,27 @@ def cutter(img, outdirr, cutt=4):
             pass
 
 
-def main(imgfile, bs, cls, modeltoload, pdmd, md, img_dir, data_dir, out_dir, LOG_DIR, METAGRAPH_DIR):
-
-    if pdmd == 'immune':
-        pos_score = ['im1_score', 'im2_score', 'im3_score', 'im4_score']
-        pos_ls = ['im1', 'im2', 'im3', 'im4']
+def main(imgfile, bs, cls, modeltoload, pdmd, img_dir, data_dir, out_dir, LOG_DIR, METAGRAPH_DIR):
+    if pdmd == 'stage':
+        pos_ls = ['stage0', 'stage1', 'stage2', 'stage3', 'stage4']
+        pos_score = ['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score']
+    elif pdmd == "grade":
+        pos_ls = ['grade0', 'grade1', 'grade2', 'grade3', 'grade4']
+        pos_score = ['grade0_score', 'grade1_score', 'grade2_score', 'grade3_score', 'grade4_score']
+    elif pdmd == "cellularity":
+        pos_ls = ['0_79_score', '80_89_score', '90_100_score']
+        pos_score = ['0_79_score', '80_89_score', '90_100_score']
+    elif pdmd == "nuclei":
+        pos_ls = ['0_49_score', '50_79_score', '80_100_score']
+        pos_score = ['0_49_score', '50_79_score', '80_100_score']
+    elif pdmd == "necrosis":
+        pos_ls = ['0_score', '1_9_score', '10_100_score']
+        pos_score = ['0_score', '1_9_score', '10_100_score']
+    elif pdmd == 'origin':
+        pos_ls = ['HNSCC', 'CCRCC', 'CO', 'BRCA', 'LUAD',
+                  'LSCC', 'PDA', 'UCEC', 'GBM', 'OV']
+        pos_score = ['HNSCC_score', 'CCRCC_score', 'CO_score', 'BRCA_score', 'LUAD_score', 'LSCC_score',
+                     'PDA_score', 'UCEC_score', 'GBM_score', 'OV_score']
     else:
         pos_score = ["POS_score", "NEG_score"]
         pos_ls = [pdmd, 'negative']
@@ -185,7 +200,7 @@ def main(imgfile, bs, cls, modeltoload, pdmd, md, img_dir, data_dir, out_dir, LO
         cutter(img_dir+imgfile, data_dir)
     if not os.path.isfile(data_dir + '/test.tfrecords'):
         loaderX(data_dir)
-    if not os.path.isfile(out_dir + '/'+md+'_Test.csv'):
+    if not os.path.isfile(out_dir + '/Test.csv'):
         # input image dimension
         INPUT_DIM = [bs, 299, 299, 3]
         # hyper parameters
@@ -196,16 +211,15 @@ def main(imgfile, bs, cls, modeltoload, pdmd, md, img_dir, data_dir, out_dir, LO
             "classes": cls,
             "sup": False
         }
-        m = cnn.INCEPTION(INPUT_DIM, HYPERPARAMS, meta_graph=modeltoload, log_dir=LOG_DIR, meta_dir=METAGRAPH_DIR,
-                          model=md)
+        m = cnn.INCEPTION(INPUT_DIM, HYPERPARAMS, meta_graph=modeltoload, log_dir=LOG_DIR, meta_dir=METAGRAPH_DIR)
 
         print("Loaded! Ready for test!")
-        HE = tfreloader(bs, cls, None)
-        m.inference(HE, str(imgfile.split('.')[0]), realtest=True, pmd=pdmd, prefix=md+'_Test')
-    if not os.path.isfile(out_dir + '/'+md+'_Overlay.png'):
+        HE = tfreloader(bs, None)
+        m.inference(HE, str(imgfile.split('.')[0]), realtest=True, pmd=pdmd)
+    if not os.path.isfile(out_dir + '/Overlay.png'):
         slist = pd.read_csv(data_dir + '/te_sample.csv', header=0)
         # load dictionary of predictions on tiles
-        teresult = pd.read_csv(out_dir+'/'+md+'_Test.csv', header=0)
+        teresult = pd.read_csv(out_dir+'/Test.csv', header=0)
         # join 2 dictionaries
         joined = pd.merge(slist, teresult, how='inner', on=['Num'])
         joined = joined.drop(columns=['Num'])
@@ -220,7 +234,7 @@ def main(imgfile, bs, cls, modeltoload, pdmd, md, img_dir, data_dir, out_dir, LO
 
         joined_dict['predict_index'] = prd_ls
         # save joined dictionary
-        joined_dict.to_csv(out_dir + '/'+md+'_finaldict.csv', index=False)
+        joined_dict.to_csv(out_dir + '/finaldict.csv', index=False)
 
         # output heat map of pos and neg.
         # initialize a graph and for each RGB channel
@@ -281,11 +295,11 @@ def main(imgfile, bs, cls, modeltoload, pdmd, md, img_dir, data_dir, out_dir, LO
         hm_G = hm_G.repeat(50, axis=0).repeat(50, axis=1)
         hm_B = hm_B.repeat(50, axis=0).repeat(50, axis=1)
         hm = np.dstack([hm_B, hm_G, hm_R])
-        cv2.imwrite(out_dir + '/'+md+'_HM.png', hm)
+        cv2.imwrite(out_dir + '/HM.png', hm)
 
         # superimpose heatmap on scaled original image
         overlay = ori_img * 0.5 + hm * 0.5
-        cv2.imwrite(out_dir + '/'+md+'_Overlay.png', overlay)
+        cv2.imwrite(out_dir + '/Overlay.png', overlay)
 
 
 if __name__ == "__main__":
@@ -307,7 +321,7 @@ if __name__ == "__main__":
         except FileExistsError:
             pass
 
-    main(imgfile, opt.bs, opt.cls, opt.modeltoload, opt.pdmd, opt.architecture, img_dir,
+    main(imgfile, opt.bs, opt.cls, opt.modeltoload, opt.pdmd, img_dir,
          data_dir, out_dir, LOG_DIR, METAGRAPH_DIR)
 
 
