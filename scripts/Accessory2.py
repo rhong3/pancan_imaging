@@ -311,11 +311,11 @@ def realout(pdx, path, name, pmd):
     elif pmd == "grade":
         lbdict = {1: 'grade1', 2: 'grade2', 3: 'grade3', 4: 'grade4', 0: 'grade0'}
     elif pmd == "cellularity":
-        lbdict = {0: '0_79_score', 1: '80_89_score', 2: '90_100_score'}
+        lbdict = {0: '0_79', 1: '80_89', 2: '90_100'}
     elif pmd == "nuclei":
-        lbdict = {0: '0_49_score', 1: '50_79_score', 2: '80_100_score'}
+        lbdict = {0: '0_49', 1: '50_79', 2: '80_100'}
     elif pmd == "necrosis":
-        lbdict = {0: '0_score', 1: '1_9_score', 2: '10_100_score'}
+        lbdict = {0: '0', 1: '1_9', 2: '10_100'}
     elif pmd == 'origin':
         lbdict = {0: 'HNSCC', 1: 'CCRCC', 2: 'CO', 3: 'BRCA', 4: 'LUAD',
                   5: 'LSCC', 6: 'PDA', 7: 'UCEC', 8: 'GBM', 9: 'OV'}
@@ -326,32 +326,34 @@ def realout(pdx, path, name, pmd):
     prl = pd.DataFrame(prl, columns=['Prediction'])
     prl = prl.replace(lbdict)
     if pmd == 'stage':
-        out = pd.DataFrame(pdx[:, 0:8],
+        out = pd.DataFrame(pdx[:, 0:11],
                            columns=['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score',
-                                    'caml1path', 'caml2path', 'caml3path'])
+                                    'oll1path', 'hml1path', 'oll2path', 'hml2path', 'oll3path', 'hml3path'])
     elif pmd == 'grade':
-        out = pd.DataFrame(pdx[:, 0:8],
+        out = pd.DataFrame(pdx[:, 0:11],
                            columns=['grade0_score', 'grade1_score', 'grade2_score', 'grade3_score', 'grade4_score',
-                                    'caml1path', 'caml2path', 'caml3path'])
+                                    'oll1path', 'hml1path', 'oll2path', 'hml2path', 'oll3path', 'hml3path'])
     elif pmd == 'cellularity':
-        out = pd.DataFrame(pdx[:, 0:6],
+        out = pd.DataFrame(pdx[:, 0:9],
                            columns=['0_79_score', '80_89_score', '90_100_score',
-                                    'caml1path', 'caml2path', 'caml3path'])
+                                    'oll1path', 'hml1path', 'oll2path', 'hml2path', 'oll3path', 'hml3path'])
     elif pmd == 'nuclei':
-        out = pd.DataFrame(pdx[:, 0:6],
+        out = pd.DataFrame(pdx[:, 0:9],
                            columns=['0_49_score', '50_79_score', '80_100_score',
-                                    'caml1path', 'caml2path', 'caml3path'])
+                                    'oll1path', 'hml1path', 'oll2path', 'hml2path', 'oll3path', 'hml3path'])
     elif pmd == 'necrosis':
-        out = pd.DataFrame(pdx[:, 0:6],
+        out = pd.DataFrame(pdx[:, 0:9],
                            columns=['0_score', '1_9_score', '10_100_score',
-                                    'caml1path', 'caml2path', 'caml3path'])
+                                    'oll1path', 'hml1path', 'oll2path', 'hml2path', 'oll3path', 'hml3path'])
     elif pmd == 'origin':
-        out = pd.DataFrame(pdx[:, 0:13],
+        out = pd.DataFrame(pdx[:, 0:16],
                            columns=['HNSCC_score', 'CCRCC_score', 'CO_score', 'BRCA_score', 'LUAD_score', 'LSCC_score',
                                     'PDA_score', 'UCEC_score', 'GBM_score', 'OV_score',
-                                    'caml1path', 'caml2path', 'caml3path'])
+                                    'oll1path', 'hml1path', 'oll2path', 'hml2path', 'oll3path', 'hml3path'])
     else:
-        out = pd.DataFrame(pdx[:, 0:5], columns=['NEG_score', 'POS_score', 'caml1path', 'caml2path', 'caml3path'])
+        out = pd.DataFrame(pdx[:, 0:8], columns=['NEG_score', 'POS_score',
+                                                 'oll1path', 'hml1path', 'oll2path',
+                                                 'hml2path', 'oll3path', 'hml3path'])
     out.reset_index(drop=True, inplace=True)
     prl.reset_index(drop=True, inplace=True)
     out = pd.concat([out, prl], axis=1)
@@ -410,15 +412,15 @@ def metrics(pdx, tl, path, name, pmd, ori_test=None):
         outt = pd.DataFrame(pdxt[:, 0:5],
                            columns=['grade0_score', 'grade1_score', 'grade2_score', 'grade3_score', 'grade4_score'])
     elif pmd == "cellularity":
-        lbdict = {0: '0_79_score', 1: '80_89_score', 2: '90_100_score'}
+        lbdict = {0: '0_79', 1: '80_89', 2: '90_100'}
         outt = pd.DataFrame(pdxt[:, 0:3],
                            columns=['0_79_score', '80_89_score', '90_100_score'])
     elif pmd == "nuclei":
-        lbdict = {0: '0_49_score', 1: '50_79_score', 2: '80_100_score'}
+        lbdict = {0: '0_49', 1: '50_79', 2: '80_100'}
         outt = pd.DataFrame(pdxt[:, 0:3],
                            columns=['0_49_score', '50_79_score', '80_100_score'])
     elif pmd == "necrosis":
-        lbdict = {0: '0_score', 1: '1_9_score', 2: '10_100_score'}
+        lbdict = {0: '0', 1: '1_9', 2: '10_100'}
         outt = pd.DataFrame(pdxt[:, 0:3],
                            columns=['0_score', '1_9_score', '10_100_score'])
     elif pmd == 'origin':

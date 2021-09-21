@@ -8,7 +8,6 @@ Modified on 09/21/2021
 @author: RH
 """
 import argparse
-import Slicer
 import matplotlib
 matplotlib.use('Agg')
 import os
@@ -16,7 +15,6 @@ import numpy as np
 import pandas as pd
 import cv2
 import tensorflow as tf
-import staintools
 import re
 from openslide import OpenSlide
 
@@ -29,7 +27,7 @@ parser.add_argument('--img_size', type=int, default=299, help='input tile size (
 parser.add_argument('--pdmd', type=str, default='stage', help='feature to predict')
 parser.add_argument('--modeltoload', type=str, default='', help='reload trained model')
 parser.add_argument('--metadir', type=str, default='', help='reload trained model')
-parser.add_argument('--imgfile', type=str, default='', help='load the image')
+parser.add_argument('--imgfile', type=str, default='', help='load the image (eg. CCRCC/C3L-SSSSS-SS)')
 
 
 # pair tiles of 10x, 5x, 2.5x of the same area
@@ -132,27 +130,6 @@ def tfreloader(bs, ct):
     return datasets
 
 
-def cutter(img, outdirr, cutt=4):
-    # load standard image for normalization
-    std = staintools.read_image("../colorstandard.png")
-    std = staintools.LuminosityStandardizer.standardize(std)
-    for m in range(1, cutt):
-        level = int(m / 2)
-        tff = int(m % 2 + 1)
-        otdir = "{}/level{}".format(outdirr, str(m))
-        try:
-            os.mkdir(otdir)
-        except(FileExistsError):
-            pass
-        try:
-            numx, numy, raw, tct = Slicer.tile(image_file=img, outdir=otdir,
-                                                                     level=level, std_img=std, ft=tff)
-        except Exception as e:
-            print(e)
-            print('Error!')
-            pass
-
-
 def main(imgfile, bs, cls, modeltoload, pdmd, img_dir, data_dir, out_dir, LOG_DIR, METAGRAPH_DIR):
     if pdmd == 'stage':
         pos_ls = ['stage0', 'stage1', 'stage2', 'stage3', 'stage4']
@@ -161,13 +138,13 @@ def main(imgfile, bs, cls, modeltoload, pdmd, img_dir, data_dir, out_dir, LOG_DI
         pos_ls = ['grade0', 'grade1', 'grade2', 'grade3', 'grade4']
         pos_score = ['grade0_score', 'grade1_score', 'grade2_score', 'grade3_score', 'grade4_score']
     elif pdmd == "cellularity":
-        pos_ls = ['0_79_score', '80_89_score', '90_100_score']
+        pos_ls = ['0_79', '80_89', '90_100']
         pos_score = ['0_79_score', '80_89_score', '90_100_score']
     elif pdmd == "nuclei":
-        pos_ls = ['0_49_score', '50_79_score', '80_100_score']
+        pos_ls = ['0_49', '50_79', '80_100']
         pos_score = ['0_49_score', '50_79_score', '80_100_score']
     elif pdmd == "necrosis":
-        pos_ls = ['0_score', '1_9_score', '10_100_score']
+        pos_ls = ['0', '1_9', '10_100']
         pos_score = ['0_score', '1_9_score', '10_100_score']
     elif pdmd == 'origin':
         pos_ls = ['HNSCC', 'CCRCC', 'CO', 'BRCA', 'LUAD',
@@ -180,7 +157,7 @@ def main(imgfile, bs, cls, modeltoload, pdmd, img_dir, data_dir, out_dir, LOG_DI
 
     level = 0
     ft = 2
-    slide = OpenSlide(img_dir+imgfile)
+    slide = OpenSlide(img_dir+imgfile+'.svs')
 
     bounds_width = slide.level_dimensions[level][0]
     bounds_height = slide.level_dimensions[level][1]
@@ -197,7 +174,15 @@ def main(imgfile, bs, cls, modeltoload, pdmd, img_dir, data_dir, out_dir, LOG_DI
     raw_img = np.array(lowres)[:, :, :3]
 
     if not os.path.isfile(data_dir + '/level3/dict.csv'):
-        cutter(img_dir+imgfile, data_dir)
+        tumor = imgfile.split('/')[0]
+        slideID = imgfile.split("-")[-1]
+        patientID = imgfile.rsplit("-", 1)[0].split('/')[-1]
+        os.symlink("../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level1', data_dir + '/level1',
+                   target_is_directory=True)
+        os.symlink("../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level2', data_dir + '/level2',
+                   target_is_directory=True)
+        os.symlink("../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level3', data_dir + '/level3',
+                   target_is_directory=True)
     if not os.path.isfile(data_dir + '/test.tfrecords'):
         loaderX(data_dir)
     if not os.path.isfile(out_dir + '/Test.csv'):
@@ -216,104 +201,115 @@ def main(imgfile, bs, cls, modeltoload, pdmd, img_dir, data_dir, out_dir, LOG_DI
         print("Loaded! Ready for test!")
         HE = tfreloader(bs, None)
         m.inference(HE, str(imgfile.split('.')[0]), bs=bs, realtest=True, pmd=pdmd)
-    if not os.path.isfile(out_dir + '/Overlay.png'):
-        slist = pd.read_csv(data_dir + '/te_sample.csv', header=0)
-        # load dictionary of predictions on tiles
-        teresult = pd.read_csv(out_dir+'/Test.csv', header=0)
-        # join 2 dictionaries
-        joined = pd.merge(slist, teresult, how='inner', on=['Num'])
-        joined = joined.drop(columns=['Num'])
-        tile_dict = pd.read_csv(data_dir+'/level1/dict.csv', header=0)
-        tile_dict = tile_dict.rename(index=str, columns={"Loc": "L0path"})
-        joined_dict = pd.merge(joined, tile_dict, how='inner', on=['L0path'])
-        logits = joined_dict[pos_score]
-        prd_ls = np.asmatrix(logits).argmax(axis=1).astype('uint8')
-        prd = int(np.mean(prd_ls))
-        print(str(pos_ls[prd])+'!')
-        print("Prediction score = " + str(logits.iloc[:, prd].mean().round(5)))
 
-        joined_dict['predict_index'] = prd_ls
-        # save joined dictionary
-        joined_dict.to_csv(out_dir + '/finaldict.csv', index=False)
+    ### Heatmap ###
+    slist = pd.read_csv(data_dir + '/te_sample.csv', header=0)
+    # load dictionary of predictions on tiles
+    teresult = pd.read_csv(out_dir+'/Test.csv', header=0)
+    # join 2 dictionaries
+    joined = pd.merge(slist, teresult, how='inner', on=['Num'])
+    joined = joined.drop(columns=['Num'])
+    tile_dict = pd.read_csv(data_dir+'/level1/dict.csv', header=0)
+    tile_dict = tile_dict.rename(index=str, columns={"Loc": "L1path"})
+    joined_dict = pd.merge(joined, tile_dict, how='inner', on=['L1path'])
+    logits = joined_dict[pos_score]
+    prd_ls = np.asmatrix(logits).argmax(axis=1).astype('uint8')
+    prd = int(np.mean(prd_ls))
+    print(str(pos_ls[prd])+'!')
+    print("Prediction score = " + str(logits.iloc[:, prd].mean().round(5)))
 
-        # output heat map of pos and neg.
-        # initialize a graph and for each RGB channel
-        opt = np.full((n_x, n_y), 0)
-        hm_R = np.full((n_x, n_y), 0)
-        hm_G = np.full((n_x, n_y), 0)
-        hm_B = np.full((n_x, n_y), 0)
+    joined_dict['predict_index'] = prd_ls
+    # save joined dictionary
+    joined_dict.to_csv(out_dir + '/finaldict.csv', index=False)
 
-        # Positive is labeled red in output heat map
-        for index, row in joined_dict.iterrows():
-            opt[int(row["X_pos"]), int(row["Y_pos"])] = 255
-            if row['predict_index'] == 0:
-                hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 228
-                hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 26
-                hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 28
-            elif row['predict_index'] == 1:
-                hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 55
-                hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 126
-                hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 184
-            elif row['predict_index'] == 2:
-                hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 77
-                hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 175
-                hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 74
-            elif row['predict_index'] == 3:
-                hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 255
-                hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 255
-                hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 51
-            elif row['predict_index'] == 4:
-                hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 191
-                hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 64
-                hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 191
-            else:
-                pass
-        # expand 5 times
-        opt = opt.repeat(50, axis=0).repeat(50, axis=1)
+    # output heat map of pos and neg.
+    # initialize a graph and for each RGB channel
+    opt = np.full((n_x, n_y), 0)
+    hm_R = np.full((n_x, n_y), 0)
+    hm_G = np.full((n_x, n_y), 0)
+    hm_B = np.full((n_x, n_y), 0)
 
-        # small-scaled original image
-        ori_img = cv2.resize(raw_img, (np.shape(opt)[0], np.shape(opt)[1]))
-        ori_img = ori_img[:np.shape(opt)[1], :np.shape(opt)[0], :3]
-        tq = ori_img[:, :, 0]
-        ori_img[:, :, 0] = ori_img[:, :, 2]
-        ori_img[:, :, 2] = tq
-        cv2.imwrite(out_dir + '/Original_scaled.png', ori_img)
+    # Positive is labeled red in output heat map
+    for index, row in joined_dict.iterrows():
+        opt[int(row["X_pos"]), int(row["Y_pos"])] = 255
+        if row['predict_index'] == 0:
+            hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 228
+            hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 26
+            hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 28
+        elif row['predict_index'] == 1:
+            hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 55
+            hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 126
+            hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 184
+        elif row['predict_index'] == 2:
+            hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 77
+            hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 175
+            hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 74
+        elif row['predict_index'] == 3:
+            hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 255
+            hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 255
+            hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 51
+        elif row['predict_index'] == 4:
+            hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 191
+            hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 64
+            hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 191
+        else:
+            pass
+    # expand 5 times
+    opt = opt.repeat(50, axis=0).repeat(50, axis=1)
 
-        # binary output image
-        topt = np.transpose(opt)
-        opt = np.full((np.shape(topt)[0], np.shape(topt)[1], 3), 0)
-        opt[:, :, 0] = topt
-        opt[:, :, 1] = topt
-        opt[:, :, 2] = topt
-        cv2.imwrite(out_dir + '/Mask.png', opt * 255)
+    # small-scaled original image
+    ori_img = cv2.resize(raw_img, (np.shape(opt)[0], np.shape(opt)[1]))
+    ori_img = ori_img[:np.shape(opt)[1], :np.shape(opt)[0], :3]
+    tq = ori_img[:, :, 0]
+    ori_img[:, :, 0] = ori_img[:, :, 2]
+    ori_img[:, :, 2] = tq
+    cv2.imwrite(out_dir + '/Original_scaled.png', ori_img)
 
-        # output heatmap
-        hm_R = np.transpose(hm_R)
-        hm_G = np.transpose(hm_G)
-        hm_B = np.transpose(hm_B)
-        hm_R = hm_R.repeat(50, axis=0).repeat(50, axis=1)
-        hm_G = hm_G.repeat(50, axis=0).repeat(50, axis=1)
-        hm_B = hm_B.repeat(50, axis=0).repeat(50, axis=1)
-        hm = np.dstack([hm_B, hm_G, hm_R])
-        cv2.imwrite(out_dir + '/HM.png', hm)
+    # binary output image
+    topt = np.transpose(opt)
+    opt = np.full((np.shape(topt)[0], np.shape(topt)[1], 3), 0)
+    opt[:, :, 0] = topt
+    opt[:, :, 1] = topt
+    opt[:, :, 2] = topt
+    cv2.imwrite(out_dir + '/Mask.png', opt * 255)
 
-        # superimpose heatmap on scaled original image
-        overlay = ori_img * 0.5 + hm * 0.5
-        cv2.imwrite(out_dir + '/Overlay.png', overlay)
+    # output heatmap
+    hm_R = np.transpose(hm_R)
+    hm_G = np.transpose(hm_G)
+    hm_B = np.transpose(hm_B)
+    hm_R = hm_R.repeat(50, axis=0).repeat(50, axis=1)
+    hm_G = hm_G.repeat(50, axis=0).repeat(50, axis=1)
+    hm_B = hm_B.repeat(50, axis=0).repeat(50, axis=1)
+    hm = np.dstack([hm_B, hm_G, hm_R])
+    cv2.imwrite(out_dir + '/HM.png', hm)
+
+    # superimpose heatmap on scaled original image
+    overlay = ori_img * 0.5 + hm * 0.5
+    cv2.imwrite(out_dir + '/Overlay.png', overlay)
+
+    ### CAM ###
+    for pre in ['ol', 'hm']:
+        for j in range(1, 4):
+            campath = pre+'l' + str(j) + 'path'
+            canvas = np.full(((np.shape(opt)[0], np.shape(opt)[1]), 3), 0)
+            for idx, row in joined_dict.iterrows():
+                imm = cv2.imread(row[campath])[25:275, 25:275, :]
+                imm = cv2.resize(imm, (50, 50))
+                canvas[int(row["X_pos"])*50:int(row["X_pos"])*50+50, int(row["Y_pos"])*50:int(row["Y_pos"])*50+50, :] = imm
+            cv2.imwrite(out_dir + '/' + pre + '_level' + str(j) + '.png', canvas)
 
 
 if __name__ == "__main__":
-    opt = parser.parse_args()
+    option = parser.parse_args()
     print('Input config:')
-    print(opt, flush=True)
-    print(opt.imgfile)
-    imgfile = opt.imgfile+'.svs'
+    print(option, flush=True)
+    imgfile = option.imgfile
     # paths to directories
-    img_dir = '../images/CCRCC/'
-    LOG_DIR = "../Results/{}".format(opt.imgfile)
-    METAGRAPH_DIR = "../Results/{}".format(opt.metadir)
-    data_dir = "../Results/{}/data".format(opt.imgfile)
-    out_dir = "../Results/{}/out".format(opt.imgfile)
+    img_dir = '../images/'
+    LOG_DIR = "../Results/{}".format(option.imgfile)
+    METAGRAPH_DIR = "../Results/{}".format(option.metadir)
+    data_dir = "../Results/{}/data".format(option.imgfile)
+    out_dir = "../Results/{}/out".format(option.imgfile)
 
     for DIR in (LOG_DIR, data_dir, out_dir):
         try:
@@ -321,7 +317,7 @@ if __name__ == "__main__":
         except FileExistsError:
             pass
 
-    main(imgfile, opt.bs, opt.cls, opt.modeltoload, opt.pdmd, img_dir,
+    main(imgfile, option.bs, option.cls, option.modeltoload, option.pdmd, img_dir,
          data_dir, out_dir, LOG_DIR, METAGRAPH_DIR)
 
 

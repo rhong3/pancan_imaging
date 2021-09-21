@@ -170,8 +170,7 @@ class INCEPTION:
                         cama = ac.CAM_R(neta, wa, pred, xa, dirr, 'Test_level1', bs, rd)
                         camb = ac.CAM_R(netb, wb, pred, xb, dirr, 'Test_level2', bs, rd)
                         camc = ac.CAM_R(netc, wc, pred, xc, dirr, 'Test_level3', bs, rd)
-                        cam = np.concatenate((cama, camb, camc), axis=1)
-                        pred = np.concatenate((pred, cam), axis=1)
+                        pred = np.concatenate((pred, cama, camb, camc), axis=1)
                         if rd == 0:
                             pdx = pred
                         else:

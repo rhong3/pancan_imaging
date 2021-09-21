@@ -63,12 +63,13 @@ for slide in opt.slides:
     pt = tdict.iloc[0, 0]
 
     for j in range(1, 4):
+        campath = 'caml'+str(j)+'path'
         idict = pd.read_csv('../tiles/'+tm+'/'+pt+'/'+slide.split('-')[-1]+'/level'+str(j)+'/dict.csv', header=0)
         canvas = np.full(((idict['X_pos'].max()*500+1000)*(2**(j-1)), (idict['Y_pos'].max()*500+1000)*(2**(j-1)), 3), 0)
         for idx, row in tdict.iterrows():
             x = int(int(row['L1path'].split('x-')[1].split('-y')[0]))
             y = int(int(row['L1path'].split('y-')[1].split('.pn')[0]))
-            imm = cv2.imread(row['caml1path'])[25:275, 25:275, :]
+            imm = cv2.imread(row[campath])[25:275, 25:275, :]
             imm = cv2.resize(imm, (500, 500))
             canvas[x:x+500, y:y+500, :] = imm
         cv2.imwrite('../Results/'+dirr+'/out/'+slide+'_'+mode+'_level'+str(j)+'_'+filt+'.jpeg', canvas)
