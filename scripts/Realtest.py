@@ -311,10 +311,10 @@ if __name__ == "__main__":
     imgfile = option.imgfile
     # paths to directories
     img_dir = '../images/'
-    LOG_DIR = "../Results/{}".format(option.imgfile)
+    LOG_DIR = "../Results/{}".format(option.dirr)
     METAGRAPH_DIR = "../Results/{}".format(option.metadir)
-    data_dir = "../Results/{}/data".format(option.imgfile)
-    out_dir = "../Results/{}/out".format(option.imgfile)
+    data_dir = "../Results/{}/data".format(option.dirr)
+    out_dir = "../Results/{}/out".format(option.dirr)
 
     for DIR in (LOG_DIR, data_dir, out_dir):
         try:
