@@ -293,7 +293,7 @@ def main(imgfile, bs, cls, modeltoload, pdmd, img_dir, data_dir, out_dir, LOG_DI
         campath = pre+'l1path'
         canvas = np.full(((np.shape(opt)[0], np.shape(opt)[1]), 3), 0)
         for idx, row in joined_dict.iterrows():
-            imm = cv2.imread(row[campath])[25:275, 25:275, :]
+            imm = cv2.imread(row[campath])[0:250, 0:250, :]
             imm = cv2.resize(imm, (fac, fac))
             canvas[int(row["X_pos"])*fac:int(row["X_pos"])*fac+fac,
             int(row["Y_pos"])*fac:int(row["Y_pos"])*fac+fac, :] = imm

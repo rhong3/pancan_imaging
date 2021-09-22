@@ -67,7 +67,7 @@ for slide in opt.slides:
     for idx, row in tdict.iterrows():
         x = int(int(row['L1path'].split('x-')[1].split('-y')[0]))
         y = int(int(row['L1path'].split('y-')[1].split('.pn')[0]))
-        imm = cv2.imread(row['caml1path'])[25:275, 25:275, :]
+        imm = cv2.imread(row['caml1path'])[0:250, 0:250, :]
         imm = cv2.resize(imm, (500, 500))
         canvas[x:x+500, y:y+500, :] = imm
     cv2.imwrite('../Results/'+dirr+'/out/'+slide+'_'+mode+'_'+filt+'.jpeg', canvas)
