@@ -157,20 +157,17 @@ def main(imgfile, bs, cls, modeltoload, pdmd, img_dir, data_dir, out_dir, LOG_DI
 
     level = 0
     ft = 2
-    slide = OpenSlide(img_dir+imgfile+'.svs')
 
-    bounds_width = slide.level_dimensions[level][0]
-    bounds_height = slide.level_dimensions[level][1]
-    x = 0
-    y = 0
-    half_width_region = 49*ft
-    full_width_region = 299*ft
-    stepsize = (full_width_region - half_width_region)
+    slideref = pd.read_csv('../imglowres.csv')
+    slideref = slideref[(slideref['SlideID'] == imgfile.split('/')[1].split('.sv')[0])]
 
-    n_x = int((bounds_width - 1) / stepsize)
-    n_y = int((bounds_height - 1) / stepsize)
+    bounds_width = int(slideref['bounds_width'][0])
+    bounds_height = int(slideref['bounds_height'][0])
 
-    lowres = slide.read_region((x, y), level+1, (int(n_x*stepsize/4), int(n_y*stepsize/4)))
+    n_x = int(slideref['n_x'][0])
+    n_y = int(slideref['n_y'][0])
+
+    lowres = cv2.imread('../lowres/'+imgfile.split('/')[1].split('.sv')[0]+'.png')
     raw_img = np.array(lowres)[:, :, :3]
 
     if not os.path.isfile(data_dir + '/level3/dict.csv'):
@@ -260,9 +257,6 @@ def main(imgfile, bs, cls, modeltoload, pdmd, img_dir, data_dir, out_dir, LOG_DI
     # small-scaled original image
     ori_img = cv2.resize(raw_img, (np.shape(opt)[0], np.shape(opt)[1]))
     ori_img = ori_img[:np.shape(opt)[1], :np.shape(opt)[0], :3]
-    tq = ori_img[:, :, 0]
-    ori_img[:, :, 0] = ori_img[:, :, 2]
-    ori_img[:, :, 2] = tq
     cv2.imwrite(out_dir + '/Original_scaled.png', ori_img)
 
     # binary output image
