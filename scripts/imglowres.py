@@ -17,7 +17,10 @@ for tm in os.listdir('../images/'):
         if '.svs' in im:
             level = 0
             ft = 2
-            slide = OpenSlide('../images/' + tm + '/' + im)
+            try:
+                slide = OpenSlide('../images/' + tm + '/' + im)
+            except:
+                continue
             bounds_width = slide.level_dimensions[level][0]
             bounds_height = slide.level_dimensions[level][1]
             x = 0
@@ -31,13 +34,16 @@ for tm in os.listdir('../images/'):
             name = im.split(".sv")[0]
 
             out.append([name, tm, bounds_width, bounds_height, n_x, n_y])
-
-            lowres = slide.read_region((x, y), level + 1, (int(n_x * stepsize / 4), int(n_y * stepsize / 4)))
-            ori_img = np.array(lowres)[:, :, :3]
-            tq = ori_img[:, :, 0]
-            ori_img[:, :, 0] = ori_img[:, :, 2]
-            ori_img[:, :, 2] = tq
-            cv2.imwrite('../lowres/'+name+'.png', ori_img)
+            if not os.path.isfile('../lowres/'+name+'.png'):
+                try:
+                    lowres = slide.read_region((x, y), level + 1, (int(n_x * stepsize / 4), int(n_y * stepsize / 4)))
+                    ori_img = np.array(lowres)[:, :, :3]
+                    tq = ori_img[:, :, 0]
+                    ori_img[:, :, 0] = ori_img[:, :, 2]
+                    ori_img[:, :, 2] = tq
+                    cv2.imwrite('../lowres/'+name+'.png', ori_img)
+                except:
+                    continue
 outpd = pd.DataFrame(out, columns=['SlideID', 'tumor', 'bounds_width', 'bounds_height', 'n_x', 'n_y'])
 outpd.to_csv('../imglowres.csv', index=False)
 
