@@ -16,7 +16,7 @@ import pandas as pd
 import cv2
 import tensorflow as tf
 import re
-from openslide import OpenSlide
+
 
 # input
 parser = argparse.ArgumentParser()
