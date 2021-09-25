@@ -326,39 +326,46 @@ def realout(pdx, path, name, pmd):
     prl = pd.DataFrame(prl, columns=['Prediction'])
     prl = prl.replace(lbdict)
     if pmd == 'stage':
-        out = pd.DataFrame(pdx[:, 0:11],
+        pdx = np.concatenate((pdx[:, 0:5], pdx[:, 20:]), axis=1)
+        out = pd.DataFrame(pdx,
                            columns=['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score',
                                     'oll1path', 'hml1path', 'oll2path', 'hml2path', 'oll3path', 'hml3path'])
     elif pmd == 'grade':
-        out = pd.DataFrame(pdx[:, 0:11],
+        pdx = np.concatenate((pdx[:, 0:5], pdx[:, 20:]), axis=1)
+        out = pd.DataFrame(pdx,
                            columns=['grade0_score', 'grade1_score', 'grade2_score', 'grade3_score', 'grade4_score',
                                     'oll1path', 'hml1path', 'oll2path', 'hml2path', 'oll3path', 'hml3path'])
     elif pmd == 'cellularity':
-        out = pd.DataFrame(pdx[:, 0:9],
+        pdx = np.concatenate((pdx[:, 0:3], pdx[:, 20:]), axis=1)
+        out = pd.DataFrame(pdx,
                            columns=['0_79_score', '80_89_score', '90_100_score',
                                     'oll1path', 'hml1path', 'oll2path', 'hml2path', 'oll3path', 'hml3path'])
     elif pmd == 'nuclei':
-        out = pd.DataFrame(pdx[:, 0:9],
+        pdx = np.concatenate((pdx[:, 0:3], pdx[:, 20:]), axis=1)
+        out = pd.DataFrame(pdx,
                            columns=['0_49_score', '50_79_score', '80_100_score',
                                     'oll1path', 'hml1path', 'oll2path', 'hml2path', 'oll3path', 'hml3path'])
     elif pmd == 'necrosis':
-        out = pd.DataFrame(pdx[:, 0:9],
+        pdx = np.concatenate((pdx[:, 0:3], pdx[:, 20:]), axis=1)
+        out = pd.DataFrame(pdx,
                            columns=['0_score', '1_9_score', '10_100_score',
                                     'oll1path', 'hml1path', 'oll2path', 'hml2path', 'oll3path', 'hml3path'])
     elif pmd == 'origin':
-        out = pd.DataFrame(pdx[:, 0:16],
+        pdx = np.concatenate((pdx[:, 0:10], pdx[:, 20:]), axis=1)
+        out = pd.DataFrame(pdx,
                            columns=['HNSCC_score', 'CCRCC_score', 'CO_score', 'BRCA_score', 'LUAD_score', 'LSCC_score',
                                     'PDA_score', 'UCEC_score', 'GBM_score', 'OV_score',
                                     'oll1path', 'hml1path', 'oll2path', 'hml2path', 'oll3path', 'hml3path'])
     else:
-        out = pd.DataFrame(pdx[:, 0:8], columns=['NEG_score', 'POS_score',
+        pdx = np.concatenate((pdx[:, 0:2], pdx[:, 20:]), axis=1)
+        out = pd.DataFrame(pdx, columns=['NEG_score', 'POS_score',
                                                  'oll1path', 'hml1path', 'oll2path',
                                                  'hml2path', 'oll3path', 'hml3path'])
     out.reset_index(drop=True, inplace=True)
     prl.reset_index(drop=True, inplace=True)
     out = pd.concat([out, prl], axis=1)
     out.insert(loc=0, column='Num', value=out.index)
-    out.to_csv("../Results/{}/out/{}.csv".format(path, name), index=False)
+    out.to_csv("{}/{}.csv".format(path, name), index=False)
 
 
 def type_metrics(path, name, pmd, fdict):
@@ -602,7 +609,7 @@ def CAM(net, w, pred, x, y, path, name, bs, pmd, rd=0):
 
 # CAM for real test; no need to determine correct or wrong
 def CAM_R(net, w, pred, x, path, name, bs, rd=0):
-    DIRR = "../Results/{}/out/{}_img".format(path, name)
+    DIRR = "{}/{}_img".format(path, name)
     rd = rd * bs
 
     try:

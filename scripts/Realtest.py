@@ -130,7 +130,7 @@ def tfreloader(bs, ct):
     return datasets
 
 
-def main(imgfile, bs, cls, modeltoload, pdmd, img_dir, data_dir, out_dir, LOG_DIR, METAGRAPH_DIR):
+def main(imgfile, bs, cls, modeltoload, pdmd, data_dir, out_dir, LOG_DIR, METAGRAPH_DIR):
     if pdmd == 'stage':
         pos_ls = ['stage0', 'stage1', 'stage2', 'stage3', 'stage4']
         pos_score = ['stage0_score', 'stage1_score', 'stage2_score', 'stage3_score', 'stage4_score']
@@ -191,7 +191,7 @@ def main(imgfile, bs, cls, modeltoload, pdmd, img_dir, data_dir, out_dir, LOG_DI
 
         print("Loaded! Ready for test!")
         HE = tfreloader(bs, None)
-        m.inference(HE, str(imgfile.split('.')[0]), bs=bs, realtest=True, pmd=pdmd)
+        m.inference(HE, out_dir, bs=bs, realtest=True, pmd=pdmd)
 
     ### Heatmap ###
     slist = pd.read_csv(data_dir + '/te_sample.csv', header=0)
@@ -200,14 +200,15 @@ def main(imgfile, bs, cls, modeltoload, pdmd, img_dir, data_dir, out_dir, LOG_DI
     # join 2 dictionaries
     joined = pd.merge(slist, teresult, how='inner', on=['Num'])
     joined = joined.drop(columns=['Num'])
+    joined['L1img'] = joined['L1path'].str.rsplit('/', 1, expand=True)[1]
     tile_dict = pd.read_csv(data_dir+'/level1/dict.csv', header=0)
-    tile_dict = tile_dict.rename(index=str, columns={"Loc": "L1path"})
-    joined_dict = pd.merge(joined, tile_dict, how='inner', on=['L1path'])
+    tile_dict['L1img'] = tile_dict['Loc'].str.rsplit('/', 1, expand=True)[1]
+    joined_dict = pd.merge(joined, tile_dict, how='inner', on=['L1img'])
     logits = joined_dict[pos_score]
     prd_ls = np.asmatrix(logits).argmax(axis=1).astype('uint8')
     prd = int(np.mean(prd_ls))
     print(str(pos_ls[prd])+'!')
-    print("Prediction score = " + str(logits.iloc[:, prd].mean().round(5)))
+    print("Prediction score = " + str(round(logits.iloc[:, prd].mean(), 5)))
 
     joined_dict['predict_index'] = prd_ls
     # save joined dictionary
@@ -279,8 +280,9 @@ def main(imgfile, bs, cls, modeltoload, pdmd, img_dir, data_dir, out_dir, LOG_DI
     for pre in ['ol', 'hm']:
         fac = 50
         campath = pre+'l1path'
-        canvas = np.full(((np.shape(opt)[0], np.shape(opt)[1]), 3), 0)
+        canvas = np.full((np.shape(opt)[0], np.shape(opt)[1], 3), 0)
         for idx, row in joined_dict.iterrows():
+            print(row[campath])
             imm = cv2.imread(row[campath])[0:250, 0:250, :]
             imm = cv2.resize(imm, (fac, fac))
             canvas[int(row["X_pos"])*fac:int(row["X_pos"])*fac+fac,
@@ -298,7 +300,6 @@ if __name__ == "__main__":
     print(option, flush=True)
     imgfile = option.imgfile
     # paths to directories
-    img_dir = '../images/'
     LOG_DIR = "../Results/{}".format(option.dirr)
     METAGRAPH_DIR = "../Results/{}".format(option.metadir)
     data_dir = "../Results/{}/data".format(option.dirr)
@@ -310,7 +311,7 @@ if __name__ == "__main__":
         except FileExistsError:
             pass
 
-    main(imgfile, option.bs, option.cls, option.modeltoload, option.pdmd, img_dir,
+    main(imgfile, option.bs, option.cls, option.modeltoload, option.pdmd,
          data_dir, out_dir, LOG_DIR, METAGRAPH_DIR)
 
 
