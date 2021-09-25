@@ -155,17 +155,11 @@ def main(imgfile, bs, cls, modeltoload, pdmd, img_dir, data_dir, out_dir, LOG_DI
         pos_score = ["POS_score", "NEG_score"]
         pos_ls = [pdmd, 'negative']
 
-    level = 0
-    ft = 2
-
     slideref = pd.read_csv('../imglowres.csv')
     slideref = slideref[(slideref['SlideID'] == imgfile.split('/')[1].split('.sv')[0])]
 
-    bounds_width = int(slideref['bounds_width'][0])
-    bounds_height = int(slideref['bounds_height'][0])
-
-    n_x = int(slideref['n_x'][0])
-    n_y = int(slideref['n_y'][0])
+    n_x = int(slideref["n_x"].tolist()[0])
+    n_y = int(slideref["n_y"].tolist()[0])
 
     lowres = cv2.imread('../lowres/'+imgfile.split('/')[1].split('.sv')[0]+'.png')
     raw_img = np.array(lowres)[:, :, :3]
@@ -174,11 +168,11 @@ def main(imgfile, bs, cls, modeltoload, pdmd, img_dir, data_dir, out_dir, LOG_DI
         tumor = imgfile.split('/')[0]
         slideID = imgfile.split("-")[-1]
         patientID = imgfile.rsplit("-", 1)[0].split('/')[-1]
-        os.symlink("../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level1', data_dir + '/level1',
+        os.symlink("../../../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level1', data_dir + '/level1',
                    target_is_directory=True)
-        os.symlink("../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level2', data_dir + '/level2',
+        os.symlink("../../../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level2', data_dir + '/level2',
                    target_is_directory=True)
-        os.symlink("../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level3', data_dir + '/level3',
+        os.symlink("../../../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level3', data_dir + '/level3',
                    target_is_directory=True)
     if not os.path.isfile(data_dir + '/test.tfrecords'):
         loaderX(data_dir)
