@@ -14,7 +14,7 @@ import os
 import numpy as np
 import pandas as pd
 import cv2
-# import tensorflow as tf
+import tensorflow as tf
 import re
 
 
@@ -29,105 +29,105 @@ parser.add_argument('--modeltoload', type=str, default='', help='reload trained 
 parser.add_argument('--metadir', type=str, default='', help='reload trained model')
 parser.add_argument('--imgfile', type=str, default='', help='load the image (eg. CCRCC/C3L-SSSSS-SS)')
 
-#
-# # pair tiles of 10x, 5x, 2.5x of the same area
-# def paired_tile_ids_in(root_dir):
-#     fac = 1000
-#     ids = []
-#     for level in range(1, 4):
-#         dirrr = root_dir + '/level{}'.format(str(level))
-#         for id in os.listdir(dirrr):
-#             if '.png' in id:
-#                 x = int(float(id.split('x-', 1)[1].split('-', 1)[0]) / fac)
-#                 y = int(float(re.split('.p', id.split('y-', 1)[1])[0]) / fac)
-#                 ids.append([level, dirrr + '/' + id, x, y])
-#             else:
-#                 print('Skipping ID:', id)
-#     ids = pd.DataFrame(ids, columns=['level', 'path', 'x', 'y'])
-#     idsa = ids.loc[ids['level'] == 1]
-#     idsa = idsa.drop(columns=['level'])
-#     idsa = idsa.rename(index=str, columns={"path": "L1path"})
-#     idsb = ids.loc[ids['level'] == 2]
-#     idsb = idsb.drop(columns=['level'])
-#     idsb = idsb.rename(index=str, columns={"path": "L2path"})
-#     idsc = ids.loc[ids['level'] == 3]
-#     idsc = idsc.drop(columns=['level'])
-#     idsc = idsc.rename(index=str, columns={"path": "L3path"})
-#     idsa = pd.merge(idsa, idsb, on=['x', 'y'], how='left', validate="many_to_many")
-#     idsa['x'] = idsa['x'] - (idsa['x'] % 2)
-#     idsa['y'] = idsa['y'] - (idsa['y'] % 2)
-#     idsa = pd.merge(idsa, idsc, on=['x', 'y'], how='left', validate="many_to_many")
-#     idsa = idsa.drop(columns=['x', 'y'])
-#     idsa = idsa.dropna()
-#     idsa = idsa.reset_index(drop=True)
-#
-#     return idsa
-#
-#
-# # read images
-# def load_image(addr):
-#     img = cv2.imread(addr)
-#     img = img.astype(np.float32)
-#     return img
-#
-#
-# # used for tfrecord float generation
-# def _float_feature(value):
-#     return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
-#
-#
-# # used for tfrecord labels generation
-# def _int64_feature(value):
-#     return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
-#
-#
-# # used for tfrecord images generation
-# def _bytes_feature(value):
-#     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
-#
-#
-# # loading images for dictionaries and generate tfrecords
-# def loaderX(totlist_dir):
-#     slist = paired_tile_ids_in(totlist_dir)
-#     slist.insert(loc=0, column='Num', value=slist.index)
-#     slist.to_csv(totlist_dir + '/te_sample.csv', header=True, index=False)
-#     imlista = slist['L1path'].values.tolist()
-#     imlistb = slist['L2path'].values.tolist()
-#     imlistc = slist['L3path'].values.tolist()
-#     filename = data_dir + '/test.tfrecords'
-#     writer = tf.python_io.TFRecordWriter(filename)
-#     for i in range(len(imlista)):
-#         try:
-#             # Load the image
-#             imga = load_image(imlista[i])
-#             imgb = load_image(imlistb[i])
-#             imgc = load_image(imlistc[i])
-#             # Create a feature
-#             feature = {'test/imageL1': _bytes_feature(tf.compat.as_bytes(imga.tostring())),
-#                        'test/imageL2': _bytes_feature(tf.compat.as_bytes(imgb.tostring())),
-#                        'test/imageL3': _bytes_feature(tf.compat.as_bytes(imgc.tostring()))}
-#             # Create an example protocol buffer
-#             example = tf.train.Example(features=tf.train.Features(feature=feature))
-#
-#             # Serialize to string and write on the file
-#             writer.write(example.SerializeToString())
-#         except AttributeError:
-#             print('Error image: ' + imlista[i] + '~' + imlistb[i] + '~' + imlistc[i])
-#             pass
-#
-#     writer.close()
-#
-#
-# import cnn5 as cnn
-# import data_input_fusion as data_input
-#
-#
-# # load tfrecords and prepare datasets
-# def tfreloader(bs, ct):
-#     filename = data_dir + '/test.tfrecords'
-#     datasets = data_input.DataSet(bs, ct, mode='test', filename=filename)
-#
-#     return datasets
+
+# pair tiles of 10x, 5x, 2.5x of the same area
+def paired_tile_ids_in(root_dir):
+    fac = 1000
+    ids = []
+    for level in range(1, 4):
+        dirrr = root_dir + '/level{}'.format(str(level))
+        for id in os.listdir(dirrr):
+            if '.png' in id:
+                x = int(float(id.split('x-', 1)[1].split('-', 1)[0]) / fac)
+                y = int(float(re.split('.p', id.split('y-', 1)[1])[0]) / fac)
+                ids.append([level, dirrr + '/' + id, x, y])
+            else:
+                print('Skipping ID:', id)
+    ids = pd.DataFrame(ids, columns=['level', 'path', 'x', 'y'])
+    idsa = ids.loc[ids['level'] == 1]
+    idsa = idsa.drop(columns=['level'])
+    idsa = idsa.rename(index=str, columns={"path": "L1path"})
+    idsb = ids.loc[ids['level'] == 2]
+    idsb = idsb.drop(columns=['level'])
+    idsb = idsb.rename(index=str, columns={"path": "L2path"})
+    idsc = ids.loc[ids['level'] == 3]
+    idsc = idsc.drop(columns=['level'])
+    idsc = idsc.rename(index=str, columns={"path": "L3path"})
+    idsa = pd.merge(idsa, idsb, on=['x', 'y'], how='left', validate="many_to_many")
+    idsa['x'] = idsa['x'] - (idsa['x'] % 2)
+    idsa['y'] = idsa['y'] - (idsa['y'] % 2)
+    idsa = pd.merge(idsa, idsc, on=['x', 'y'], how='left', validate="many_to_many")
+    idsa = idsa.drop(columns=['x', 'y'])
+    idsa = idsa.dropna()
+    idsa = idsa.reset_index(drop=True)
+
+    return idsa
+
+
+# read images
+def load_image(addr):
+    img = cv2.imread(addr)
+    img = img.astype(np.float32)
+    return img
+
+
+# used for tfrecord float generation
+def _float_feature(value):
+    return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
+
+
+# used for tfrecord labels generation
+def _int64_feature(value):
+    return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
+
+
+# used for tfrecord images generation
+def _bytes_feature(value):
+    return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
+
+
+# loading images for dictionaries and generate tfrecords
+def loaderX(totlist_dir):
+    slist = paired_tile_ids_in(totlist_dir)
+    slist.insert(loc=0, column='Num', value=slist.index)
+    slist.to_csv(totlist_dir + '/te_sample.csv', header=True, index=False)
+    imlista = slist['L1path'].values.tolist()
+    imlistb = slist['L2path'].values.tolist()
+    imlistc = slist['L3path'].values.tolist()
+    filename = data_dir + '/test.tfrecords'
+    writer = tf.python_io.TFRecordWriter(filename)
+    for i in range(len(imlista)):
+        try:
+            # Load the image
+            imga = load_image(imlista[i])
+            imgb = load_image(imlistb[i])
+            imgc = load_image(imlistc[i])
+            # Create a feature
+            feature = {'test/imageL1': _bytes_feature(tf.compat.as_bytes(imga.tostring())),
+                       'test/imageL2': _bytes_feature(tf.compat.as_bytes(imgb.tostring())),
+                       'test/imageL3': _bytes_feature(tf.compat.as_bytes(imgc.tostring()))}
+            # Create an example protocol buffer
+            example = tf.train.Example(features=tf.train.Features(feature=feature))
+
+            # Serialize to string and write on the file
+            writer.write(example.SerializeToString())
+        except AttributeError:
+            print('Error image: ' + imlista[i] + '~' + imlistb[i] + '~' + imlistc[i])
+            pass
+
+    writer.close()
+
+
+import cnn5 as cnn
+import data_input_fusion as data_input
+
+
+# load tfrecords and prepare datasets
+def tfreloader(bs, ct):
+    filename = data_dir + '/test.tfrecords'
+    datasets = data_input.DataSet(bs, ct, mode='test', filename=filename)
+
+    return datasets
 
 
 def main(imgfile, bs, cls, modeltoload, pdmd, data_dir, out_dir, LOG_DIR, METAGRAPH_DIR):
@@ -164,34 +164,34 @@ def main(imgfile, bs, cls, modeltoload, pdmd, data_dir, out_dir, LOG_DIR, METAGR
     lowres = cv2.imread('../lowres/'+imgfile.split('/')[1].split('.sv')[0]+'.png')
     raw_img = np.array(lowres)[:, :, :3]
 
-    # if not os.path.isfile(data_dir + '/level3/dict.csv'):
-    #     tumor = imgfile.split('/')[0]
-    #     slideID = imgfile.split("-")[-1]
-    #     patientID = imgfile.rsplit("-", 1)[0].split('/')[-1]
-    #     os.symlink("../../../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level1', data_dir + '/level1',
-    #                target_is_directory=True)
-    #     os.symlink("../../../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level2', data_dir + '/level2',
-    #                target_is_directory=True)
-    #     os.symlink("../../../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level3', data_dir + '/level3',
-    #                target_is_directory=True)
-    # if not os.path.isfile(data_dir + '/test.tfrecords'):
-    #     loaderX(data_dir)
-    # if not os.path.isfile(out_dir + '/Test.csv'):
-    #     # input image dimension
-    #     INPUT_DIM = [bs, 299, 299, 3]
-    #     # hyper parameters
-    #     HYPERPARAMS = {
-    #         "batch_size": bs,
-    #         "dropout": 0.5,
-    #         "learning_rate": 1E-4,
-    #         "classes": cls,
-    #         "sup": False
-    #     }
-    #     m = cnn.INCEPTION(INPUT_DIM, HYPERPARAMS, meta_graph=modeltoload, log_dir=LOG_DIR, meta_dir=METAGRAPH_DIR)
-    #
-    #     print("Loaded! Ready for test!")
-    #     HE = tfreloader(bs, None)
-    #     m.inference(HE, out_dir, bs=bs, realtest=True, pmd=pdmd)
+    if not os.path.isfile(data_dir + '/level3/dict.csv'):
+        tumor = imgfile.split('/')[0]
+        slideID = imgfile.split("-")[-1]
+        patientID = imgfile.rsplit("-", 1)[0].split('/')[-1]
+        os.symlink("../../../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level1', data_dir + '/level1',
+                   target_is_directory=True)
+        os.symlink("../../../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level2', data_dir + '/level2',
+                   target_is_directory=True)
+        os.symlink("../../../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level3', data_dir + '/level3',
+                   target_is_directory=True)
+    if not os.path.isfile(data_dir + '/test.tfrecords'):
+        loaderX(data_dir)
+    if not os.path.isfile(out_dir + '/Test.csv'):
+        # input image dimension
+        INPUT_DIM = [bs, 299, 299, 3]
+        # hyper parameters
+        HYPERPARAMS = {
+            "batch_size": bs,
+            "dropout": 0.5,
+            "learning_rate": 1E-4,
+            "classes": cls,
+            "sup": False
+        }
+        m = cnn.INCEPTION(INPUT_DIM, HYPERPARAMS, meta_graph=modeltoload, log_dir=LOG_DIR, meta_dir=METAGRAPH_DIR)
+
+        print("Loaded! Ready for test!")
+        HE = tfreloader(bs, None)
+        m.inference(HE, out_dir, bs=bs, realtest=True, pmd=pdmd)
 
     ### Heatmap ###
     slist = pd.read_csv(data_dir + '/te_sample.csv', header=0)
