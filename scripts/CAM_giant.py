@@ -69,6 +69,6 @@ for slide in opt.slides:
         y = int(int(row['L1path'].split('y-')[1].split('.pn')[0]))
         imm = cv2.imread(row['caml1path'])[0:250, 0:250, :]
         imm = cv2.resize(imm, (500, 500))
-        canvas[x:x+500, y:y+500, :] = imm
+        canvas[y:y+500, x:x+500, :] = imm
     cv2.imwrite('../Results/'+dirr+'/out/'+slide+'_'+mode+'_'+filt+'.jpeg', canvas)
 
