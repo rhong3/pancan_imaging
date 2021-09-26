@@ -153,7 +153,7 @@ def main(imgfile, bs, cls, modeltoload, pdmd, data_dir, out_dir, LOG_DIR, METAGR
         pos_score = ['HNSCC_score', 'CCRCC_score', 'CO_score', 'BRCA_score', 'LUAD_score', 'LSCC_score',
                      'PDA_score', 'UCEC_score', 'GBM_score', 'OV_score']
     else:
-        pos_score = ["POS_score", "NEG_score"]
+        pos_score = ["NEG_score", "POS_score"]
         pos_ls = [pdmd, 'negative']
 
     slideref = pd.read_csv('../imglowres.csv')
