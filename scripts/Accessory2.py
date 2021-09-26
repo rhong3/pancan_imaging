@@ -322,7 +322,7 @@ def realout(pdx, path, name, pmd):
     else:
         lbdict = {0: 'negative', 1: pmd}
     pdx = np.asmatrix(pdx)
-    prl = pdx.argmax(axis=1).astype('uint8')
+    prl = pdx[:, 0:20].argmax(axis=1).astype('uint8')
     prl = pd.DataFrame(prl, columns=['Prediction'])
     prl = prl.replace(lbdict)
     if pmd == 'stage':

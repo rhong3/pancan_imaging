@@ -14,6 +14,7 @@ import os
 import numpy as np
 import pandas as pd
 import cv2
+from PIL import Image
 import tensorflow as tf
 import re
 
@@ -225,13 +226,13 @@ def main(imgfile, bs, cls, modeltoload, pdmd, data_dir, out_dir, LOG_DIR, METAGR
     for index, row in joined_dict.iterrows():
         opt[int(row["X_pos"]), int(row["Y_pos"])] = 255
         if row['predict_index'] == 0:
-            hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 228
-            hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 26
-            hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 28
-        elif row['predict_index'] == 1:
             hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 55
             hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 126
             hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 184
+        elif row['predict_index'] == 1:
+            hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 228
+            hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 26
+            hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 28
         elif row['predict_index'] == 2:
             hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 77
             hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 175
@@ -269,7 +270,7 @@ def main(imgfile, bs, cls, modeltoload, pdmd, data_dir, out_dir, LOG_DIR, METAGR
     hm_R = hm_R.repeat(50, axis=0).repeat(50, axis=1)
     hm_G = hm_G.repeat(50, axis=0).repeat(50, axis=1)
     hm_B = hm_B.repeat(50, axis=0).repeat(50, axis=1)
-    hm = np.dstack([hm_B, hm_G, hm_R])
+    hm = np.dstack([hm_R, hm_G, hm_B])
     cv2.imwrite(out_dir + '/HM.png', hm)
 
     # superimpose heatmap on scaled original image

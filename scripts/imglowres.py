@@ -9,7 +9,7 @@ from openslide import OpenSlide
 import pandas as pd
 import os
 import numpy as np
-import cv2
+from PIL import Image
 
 out = []
 for tm in os.listdir('../images/'):
@@ -19,7 +19,8 @@ for tm in os.listdir('../images/'):
             ft = 2
             try:
                 slide = OpenSlide('../images/' + tm + '/' + im)
-            except:
+            except Exception as e:
+                print(e)
                 continue
             bounds_width = slide.level_dimensions[level][0]
             bounds_height = slide.level_dimensions[level][1]
@@ -38,11 +39,10 @@ for tm in os.listdir('../images/'):
                 try:
                     lowres = slide.read_region((x, y), level + 1, (int(n_x * stepsize / 4), int(n_y * stepsize / 4)))
                     ori_img = np.array(lowres)[:, :, :3]
-                    tq = ori_img[:, :, 0]
-                    ori_img[:, :, 0] = ori_img[:, :, 2]
-                    ori_img[:, :, 2] = tq
-                    cv2.imwrite('../lowres/'+name+'.png', ori_img)
-                except:
+                    ori_img = Image.fromarray(ori_img.astype('uint8'), 'RGB')
+                    ori_img.save('../lowres/'+name+'.png')
+                except Exception as e:
+                    print(e)
                     continue
 outpd = pd.DataFrame(out, columns=['SlideID', 'tumor', 'bounds_width', 'bounds_height', 'n_x', 'n_y'])
 outpd.to_csv('../imglowres.csv', index=False)
