@@ -14,21 +14,19 @@ import os
 import numpy as np
 import pandas as pd
 import cv2
-from PIL import Image
 import tensorflow as tf
 import re
 
-
 # input
 parser = argparse.ArgumentParser()
-parser.add_argument('--dirr', type=str, default='trial', help='output directory')
 parser.add_argument('--bs', type=int, default=12, help='batch size')
 parser.add_argument('--cls', type=int, default=5, help='number of classes to predict')
 parser.add_argument('--img_size', type=int, default=299, help='input tile size (default 299)')
 parser.add_argument('--pdmd', type=str, default='stage', help='feature to predict')
 parser.add_argument('--modeltoload', type=str, default='', help='reload trained model')
 parser.add_argument('--metadir', type=str, default='', help='reload trained model')
-parser.add_argument('--imgfile', type=str, default='', help='load the image (eg. CCRCC/C3L-SSSSS-SS)')
+parser.add_argument('--imgfile', nargs='+', type=str, default=None,
+                    help='load the image (eg. CCRCC/C3L-SSSSS-SS,CCRCC/C3L-SSSSS-SS)')
 
 
 # pair tiles of 10x, 5x, 2.5x of the same area
@@ -298,21 +296,22 @@ if __name__ == "__main__":
     option = parser.parse_args()
     print('Input config:')
     print(option, flush=True)
-    imgfile = option.imgfile
-    # paths to directories
-    LOG_DIR = "../Results/{}".format(option.dirr)
-    METAGRAPH_DIR = "../Results/{}".format(option.metadir)
-    data_dir = "../Results/{}/data".format(option.dirr)
-    out_dir = "../Results/{}/out".format(option.dirr)
 
-    for DIR in (LOG_DIR, data_dir, out_dir):
-        try:
-            os.mkdir(DIR)
-        except FileExistsError:
-            pass
+    for imgfile in option.imgfile:
+        # paths to directories
+        LOG_DIR = "../Results/{}_{}".format(option.pdmd, imgfile)
+        METAGRAPH_DIR = "../Results/{}".format(option.metadir)
+        data_dir = "../Results/{}_{}/data".format(option.pdmd, imgfile)
+        out_dir = "../Results/{}_{}/out".format(option.pdmd, imgfile)
 
-    main(imgfile, option.bs, option.cls, option.modeltoload, option.pdmd,
-         data_dir, out_dir, LOG_DIR, METAGRAPH_DIR)
+        for DIR in (LOG_DIR, data_dir, out_dir):
+            try:
+                os.mkdir(DIR)
+            except FileExistsError:
+                pass
+
+        main(imgfile, option.bs, option.cls, option.modeltoload, option.pdmd,
+             data_dir, out_dir, LOG_DIR, METAGRAPH_DIR)
 
 
 
