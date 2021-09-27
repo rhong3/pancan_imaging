@@ -298,11 +298,12 @@ if __name__ == "__main__":
     print(option, flush=True)
 
     for imgfile in option.imgfile:
+        sld = imgfile.split('/')[1]
         # paths to directories
-        LOG_DIR = "../Results/{}_{}".format(option.pdmd, imgfile)
+        LOG_DIR = "../Results/{}_{}".format(option.pdmd, sld)
         METAGRAPH_DIR = "../Results/{}".format(option.metadir)
-        data_dir = "../Results/{}_{}/data".format(option.pdmd, imgfile)
-        out_dir = "../Results/{}_{}/out".format(option.pdmd, imgfile)
+        data_dir = "../Results/{}_{}/data".format(option.pdmd, sld)
+        out_dir = "../Results/{}_{}/out".format(option.pdmd, sld)
 
         for DIR in (LOG_DIR, data_dir, out_dir):
             try:
