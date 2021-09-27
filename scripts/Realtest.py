@@ -220,31 +220,43 @@ def main(imgfile, bs, cls, modeltoload, pdmd, data_dir, out_dir, LOG_DIR, METAGR
     hm_G = np.full((n_x, n_y), 0)
     hm_B = np.full((n_x, n_y), 0)
 
-    # Positive is labeled red in output heat map
-    for index, row in joined_dict.iterrows():
-        opt[int(row["X_pos"]), int(row["Y_pos"])] = 255
-        if row['predict_index'] == 0:
-            hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 55
-            hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 126
-            hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 184
-        elif row['predict_index'] == 1:
-            hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 228
-            hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 26
-            hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 28
-        elif row['predict_index'] == 2:
-            hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 77
-            hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 175
-            hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 74
-        elif row['predict_index'] == 3:
-            hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 255
-            hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 255
-            hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 51
-        elif row['predict_index'] == 4:
-            hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 191
-            hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 64
-            hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 191
-        else:
-            pass
+    if cls == 2:
+        for index, row in joined_dict.iterrows():
+            opt[int(row["X_pos"]), int(row["Y_pos"])] = 255
+            if row['POS_score'] >= 0.5:
+                hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 255
+                hm_G[int(row["X_pos"]), int(row["Y_pos"])] = int((1 - (row['POS_score'] - 0.5) * 2) * 255)
+                hm_B[int(row["X_pos"]), int(row["Y_pos"])] = int((1 - (row['POS_score'] - 0.5) * 2) * 255)
+            else:
+                hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 255
+                hm_G[int(row["X_pos"]), int(row["Y_pos"])] = int((1 - (row["NEG_score"] - 0.5) * 2) * 255)
+                hm_R[int(row["X_pos"]), int(row["Y_pos"])] = int((1 - (row["NEG_score"] - 0.5) * 2) * 255)
+    else:
+        # Positive is labeled red in output heat map
+        for index, row in joined_dict.iterrows():
+            opt[int(row["X_pos"]), int(row["Y_pos"])] = 255
+            if row['predict_index'] == 0:
+                hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 55
+                hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 126
+                hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 184
+            elif row['predict_index'] == 1:
+                hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 228
+                hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 26
+                hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 28
+            elif row['predict_index'] == 2:
+                hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 77
+                hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 175
+                hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 74
+            elif row['predict_index'] == 3:
+                hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 255
+                hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 255
+                hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 51
+            elif row['predict_index'] == 4:
+                hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 191
+                hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 64
+                hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 191
+            else:
+                pass
     # expand 5 times
     opt = opt.repeat(50, axis=0).repeat(50, axis=1)
 
