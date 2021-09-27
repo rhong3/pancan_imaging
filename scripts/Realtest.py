@@ -268,7 +268,7 @@ def main(imgfile, bs, cls, modeltoload, pdmd, data_dir, out_dir, LOG_DIR, METAGR
     hm_R = hm_R.repeat(50, axis=0).repeat(50, axis=1)
     hm_G = hm_G.repeat(50, axis=0).repeat(50, axis=1)
     hm_B = hm_B.repeat(50, axis=0).repeat(50, axis=1)
-    hm = np.dstack([hm_R, hm_G, hm_B])
+    hm = np.dstack([hm_B, hm_G, hm_R])
     cv2.imwrite(out_dir + '/HM.png', hm)
 
     # superimpose heatmap on scaled original image
