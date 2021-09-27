@@ -152,7 +152,7 @@ def main(imgfile, bs, cls, modeltoload, pdmd, data_dir, out_dir, LOG_DIR, METAGR
                      'PDA_score', 'UCEC_score', 'GBM_score', 'OV_score']
     else:
         pos_score = ["NEG_score", "POS_score"]
-        pos_ls = [pdmd, 'negative']
+        pos_ls = ['negative', pdmd]
 
     slideref = pd.read_csv('../imglowres.csv')
     slideref = slideref[(slideref['SlideID'] == imgfile.split('/')[1].split('.sv')[0])]
@@ -205,7 +205,7 @@ def main(imgfile, bs, cls, modeltoload, pdmd, data_dir, out_dir, LOG_DIR, METAGR
     joined_dict = pd.merge(joined, tile_dict, how='inner', on=['L1img'])
     logits = joined_dict[pos_score]
     prd_ls = np.asmatrix(logits).argmax(axis=1).astype('uint8')
-    prd = int(np.mean(prd_ls))
+    prd = int(np.round(np.mean(prd_ls)))
     print(str(pos_ls[prd])+'!')
     print("Prediction score = " + str(round(logits.iloc[:, prd].mean(), 5)))
 
