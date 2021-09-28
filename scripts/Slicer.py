@@ -66,7 +66,11 @@ def v_slide(slp, n_y, x, y, tile_size, stepsize, x0, outdir, level, dp, std):
         wscore = bgcheck(img, tile_size)
         if wscore < 0.7:
             img = img.resize((299, 299))
-            img = normalization(img, std)
+            try:
+                img = normalization(img, std)
+            except Exception as e:
+                print(e)
+                pass
             if dp:
                 img.save(outdir + "/region_x-{}-y-{}_{}.png".format(image_x, image_y, str(dp)))
                 strr = outdir + "/region_x-{}-y-{}_{}.png".format(image_x, image_y, str(dp))
