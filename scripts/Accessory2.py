@@ -580,6 +580,9 @@ def CAM(net, w, pred, x, y, path, name, bs, pmd, rd=0):
         for kk in range(topNum):
             curCAMmap_crops = curCAMmapAll[:, :, kk]
             curCAMmapLarge_crops = cv2.resize(curCAMmap_crops, (299, 299))
+            ### Added Relu ###
+            curCAMmapLarge_crops = np.clip(curCAMmapLarge_crops, 0, np.max(curCAMmapLarge_crops))
+            ### Added Relu ###
             curHeatMap = cv2.resize(im2double(curCAMmapLarge_crops), (299, 299))
             curHeatMap = im2double(curHeatMap)
             curHeatMap = py_map2jpg(curHeatMap)
