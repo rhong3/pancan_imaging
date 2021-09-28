@@ -512,7 +512,7 @@ def py_returnCAMmap(activation, weights_LR):
     out = np.zeros([w, h, n_top])
     for t in range(n_top):
         weights_vec = np.reshape(weights_LR[t], [1, weights_LR[t].shape[0]])
-        heatmap_vec = np.dot(weights_vec,act_vec)
+        heatmap_vec = np.dot(weights_vec, act_vec)
         heatmap = np.reshape(np.squeeze(heatmap_vec), [w, h])
         out[:, :, t] = heatmap
     return out
@@ -631,6 +631,9 @@ def CAM_R(net, w, pred, x, path, name, bs, rd=0):
         curCAMmapAll = py_returnCAMmap(activation_lastconv, weights_LR[[predNum], :])
         curCAMmap_crops = curCAMmapAll[:, :, 0]
         curCAMmapLarge_crops = cv2.resize(curCAMmap_crops, (299, 299))
+        ### Added Relu ###
+        curCAMmapLarge_crops = np.clip(curCAMmapLarge_crops, 0, np.max(curCAMmapLarge_crops))
+        ### Added Relu ###
         curHeatMap = cv2.resize(im2double(curCAMmapLarge_crops), (299, 299))  # this line is not doing much
         curHeatMap = im2double(curHeatMap)
         curHeatMap = py_map2jpg(curHeatMap)
@@ -658,7 +661,6 @@ def CAM_R(net, w, pred, x, path, name, bs, rd=0):
         camls.append([imname, imname2])
 
     return np.asarray(camls)
-
 
 
 # Output activation for tSNE
