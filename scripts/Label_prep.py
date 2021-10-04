@@ -48,8 +48,10 @@ import os
 #
 
 # ICA labels
-ic = pd.read_csv('../IC_1QT_labels.csv', header=0)
-tumor = pd.read_csv('../tumor_label_df.csv', header=0, usecols=['Patient_ID', 'Slide_ID'])
+ic = pd.read_csv('../IC_1QT_raw.csv', header=0)
+tumor = pd.read_csv('../tumor_label_df.csv', header=0, usecols=['Patient_ID', 'Slide_ID', 'Tumor_normal'])
+tumor = tumor[tumor['Tumor_normal'] == 1]
+tumor = tumor.drop(columns=['Tumor_normal'])
 
 ic = ic.join(tumor.set_index('Patient_ID'), on='Patient_ID', how='left')
 ic = ic.dropna()
