@@ -79,39 +79,20 @@ if __name__ == "__main__":
                 pass
             test_tiles = pd.read_csv('../Results/'+dirr+'/out/Test_tile.csv')
             for idx, row in test_tiles.iterrows():
+                print(row['Slide_ID'])
                 try:
                     os.mkdir(dirpath + str(row['Slide_ID']))
                 except FileExistsError:
                     pass
-                # prediction_class = sess.run(
-                #     [prediction], {x_in: img})[0]
-                # weight = sess.run('logits/logits/weights:0')
-
-                # Baseline is a white image.
-                grad = saliency.IntegratedGradients(graph, sess, y, xa_in_reshape)
                 img = cv2.imread(row['L1path'])
                 img = img.astype(np.float32)
                 baseline = np.zeros(img.shape)
                 baseline.fill(255)
-                # vanilla_mask_3d = grad.GetMask(img, feed_dict={neuron_selector: 1},
-                #                                x_stepIntegratedGradientss=25, x_baseline=baseline)
+
+                grad = saliency.IntegratedGradients(graph, sess, y, xa_in_reshape)
                 smoothgrad_mask_3d = grad.GetSmoothedMask(img, feed_dict={
-                    neuron_selector: int(row["label"])}, x_steps=5, x_baseline=baseline)
-
-                # Call the visualization methods to convert the 3D tensors to 2D grayscale.
-                # vanilla_mask_grayscale = saliency.VisualizeImageGrayscale(vanilla_mask_3d)
+                    neuron_selector: 1}, x_steps=5, x_baseline=baseline)
                 smoothgrad_mask_grayscale = saliency.VisualizeImageGrayscale(smoothgrad_mask_3d)
-
-                print(row['Slide_ID'])
-                # vanilla_mask_grayscale = im2double(vanilla_mask_grayscale)
-                # vanilla_mask_grayscale = py_map2jpg(vanilla_mask_grayscale)
-                # a = im2double(img) * 255
-                # b = im2double(vanilla_mask_grayscale) * 255
-                # curHeatMap = a * 0.5 + b * 0.5
-                # ab = np.hstack((a, b))
-                # full = np.hstack((curHeatMap, ab))
-                # cv2.imwrite(str(dirpath + '/' + aa), full)
-
                 smoothgrad_mask_grayscale = im2double(smoothgrad_mask_grayscale)
                 smoothgrad_mask_grayscale = py_map2jpg(smoothgrad_mask_grayscale)
                 sa = im2double(img) * 255
@@ -119,13 +100,144 @@ if __name__ == "__main__":
                 scurHeatMap = sa * 0.5 + sb * 0.5
                 sab = np.hstack((sa, sb))
                 sfull = np.hstack((scurHeatMap, sab))
+                cv2.imwrite(str(dirpath+str(row["Slide_ID"])+"/SGIG"+row['L1path'].split("/")[-1]), sfull)
 
-                cv2.imwrite(str(dirpath+str(row["Slide_ID"])+"/"+row['L1path'].split("/")[-1]), sfull)
+                guided_ig = saliency.GuidedIG(graph, sess, y, xa_in_reshape)
+                guided_ig_mask_3d = guided_ig.GetMask(
+                    img, feed_dict={neuron_selector: 1}, x_steps=5, x_baseline=baseline, max_dist=0.2, fraction=0.5)
+                guided_ig_mask_grayscale = saliency.VisualizeImageGrayscale(guided_ig_mask_3d)
+                guided_ig_mask_grayscale = im2double(guided_ig_mask_grayscale)
+                guided_ig_mask_grayscale = py_map2jpg(guided_ig_mask_grayscale)
+                sa = im2double(img) * 255
+                sb = im2double(guided_ig_mask_grayscale) * 255
+                scurHeatMap = sa * 0.5 + sb * 0.5
+                sab = np.hstack((sa, sb))
+                sfull = np.hstack((scurHeatMap, sab))
+                cv2.imwrite(str(dirpath+str(row["Slide_ID"])+"/GIG"+row['L1path'].split("/")[-1]), sfull)
 
-    # print(np.shape(x_))
-    # print(np.shape(nett_))
-    # print(np.shape(pred_))
-    # print(np.shape(weight))
+                blur_ig = saliency.BlurIG(graph, sess, y, xa_in_reshape)
+                smooth_blur_ig_mask_3d = blur_ig.GetSmoothedMask(img, feed_dict={neuron_selector: 1})
+                smooth_blur_ig_mask_grayscale = saliency.VisualizeImageGrayscale(smooth_blur_ig_mask_3d)
+                smooth_blur_ig_mask_grayscale = im2double(smooth_blur_ig_mask_grayscale)
+                smooth_blur_ig_mask_grayscale = py_map2jpg(smooth_blur_ig_mask_grayscale)
+                sa = im2double(img) * 255
+                sb = im2double(smooth_blur_ig_mask_grayscale) * 255
+                scurHeatMap = sa * 0.5 + sb * 0.5
+                sab = np.hstack((sa, sb))
+                sfull = np.hstack((scurHeatMap, sab))
+                cv2.imwrite(str(dirpath+str(row["Slide_ID"])+"/SBIG"+row['L1path'].split("/")[-1]), sfull)
 
 
 
+
+# ### Heatmap ###
+# slist = pd.read_csv(data_dir + '/te_sample.csv', header=0)
+# # load dictionary of predictions on tiles
+# teresult = pd.read_csv(out_dir+'/Test.csv', header=0)
+# # join 2 dictionaries
+# joined = pd.merge(slist, teresult, how='inner', on=['Num'])
+# joined = joined.drop(columns=['Num'])
+# joined['L1img'] = joined['L1path'].str.rsplit('/', 1, expand=True)[1]
+# tile_dict = pd.read_csv(data_dir+'/level1/dict.csv', header=0)
+# tile_dict['L1img'] = tile_dict['Loc'].str.rsplit('/', 1, expand=True)[1]
+# joined_dict = pd.merge(joined, tile_dict, how='inner', on=['L1img'])
+# logits = joined_dict[pos_score]
+# prd_ls = np.asmatrix(logits).argmax(axis=1).astype('uint8')
+# prd = int(np.round(np.mean(prd_ls)))
+# print(str(pos_ls[prd])+'!')
+# print("Prediction score = " + str(round(logits.iloc[:, prd].mean(), 5)))
+#
+# joined_dict['predict_index'] = prd_ls
+# # save joined dictionary
+# joined_dict.to_csv(out_dir + '/finaldict.csv', index=False)
+#
+# # output heat map of pos and neg.
+# # initialize a graph and for each RGB channel
+# opt = np.full((n_x, n_y), 0)
+# hm_R = np.full((n_x, n_y), 0)
+# hm_G = np.full((n_x, n_y), 0)
+# hm_B = np.full((n_x, n_y), 0)
+#
+# if cls == 2:
+#     for index, row in joined_dict.iterrows():
+#         opt[int(row["X_pos"]), int(row["Y_pos"])] = 255
+#         if row['POS_score'] >= 0.5:
+#             hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 255
+#             hm_G[int(row["X_pos"]), int(row["Y_pos"])] = int((1 - (row['POS_score'] - 0.5) * 2) * 255)
+#             hm_B[int(row["X_pos"]), int(row["Y_pos"])] = int((1 - (row['POS_score'] - 0.5) * 2) * 255)
+#         else:
+#             hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 255
+#             hm_G[int(row["X_pos"]), int(row["Y_pos"])] = int((1 - (row["NEG_score"] - 0.5) * 2) * 255)
+#             hm_R[int(row["X_pos"]), int(row["Y_pos"])] = int((1 - (row["NEG_score"] - 0.5) * 2) * 255)
+# else:
+#     # Positive is labeled red in output heat map
+#     for index, row in joined_dict.iterrows():
+#         opt[int(row["X_pos"]), int(row["Y_pos"])] = 255
+#         if row['predict_index'] == 0:
+#             hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 55
+#             hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 126
+#             hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 184
+#         elif row['predict_index'] == 1:
+#             hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 228
+#             hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 26
+#             hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 28
+#         elif row['predict_index'] == 2:
+#             hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 77
+#             hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 175
+#             hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 74
+#         elif row['predict_index'] == 3:
+#             hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 255
+#             hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 255
+#             hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 51
+#         elif row['predict_index'] == 4:
+#             hm_R[int(row["X_pos"]), int(row["Y_pos"])] = 191
+#             hm_G[int(row["X_pos"]), int(row["Y_pos"])] = 64
+#             hm_B[int(row["X_pos"]), int(row["Y_pos"])] = 191
+#         else:
+#             pass
+# # expand 5 times
+# opt = opt.repeat(50, axis=0).repeat(50, axis=1)
+#
+# # small-scaled original image
+# ori_img = cv2.resize(raw_img, (np.shape(opt)[0], np.shape(opt)[1]))
+# ori_img = ori_img[:np.shape(opt)[1], :np.shape(opt)[0], :3]
+# cv2.imwrite(out_dir + '/Original_scaled.png', ori_img)
+#
+# # binary output image
+# topt = np.transpose(opt)
+# opt = np.full((np.shape(topt)[0], np.shape(topt)[1], 3), 0)
+# opt[:, :, 0] = topt
+# opt[:, :, 1] = topt
+# opt[:, :, 2] = topt
+# cv2.imwrite(out_dir + '/Mask.png', opt * 255)
+#
+# # output heatmap
+# hm_R = np.transpose(hm_R)
+# hm_G = np.transpose(hm_G)
+# hm_B = np.transpose(hm_B)
+# hm_R = hm_R.repeat(50, axis=0).repeat(50, axis=1)
+# hm_G = hm_G.repeat(50, axis=0).repeat(50, axis=1)
+# hm_B = hm_B.repeat(50, axis=0).repeat(50, axis=1)
+# hm = np.dstack([hm_B, hm_G, hm_R])
+# cv2.imwrite(out_dir + '/HM.png', hm)
+#
+# # superimpose heatmap on scaled original image
+# overlay = ori_img * 0.5 + hm * 0.5
+# cv2.imwrite(out_dir + '/Overlay.png', overlay)
+#
+# ### CAM ###
+# for pre in ['ol', 'hm']:
+#     fac = 50
+#     campath = pre+'l1path'
+#     canvas = np.full((np.shape(opt)[0], np.shape(opt)[1], 3), 0)
+#     for idx, row in joined_dict.iterrows():
+#         imm = cv2.imread(row[campath])[0:250, 0:250, :]
+#         imm = cv2.resize(imm, (fac, fac))
+#         canvas[int(row["Y_pos"])*fac:int(row["Y_pos"])*fac+fac,
+#         int(row["X_pos"])*fac:int(row["X_pos"])*fac+fac, :] = imm
+#     cv2.imwrite(out_dir + '/' + pre + '_CAM.png', canvas)
+#     if pre == 'hm':
+#         # superimpose heatmap on scaled original image
+#         overlayhm = ori_img * 0.5 + canvas * 0.5
+#         cv2.imwrite(out_dir + '/cam_Overlay.png', overlayhm)
+#
