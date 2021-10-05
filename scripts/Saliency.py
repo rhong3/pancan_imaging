@@ -120,7 +120,7 @@ if __name__ == "__main__":
                 sab = np.hstack((sa, sb))
                 sfull = np.hstack((scurHeatMap, sab))
 
-                cv2.imwrite(str(dirpath+str(row["Slide_ID"])+"/"+row['L1path'].split("/", 5)[-1]), sfull)
+                cv2.imwrite(str(dirpath+str(row["Slide_ID"])+"/"+row['L1path'].split("/")[-1]), sfull)
 
     # print(np.shape(x_))
     # print(np.shape(nett_))
