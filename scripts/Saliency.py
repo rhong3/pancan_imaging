@@ -14,6 +14,7 @@ import pandas as pd
 import tensorflow as tf
 import Panoptes1
 import saliency
+from tensorflow.python.tools.inspect_checkpoint import print_tensors_in_checkpoint_file
 
 
 parser = argparse.ArgumentParser()
@@ -47,11 +48,11 @@ def inference(xa_in_re, xb_in_re, xc_in_re, num_classes):
 
 
 if __name__ == "__main__":
-    # saver = tf.train.import_meta_graph('../Results/'+dirr+'/dropout_0.5.meta')
+    saver = tf.train.import_meta_graph('../Results/'+dirr+'/dropout_0.5.meta')
 
     # print(sess.run('logits/logits/weights:0'))
-    # print_tensors_in_checkpoint_file(file_name='../Results/'+dirr+'/dropout_0.5', tensor_name='',
-    #                                  all_tensors=False, all_tensor_names=False)
+    print_tensors_in_checkpoint_file(file_name='../Results/'+dirr+'/dropout_0.5', tensor_name='',
+                                     all_tensors=False, all_tensor_names=False)
     graph = tf.Graph()
     with graph.as_default():
         # image input
@@ -102,34 +103,30 @@ if __name__ == "__main__":
                 sfull = np.hstack((scurHeatMap, sab))
                 cv2.imwrite(str(dirpath+str(row["Slide_ID"])+"/SGIG"+row['L1path'].split("/")[-1]), sfull)
 
-                guided_ig = saliency.GuidedIG(graph, sess, y, xa_in_reshape)
-                guided_ig_mask_3d = guided_ig.GetMask(
-                    img, feed_dict={neuron_selector: 1}, x_steps=5, x_baseline=baseline, max_dist=0.2, fraction=0.5)
-                guided_ig_mask_grayscale = saliency.VisualizeImageGrayscale(guided_ig_mask_3d)
-                guided_ig_mask_grayscale = im2double(guided_ig_mask_grayscale)
-                guided_ig_mask_grayscale = py_map2jpg(guided_ig_mask_grayscale)
-                sa = im2double(img) * 255
-                sb = im2double(guided_ig_mask_grayscale) * 255
-                scurHeatMap = sa * 0.5 + sb * 0.5
-                sab = np.hstack((sa, sb))
-                sfull = np.hstack((scurHeatMap, sab))
-                cv2.imwrite(str(dirpath+str(row["Slide_ID"])+"/GIG"+row['L1path'].split("/")[-1]), sfull)
-
-                blur_ig = saliency.BlurIG(graph, sess, y, xa_in_reshape)
-                smooth_blur_ig_mask_3d = blur_ig.GetSmoothedMask(img, feed_dict={neuron_selector: 1})
-                smooth_blur_ig_mask_grayscale = saliency.VisualizeImageGrayscale(smooth_blur_ig_mask_3d)
-                smooth_blur_ig_mask_grayscale = im2double(smooth_blur_ig_mask_grayscale)
-                smooth_blur_ig_mask_grayscale = py_map2jpg(smooth_blur_ig_mask_grayscale)
-                sa = im2double(img) * 255
-                sb = im2double(smooth_blur_ig_mask_grayscale) * 255
-                scurHeatMap = sa * 0.5 + sb * 0.5
-                sab = np.hstack((sa, sb))
-                sfull = np.hstack((scurHeatMap, sab))
-                cv2.imwrite(str(dirpath+str(row["Slide_ID"])+"/SBIG"+row['L1path'].split("/")[-1]), sfull)
+                # conv_tensor = graph.get_tensor_by_name('Panoptes1/conv2d_130/kernel:0')
+                # grad_cam = saliency.GradCam(graph, sess, y, xa_in_reshape, conv_tensor)
+                # smoothgrad_grad_cam_mask_3d = grad_cam.GetSmoothedMask(img, feed_dict={neuron_selector: 1})
+                # smoothgrad_grad_cam_mask_grayscale = saliency.VisualizeImageGrayscale(smoothgrad_grad_cam_mask_3d)
+                # smoothgrad_grad_cam_mask_grayscale = im2double(smoothgrad_grad_cam_mask_grayscale)
+                # smoothgrad_grad_cam_mask_grayscale = py_map2jpg(smoothgrad_grad_cam_mask_grayscale)
+                # sa = im2double(img) * 255
+                # sb = im2double(smoothgrad_grad_cam_mask_grayscale) * 255
+                # scurHeatMap = sa * 0.5 + sb * 0.5
+                # sab = np.hstack((sa, sb))
+                # sfull = np.hstack((scurHeatMap, sab))
+                # cv2.imwrite(str(dirpath + str(row["Slide_ID"]) + "/gradCAM" + row['L1path'].split("/")[-1]), sfull)
 
 
-
-
+# if not os.path.isfile(data_dir + '/level3/dict.csv'):
+#     tumor = imgfile.split('/')[0]
+#     slideID = imgfile.split("-")[-1]
+#     patientID = imgfile.rsplit("-", 1)[0].split('/')[-1]
+#     os.symlink("../../../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level1', data_dir + '/level1',
+#                target_is_directory=True)
+#     os.symlink("../../../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level2', data_dir + '/level2',
+#                target_is_directory=True)
+#     os.symlink("../../../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level3', data_dir + '/level3',
+#                target_is_directory=True)
 # ### Heatmap ###
 # slist = pd.read_csv(data_dir + '/te_sample.csv', header=0)
 # # load dictionary of predictions on tiles
