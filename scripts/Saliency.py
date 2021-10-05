@@ -79,7 +79,6 @@ if __name__ == "__main__":
                 pass
             test_tiles = pd.read_csv('../Results/'+dirr+'/out/Test_tile.csv')
             for idx, row in test_tiles.iterrows():
-                print(row)
                 try:
                     os.mkdir(dirpath + str(row['Slide_ID']))
                 except FileExistsError:
