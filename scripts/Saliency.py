@@ -98,9 +98,11 @@ if __name__ == "__main__":
             saver.restore(sess, '../Results/'+metadir+'/'+modeltoload)
             finalls = []
             for idx, row in tiles.iterrows():
-                if os.path.isfile('../Results/'+dirr+'/saliency/SGIG_'+row['Loc'].split("/")[-1]):
+                if os.path.isfile('../Results/'+dirr+'/saliency/hm_'+row['Loc'].split("/")[-1]) \
+                        and os.path.isfile('../Results/'+dirr+'/saliency/ol_'+row['Loc'].split("/")[-1]):
                     finalls.append([row['Num'], row['X_pos'], row['Y_pos'], row['X'],
-                                    row['Y'], '../Results/' + dirr + '/saliency/SGIG_' + row['Loc'].split("/")[-1]])
+                                    row['Y'], '../Results/' + dirr + '/saliency/ol_' + row['Loc'].split("/")[-1],
+                                    '../Results/' + dirr + '/saliency/hm_' + row['Loc'].split("/")[-1]])
                 else:
                     img = cv2.imread(row['Loc'])
                     img = img.astype(np.float32)
@@ -116,13 +118,13 @@ if __name__ == "__main__":
                     sa = im2double(img) * 255
                     sb = im2double(smoothgrad_mask_grayscale) * 255
                     scurHeatMap = sa * 0.5 + sb * 0.5
-                    sab = np.hstack((sa, sb))
-                    sfull = np.hstack((scurHeatMap, sab))
-                    cv2.imwrite('../Results/'+dirr+'/saliency/SGIG_'+row['Loc'].split("/")[-1], sfull)
+                    cv2.imwrite('../Results/'+dirr+'/saliency/ol_'+row['Loc'].split("/")[-1], scurHeatMap)
+                    cv2.imwrite('../Results/' + dirr + '/saliency/hm_' + row['Loc'].split("/")[-1], sb)
                     finalls.append([row['Num'], row['X_pos'], row['Y_pos'], row['X'],
-                                    row['Y'], '../Results/'+dirr+'/saliency/SGIG_'+row['Loc'].split("/")[-1]])
+                                    row['Y'], '../Results/'+dirr+'/saliency/ol_'+row['Loc'].split("/")[-1],
+                                    '../Results/'+dirr+'/saliency/hm_'+row['Loc'].split("/")[-1]])
 
-    joined_dict = pd.DataFrame(finalls, columns=['Num', 'X_pos', 'Y_pos', 'X', 'Y', 'path'])
+    joined_dict = pd.DataFrame(finalls, columns=['Num', 'X_pos', 'Y_pos', 'X', 'Y', 'olpath', 'hmpath'])
     joined_dict.to_csv('../Results/'+dirr+'/saliency.csv', index=False)
 
     ### slide level ###
@@ -158,12 +160,20 @@ if __name__ == "__main__":
     fac = 50
     canvas = np.full((np.shape(optimg)[0], np.shape(optimg)[1], 3), 0)
     for idx, row in joined_dict.iterrows():
-        imm = cv2.imread(row['path'])[0:250, 0:250, :]
+        imm = cv2.imread(row['hmpath'])[0:250, 0:250, :]
         imm = cv2.resize(imm, (fac, fac))
         canvas[int(row["Y_pos"])*fac:int(row["Y_pos"])*fac+fac,
         int(row["X_pos"])*fac:int(row["X_pos"])*fac+fac, :] = imm
-    cv2.imwrite('../Results/' + dirr + '/Saliency.png', canvas)
+    cv2.imwrite('../Results/' + dirr + '/Saliency_hm.png', canvas)
     # superimpose on scaled original image
     overlayhm = ori_img * 0.5 + canvas * 0.5
     cv2.imwrite('../Results/' + dirr + '/Saliency_Overlay.png', overlayhm)
+
+    canvas = np.full((np.shape(optimg)[0], np.shape(optimg)[1], 3), 0)
+    for idx, row in joined_dict.iterrows():
+        imm = cv2.imread(row['olpath'])[0:250, 0:250, :]
+        imm = cv2.resize(imm, (fac, fac))
+        canvas[int(row["Y_pos"]) * fac:int(row["Y_pos"]) * fac + fac,
+        int(row["X_pos"]) * fac:int(row["X_pos"]) * fac + fac, :] = imm
+    cv2.imwrite('../Results/' + dirr + '/Saliency_ol.png', canvas)
 
