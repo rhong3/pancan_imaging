@@ -21,7 +21,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dirr', type=str, default='trial', help='output directory')
 parser.add_argument('--classes', type=int, default=2, help='number of classes to predict')
 parser.add_argument('--pdmd', type=str, default='tumor', help='feature to predict')
-parser.add_argument('--imgfile', nargs='+', type=str, default=None,
+parser.add_argument('--imgfile',type=str, default=None,
                     help='load the image (eg. CCRCC/C3L-SSSSS-SS,CCRCC/C3L-SSSSS-SS)')
 parser.add_argument('--modeltoload', type=str, default='', help='reload trained model')
 parser.add_argument('--metadir', type=str, default='', help='reload trained model')
@@ -68,7 +68,7 @@ if __name__ == "__main__":
         tumor = imgfile.split('/')[0]
         slideID = imgfile.split("-")[-1]
         patientID = imgfile.rsplit("-", 1)[0].split('/')[-1]
-        os.symlink("../../../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level1', '../Results/'+dirr + '/level1',
+        os.symlink("../../tiles/" + tumor + "/" + patientID + "/" + slideID + '/level1', '../Results/'+dirr + '/level1',
                    target_is_directory=True)
     tiles = pd.read_csv('../Results/' + dirr + '/level1/dict.csv')
 
