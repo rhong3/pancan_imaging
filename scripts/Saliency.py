@@ -98,25 +98,29 @@ if __name__ == "__main__":
             saver.restore(sess, '../Results/'+metadir+'/'+modeltoload)
             finalls = []
             for idx, row in tiles.iterrows():
-                img = cv2.imread(row['Loc'])
-                img = img.astype(np.float32)
-                baseline = np.zeros(img.shape)
-                baseline.fill(255)
+                if os.path.isfile('../Results/'+dirr+'/saliency/SGIG_'+row['Loc'].split("/")[-1]):
+                    finalls.append([row['Num'], row['X_pos'], row['Y_pos'], row['X'],
+                                    row['Y'], '../Results/' + dirr + '/saliency/SGIG_' + row['Loc'].split("/")[-1]])
+                else:
+                    img = cv2.imread(row['Loc'])
+                    img = img.astype(np.float32)
+                    baseline = np.zeros(img.shape)
+                    baseline.fill(255)
 
-                grad = saliency.IntegratedGradients(graph, sess, y, xa_in_reshape)
-                smoothgrad_mask_3d = grad.GetSmoothedMask(img, feed_dict={
-                    neuron_selector: 1}, x_steps=5, x_baseline=baseline)
-                smoothgrad_mask_grayscale = saliency.VisualizeImageGrayscale(smoothgrad_mask_3d)
-                smoothgrad_mask_grayscale = im2double(smoothgrad_mask_grayscale)
-                smoothgrad_mask_grayscale = py_map2jpg(smoothgrad_mask_grayscale)
-                sa = im2double(img) * 255
-                sb = im2double(smoothgrad_mask_grayscale) * 255
-                scurHeatMap = sa * 0.5 + sb * 0.5
-                sab = np.hstack((sa, sb))
-                sfull = np.hstack((scurHeatMap, sab))
-                cv2.imwrite('../Results/'+dirr+'/saliency/SGIG_'+row['Loc'].split("/")[-1], sfull)
-                finalls.append([row['Num'], row['X_pos'], row['Y_pos'], row['X'],
-                                row['Y'], '../Results/'+dirr+'/saliency/SGIG_'+row['Loc'].split("/")[-1]])
+                    grad = saliency.IntegratedGradients(graph, sess, y, xa_in_reshape)
+                    smoothgrad_mask_3d = grad.GetSmoothedMask(img, feed_dict={
+                        neuron_selector: 1}, x_steps=5, x_baseline=baseline)
+                    smoothgrad_mask_grayscale = saliency.VisualizeImageGrayscale(smoothgrad_mask_3d)
+                    smoothgrad_mask_grayscale = im2double(smoothgrad_mask_grayscale)
+                    smoothgrad_mask_grayscale = py_map2jpg(smoothgrad_mask_grayscale)
+                    sa = im2double(img) * 255
+                    sb = im2double(smoothgrad_mask_grayscale) * 255
+                    scurHeatMap = sa * 0.5 + sb * 0.5
+                    sab = np.hstack((sa, sb))
+                    sfull = np.hstack((scurHeatMap, sab))
+                    cv2.imwrite('../Results/'+dirr+'/saliency/SGIG_'+row['Loc'].split("/")[-1], sfull)
+                    finalls.append([row['Num'], row['X_pos'], row['Y_pos'], row['X'],
+                                    row['Y'], '../Results/'+dirr+'/saliency/SGIG_'+row['Loc'].split("/")[-1]])
 
     joined_dict = pd.DataFrame(finalls, columns=['Num', 'X_pos', 'Y_pos', 'X', 'Y', 'path'])
     joined_dict.to_csv('../Results/'+dirr+'/saliency.csv', index=False)
