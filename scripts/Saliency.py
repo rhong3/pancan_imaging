@@ -81,10 +81,6 @@ if __name__ == "__main__":
         # image input
         xa_in = tf.placeholder(tf.float32, name="xa")
         xa_in_reshape = tf.reshape(xa_in, [-1, 299, 299, 3])
-        # xb_in = tf.placeholder(tf.float32, name="xb")
-        # xb_in_reshape = tf.reshape(xb_in, [-1, 299, 299, 3])
-        # xc_in = tf.placeholder(tf.float32, name="xc")
-        # xc_in_reshape = tf.reshape(xc_in, [-1, 299, 299, 3])
 
         logits, nett = inference(xa_in_reshape, xa_in_reshape, xa_in_reshape, classes)
         pred = tf.nn.softmax(logits, name="prediction")
