@@ -710,3 +710,4 @@ def tSNE_prep(flatnet, ori_test, y, pred, path, pmd):
     #     out = out.sample(30000, replace=False)
     out.to_csv("../Results/{}/out/For_tSNE.csv".format(path), index=False)
 
+
