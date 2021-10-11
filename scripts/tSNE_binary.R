@@ -2,7 +2,7 @@
 ## visualize the manifold
 
 ### Tile-level tSNE ###
-inlist=c('Results/TP53')
+inlist=c('Results/IC1', 'Results/IC5', 'Results/IC13', 'Results/IC31', 'Results/IC39')
 
 for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')
@@ -106,11 +106,13 @@ for(xx in inlist){
   library(dplyr)
   library(Rtsne)
   ori_dat = read.table(file=input_file,header=T,sep=',')
+  ori_dat = na.omit(ori_dat)
   ori_dat = ori_dat[, c(2,3,8:ncol(ori_dat))]
   sp_ori_dat = ori_dat %>%
     group_by(Slide_ID, Tumor) %>%
     summarise_all(mean) %>%
-    mutate(Prediction=round(Prediction))
+    mutate(Prediction=round(Prediction)) %>%
+    mutate(True_label=round(True_label))
 
   X = as.matrix(sp_ori_dat[,start:ncol(sp_ori_dat)])
   res = Rtsne(X, initial_dims=100, check_duplicates = FALSE)
@@ -197,11 +199,13 @@ for(xx in inlist){
   library(dplyr)
   library(Rtsne)
   ori_dat = read.table(file=input_file,header=T,sep=',')
+  ori_dat = na.omit(ori_dat)
   ori_dat = ori_dat[, c(1,3,8:ncol(ori_dat))]
   sp_ori_dat = ori_dat %>%
     group_by(Patient_ID, Tumor) %>%
     summarise_all(mean) %>%
-    mutate(Prediction=round(Prediction))
+    mutate(Prediction=round(Prediction)) %>%
+    mutate(True_label=round(True_label))
   
   X = as.matrix(sp_ori_dat[,start:ncol(sp_ori_dat)])
   res = Rtsne(X, initial_dims=100, check_duplicates = FALSE, perplexity=20)
