@@ -53,8 +53,8 @@ joint.fig[,8:23] = lapply(joint.fig[,8:23],
                                function(x)as.factor(x))
 ColSide=lapply(joint.fig[,8:23],
                function(x)get_color(binaries,x))
-
-ColSide[['Tumor']]=get_color(colors=c('#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33'),
+# tissueOrigin= c('CCRCC' = '#ff7f0e', 'HNSCC' = '#902020','LSCC' = '#41e0d1','LUAD' = '#cb997e', 'PDA' = '#9566bd','UCEC' = '#ff0101’)
+ColSide[['Tumor']]=get_color(colors=c('#ff7f0e','#902020','#41e0d1','#cb997e','#9566bd','#ff0101'),
                              factor=joint.fig$Tumor)
 
 ColSide[['Set']]=get_color(colors=c('#8dd3c7','#ffffb3', '#bebada'),
@@ -123,4 +123,59 @@ pdf(file = paste(out_dir,'normal_count.pdf',sep='/'),
     width =15, height = 5, bg='white')
 p
 graphics.off()
+
+
+
+# Mutation rate summary
+# mutation rate
+
+CCA_cohort = read.csv("DLCCA/summary.csv")
+CCA_cohort$Patient_ID = substr(as.character(CCA_cohort$Slide_ID),1,nchar(as.character(CCA_cohort$Slide_ID))-3)
+CCA_cohort = unique(CCA_cohort[, c("Tumor", "Patient_ID")])
+
+
+mutation = read.csv('~/documents/pancan_imaging/mutation_label.csv')
+mutation = mutation[, c('Patient_ID', 'Tumor', 'STK11', 'KRAS', 'EGFR', 'TP53', 'PTEN', 'CTNNB1', 'ARID1A', 'PIK3CA', 'NOTCH1', 
+                        'ZFHX3', 'ARID2', 'BRCA2', 'JAK1', 'MAP3K1', 'MTOR', 'NOTCH3')]
+mutation = mutation[mutation$Patient_ID %in% CCA_cohort$Patient_ID, ]
+
+mutation = unique(mutation)
+mutation = mutation[,-1]
+
+mutation.tab = mutation %>%
+  group_by(Tumor) %>%
+  summarise_all(mean, na.rm = TRUE)
+
+mut = as.data.frame(mutation.tab[,c('Tumor', colnames(mutation.tab)[2])])
+colnames(mut) = c('type', 'mutation rate')
+mut$gene = colnames(mutation.tab)[2]
+for (i in 3:ncol(mutation.tab)){
+  mutx = as.data.frame(mutation.tab[,c('Tumor', colnames(mutation.tab)[i])])
+  colnames(mutx) = c('type', 'mutation rate')
+  mutx$gene = colnames(mutation.tab)[i]
+  mut = rbind.data.frame(mut, mutx)
+}
+
+mut$`mutation rate` = as.numeric(as.character(mut$`mutation rate`))*100
+mut = na.omit(mut)
+mut$`mutation rate`=replace_na(mut$`mutation rate`, 0)
+
+# tissueOrigin= c('CCRCC' = '#ff7f0e','GBM' = '#818081', 'HNSCC' = '#902020','LSCC' = '#41e0d1','LUAD' = '#cb997e', 'PDA' = '#9566bd','UCEC' = '#ff0101')
+
+pdf(file='DLCCA//mutation_summary.pdf', 
+    width=12,height=4)
+ggplot(mut, aes(x=gene, y=`mutation rate`, fill=type))+
+  geom_bar(stat="identity", color="black", position=position_dodge())+
+  geom_text(aes(label=round(mut$`mutation rate`)), vjust=0, color="black",
+            position = position_dodge(1), size=2) +
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                     panel.grid.minor = element_blank(), 
+                     axis.line = element_line(colour = "black"), legend.position='bottom')+
+  scale_fill_manual(values=c('#ff7f0e','#902020', '#41e0d1','#cb997e', '#9566bd', '#ff0101'))
+dev.off()
+
+
+
+
+
 
