@@ -3,6 +3,7 @@ library(ComplexHeatmap)
 library(dplyr)
 library(readr)
 library(circlize)
+library(ggplot2)
 
 # Figure1A heatmaps
 necrosis = read.csv("DLCCA/necrosis.csv")[, c("Slide_ID", "Tumor", "set", "Percent_Necrosis")]
@@ -102,5 +103,24 @@ graphics.off()
 
 
 # Bar plot for normal samples
+joint.nor = joint[joint["Tumor_normal"] !=1, c(2,3)]
+joint.nor = joint.nor[rowSums(is.na(joint.nor)) != ncol(joint.nor), ]
+joint.sum = joint.nor %>%
+  count(Tumor, Set, sort=F)
+colnames(joint.sum) = c("Tumor", "Set", "normal_sample_count")
 
+p = ggplot(joint.sum, aes(x=Tumor, y=normal_sample_count, fill=Set))+
+  geom_bar(stat="identity", position=position_dodge())+
+  geom_text(aes(label=normal_sample_count), vjust=1, position = position_dodge(0.9),
+                                                                 color="black", size=3.5)+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                     panel.grid.minor = element_blank(), 
+                     axis.line = element_line(colour = "black"), legend.position='bottom')+
+  scale_fill_manual(values=c('#8dd3c7','#ffffb3', '#bebada'))
+
+out_dir = 'DLCCA/'
+pdf(file = paste(out_dir,'normal_count.pdf',sep='/'),
+    width =15, height = 5, bg='white')
+p
+graphics.off()
 
