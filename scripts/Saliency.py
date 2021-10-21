@@ -138,7 +138,7 @@ if __name__ == "__main__":
         optimg[int(row["X_pos"]), int(row["Y_pos"])] = 255
 
     # expand 5 times
-    optimg = optimg.repeat(50, axis=0).repeat(50, axis=1)
+    optimg = optimg.repeat(250, axis=0).repeat(250, axis=1)
 
     # small-scaled original image
     ori_img = cv2.resize(raw_img, (np.shape(optimg)[0], np.shape(optimg)[1]))
@@ -153,7 +153,7 @@ if __name__ == "__main__":
     optimg[:, :, 2] = topt
     cv2.imwrite('../Results/' + dirr + '/Mask.png', optimg * 255)
 
-    fac = 50
+    fac = 250
     canvas = np.full((np.shape(optimg)[0], np.shape(optimg)[1], 3), 0)
     for idx, row in joined_dict.iterrows():
         imm = cv2.imread(row['hmpath'])[0:250, 0:250, :]

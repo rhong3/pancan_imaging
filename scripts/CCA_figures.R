@@ -162,7 +162,7 @@ mut$`mutation rate`=replace_na(mut$`mutation rate`, 0)
 
 # tissueOrigin= c('CCRCC' = '#ff7f0e','GBM' = '#818081', 'HNSCC' = '#902020','LSCC' = '#41e0d1','LUAD' = '#cb997e', 'PDA' = '#9566bd','UCEC' = '#ff0101')
 
-pdf(file='DLCCA//mutation_summary.pdf', 
+pdf(file='DLCCA/mutation_summary.pdf', 
     width=12,height=4)
 ggplot(mut, aes(x=gene, y=`mutation rate`, fill=type))+
   geom_bar(stat="identity", color="black", position=position_dodge())+
