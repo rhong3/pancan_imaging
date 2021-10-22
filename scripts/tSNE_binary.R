@@ -2,8 +2,7 @@
 ## visualize the manifold
 
 ### Tile-level tSNE ###
-inlist=c('Results/ZFHX3_CCA', 'Results/STK11_CCA', 'Results/PTEN_CCA', 'Results/PIK3CA_CCA', 'Results/NOTCH3_CCA', 'Results/NOTCH1_CCA',
-         'Results/MTOR_CCA', 'Results/KRAS_CCA', 'Results/JAK1_CCA', 'Results/EGFR_CCA', 'Results/BRCA2_CCA', 'Results/ARID2_CCA', 'Results/ARID1A_CCA')
+inlist=c('Results/EGFR_CCA', 'Results/BRCA2_CCA', 'Results/ARID2_CCA', 'Results/ARID1A_CCA')
 
 for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')
