@@ -78,7 +78,7 @@ ca = HeatmapAnnotation(df = joint.fig[order(joint.fig$Set, joint.fig$Tumor), ], 
                        annotation_name_gp = gpar(fontsize =18,fontface='bold'),
                        annotation_height = unit(rep(1,length(ColSide)), "inch"),
                        border = F,
-                       gap = unit(rep(0.02,length(ColSide)), "inch"),
+                       gap = unit(rep(0.1,length(ColSide)), "inch"),
                        annotation_legend_param = list(title_gp = gpar(fontsize = 22,fontface = 'bold'),
                                                       labels_gp = gpar(fontsize = 18),
                                                       direction='horizontal',
@@ -95,7 +95,7 @@ plot_heatmap=Heatmap(ph[,order(joint.fig$Set, joint.fig$Tumor)],
                      top_annotation = ca, cluster_columns = F, cluster_rows = F, show_heatmap_legend = F)
 
 
-out_dir = 'DLCCA/'
+out_dir = 'DLCCA/Figure1-S1/'
 pdf(file = paste(out_dir,'summaryHM_tumor.pdf',sep='/'),
     width =50, height = 10, bg='white')
 draw(plot_heatmap, annotation_legend_side = "bottom")
@@ -118,7 +118,7 @@ p = ggplot(joint.sum, aes(x=Tumor, y=normal_sample_count, fill=Set))+
                      axis.line = element_line(colour = "black"), legend.position='bottom')+
   scale_fill_manual(values=c('#8dd3c7','#ffffb3', '#bebada'))
 
-out_dir = 'DLCCA/'
+out_dir = 'DLCCA/Figure1-S1/'
 pdf(file = paste(out_dir,'normal_count.pdf',sep='/'),
     width =15, height = 5, bg='white')
 p
@@ -128,6 +128,7 @@ graphics.off()
 
 # Mutation rate summary
 # mutation rate
+library("tidyr")
 
 CCA_cohort = read.csv("DLCCA/summary.csv")
 CCA_cohort$Patient_ID = substr(as.character(CCA_cohort$Slide_ID),1,nchar(as.character(CCA_cohort$Slide_ID))-3)
@@ -157,16 +158,15 @@ for (i in 3:ncol(mutation.tab)){
 }
 
 mut$`mutation rate` = as.numeric(as.character(mut$`mutation rate`))*100
-mut = na.omit(mut)
 mut$`mutation rate`=replace_na(mut$`mutation rate`, 0)
 
 # tissueOrigin= c('CCRCC' = '#ff7f0e','GBM' = '#818081', 'HNSCC' = '#902020','LSCC' = '#41e0d1','LUAD' = '#cb997e', 'PDA' = '#9566bd','UCEC' = '#ff0101')
 
-pdf(file='DLCCA/mutation_summary.pdf', 
+pdf(file='DLCCA/Figure1-S1/mutation_summary.pdf', 
     width=12,height=4)
 ggplot(mut, aes(x=gene, y=`mutation rate`, fill=type))+
   geom_bar(stat="identity", color="black", position=position_dodge())+
-  geom_text(aes(label=round(mut$`mutation rate`)), vjust=0, color="black",
+  geom_text(aes(label=round(`mutation rate`)), vjust=0, color="black",
             position = position_dodge(1), size=2) +
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                      panel.grid.minor = element_blank(), 
