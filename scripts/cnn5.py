@@ -161,16 +161,16 @@ class INCEPTION:
                                      self.is_train: train_status}
                         fetches = [self.pred, self.net, self.w]
                         pred, net, w = self.sesh.run(fetches, feed_dict)
-                        # neta = net[:, :, :, :int(np.shape(net)[3] / 3)]
-                        # netb = net[:, :, :, int(np.shape(net)[3] / 3):2 * int(np.shape(net)[3] / 3)]
-                        # netc = net[:, :, :, 2 * int(np.shape(net)[3] / 3):]
-                        # wa = w[:int(np.shape(net)[3] / 3), :]
-                        # wb = w[int(np.shape(net)[3] / 3):2 * int(np.shape(net)[3] / 3), :]
-                        # wc = w[2 * int(np.shape(net)[3] / 3):, :]
-                        # cama = ac.CAM_R(neta, wa, pred, xa, dirr, 'Test_level1', bs, rd)
-                        # camb = ac.CAM_R(netb, wb, pred, xb, dirr, 'Test_level2', bs, rd)
-                        # camc = ac.CAM_R(netc, wc, pred, xc, dirr, 'Test_level3', bs, rd)
-                        # pred = np.concatenate((pred, cama, camb, camc), axis=1)
+                        neta = net[:, :, :, :int(np.shape(net)[3] / 3)]
+                        netb = net[:, :, :, int(np.shape(net)[3] / 3):2 * int(np.shape(net)[3] / 3)]
+                        netc = net[:, :, :, 2 * int(np.shape(net)[3] / 3):]
+                        wa = w[:int(np.shape(net)[3] / 3), :]
+                        wb = w[int(np.shape(net)[3] / 3):2 * int(np.shape(net)[3] / 3), :]
+                        wc = w[2 * int(np.shape(net)[3] / 3):, :]
+                        cama = ac.CAM_R(neta, wa, pred, xa, dirr, 'Test_level1', bs, rd)
+                        camb = ac.CAM_R(netb, wb, pred, xb, dirr, 'Test_level2', bs, rd)
+                        camc = ac.CAM_R(netc, wc, pred, xc, dirr, 'Test_level3', bs, rd)
+                        pred = np.concatenate((pred, cama, camb, camc), axis=1)
                         if rd == 0:
                             pdx = pred
                         else:

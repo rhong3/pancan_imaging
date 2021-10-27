@@ -258,7 +258,7 @@ def main(imgfile, bs, cls, modeltoload, pdmd, data_dir, out_dir, LOG_DIR, METAGR
             else:
                 pass
     # expand 5 times
-    opt = opt.repeat(50, axis=0).repeat(50, axis=1)
+    opt = opt.repeat(250, axis=0).repeat(250, axis=1)
 
     # small-scaled original image
     ori_img = cv2.resize(raw_img, (np.shape(opt)[0], np.shape(opt)[1]))
@@ -277,9 +277,9 @@ def main(imgfile, bs, cls, modeltoload, pdmd, data_dir, out_dir, LOG_DIR, METAGR
     hm_R = np.transpose(hm_R)
     hm_G = np.transpose(hm_G)
     hm_B = np.transpose(hm_B)
-    hm_R = hm_R.repeat(50, axis=0).repeat(50, axis=1)
-    hm_G = hm_G.repeat(50, axis=0).repeat(50, axis=1)
-    hm_B = hm_B.repeat(50, axis=0).repeat(50, axis=1)
+    hm_R = hm_R.repeat(250, axis=0).repeat(250, axis=1)
+    hm_G = hm_G.repeat(250, axis=0).repeat(250, axis=1)
+    hm_B = hm_B.repeat(250, axis=0).repeat(250, axis=1)
     hm = np.dstack([hm_B, hm_G, hm_R])
     cv2.imwrite(out_dir + '/HM.png', hm)
 
