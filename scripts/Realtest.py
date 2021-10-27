@@ -289,7 +289,7 @@ def main(imgfile, bs, cls, modeltoload, pdmd, data_dir, out_dir, LOG_DIR, METAGR
 
     ### CAM ###
     for pre in ['ol', 'hm']:
-        fac = 50
+        fac = 250
         campath = pre+'l1path'
         canvas = np.full((np.shape(opt)[0], np.shape(opt)[1], 3), 0)
         for idx, row in joined_dict.iterrows():
