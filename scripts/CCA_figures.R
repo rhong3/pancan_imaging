@@ -37,6 +37,8 @@ joint.fig = joint[joint["Tumor_normal"] == 1, -c(1,5)]
 
 joint.fig = joint.fig[rowSums(is.na(joint.fig)) != ncol(joint.fig), ]
 
+joint.fig = joint.fig[joint.fig["Set"] == "validation", -c(1)]
+
 binaries = c('gray90','gray10')
 
 get_color = function(colors,factor){
@@ -49,16 +51,16 @@ get_color = function(colors,factor){
   return(res)
 }
 
-joint.fig[,8:23] = lapply(joint.fig[,8:23],
+joint.fig[,7:22] = lapply(joint.fig[,7:22],
                                function(x)as.factor(x))
-ColSide=lapply(joint.fig[,8:23],
+ColSide=lapply(joint.fig[,7:22],
                function(x)get_color(binaries,x))
 # tissueOrigin= c('CCRCC' = '#ff7f0e', 'HNSCC' = '#902020','LSCC' = '#41e0d1','LUAD' = '#cb997e', 'PDA' = '#9566bd','UCEC' = '#ff0101’)
 ColSide[['Tumor']]=get_color(colors=c('#ff7f0e','#902020','#41e0d1','#cb997e','#9566bd','#ff0101'),
                              factor=joint.fig$Tumor)
 
-ColSide[['Set']]=get_color(colors=c('#8dd3c7','#ffffb3', '#bebada'),
-                                 factor = joint.fig$Set)
+# ColSide[['Set']]=get_color(colors=c('#8dd3c7','#ffffb3', '#bebada'),
+#                                  factor = joint.fig$Set)
 
 ColSide[['Grade']]=get_color(colors=c('#f1eef6', '#d7b5d8', '#df65b0', '#ce1256'), 
                             factor = as.factor(joint.fig$Grade))
@@ -73,7 +75,7 @@ ColSide[['Cellularity%']]=colorRamp2(breaks=range(joint.fig$`Cellularity%`, na.r
 ColSide[['Tumor_Nuclei%']]=colorRamp2(breaks=range(joint.fig$`Tumor_Nuclei%`, na.rm=T),
                                                   colors=c("#f2f0f7","#6a51a3"))
 
-ca = HeatmapAnnotation(df = joint.fig[order(joint.fig$Set, joint.fig$Tumor), ], na_col ='white',
+ca = HeatmapAnnotation(df = joint.fig[order(joint.fig$Tumor), ], na_col ='white',
                        which = 'column',
                        annotation_name_gp = gpar(fontsize =18,fontface='bold'),
                        annotation_height = unit(rep(1,length(ColSide)), "inch"),
@@ -91,13 +93,13 @@ ca = HeatmapAnnotation(df = joint.fig[order(joint.fig$Set, joint.fig$Tumor), ], 
 
 ph = matrix(NA ,ncol=nrow(joint.fig),nrow=0)
 
-plot_heatmap=Heatmap(ph[,order(joint.fig$Set, joint.fig$Tumor)], 
+plot_heatmap=Heatmap(ph[,order(joint.fig$Tumor)], 
                      top_annotation = ca, cluster_columns = F, cluster_rows = F, show_heatmap_legend = F)
 
 
-out_dir = 'DLCCA/Figure1-S1/'
-pdf(file = paste(out_dir,'summaryHM_tumor.pdf',sep='/'),
-    width =50, height = 10, bg='white')
+out_dir = 'DLCCA/Figures/Figure1-S1/'
+pdf(file = paste(out_dir,'ValidationsummaryHM_tumor.pdf',sep='/'),
+    width =25, height = 10, bg='white')
 draw(plot_heatmap, annotation_legend_side = "bottom")
 graphics.off()
 
