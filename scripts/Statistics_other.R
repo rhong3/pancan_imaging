@@ -8,7 +8,7 @@ library(MLmetrics)
 library(boot)
 library(gmodels)
 
-inlist = c('IC1-IC001')
+inlist = c('R12-RNA_12', 'R13-RNA_13', 'R20-RNA_20', 'R4-RNA_4', 'R7-RNA_7')
 # Check previously calculated trials
 previous=read.csv("~/Documents/pancan_imaging/Results/Statistics_other.csv")
 existed=paste(previous$Folder, previous$Feature, previous$Type_number, sep='-')
