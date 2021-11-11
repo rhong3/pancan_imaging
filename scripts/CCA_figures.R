@@ -15,7 +15,7 @@ stage = read.csv("DLCCA/stage.csv")[, c("Slide_ID", "Tumor", "set", "Stage")]
 tmnm = read.csv("DLCCA/tumor_normal.csv")[, c("Slide_ID", "Tumor", "set", "Tumor_normal")]
 grade = read.csv("DLCCA/grade.csv")[, c("Slide_ID", "Tumor", "set", "grade")]
 colnames(grade) = c("Slide_ID", "Tumor", "set", "Grade")
- 
+
 joint = grade %>%
   full_join(tmnm , by=c("Slide_ID", "Tumor", "set")) %>%
   full_join(stage , by=c("Slide_ID", "Tumor", "set")) %>%
