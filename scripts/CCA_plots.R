@@ -72,6 +72,8 @@ for (f in todolist){
   tile_all = rbind(tile_all, Test_tile)
 }
 
+tile_all$feature = gsub('_CCA', "", tile_all$feature)
+
 pp = ggboxplot(tile_all, x = "feature", y = "Prediction_score",
                color = "black", fill = "True_label", palette = "grey")+ 
   stat_compare_means(method.args = list(alternative = "less"), aes(group = True_label), label = "p.signif", label.y = 1.1) + 
@@ -103,6 +105,8 @@ for (f in todolist){
   colnames(Test_slide) = c('Prediction_score', 'True_label', 'feature')
   slide_all = rbind(slide_all, Test_slide)
 }
+
+slide_all$feature = gsub('_CCA', "", slide_all$feature)
 
 pp = ggboxplot(slide_all, x = "feature", y = "Prediction_score",
                color = "black", fill = "True_label", palette = "grey")+ 
