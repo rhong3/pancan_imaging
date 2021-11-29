@@ -2,7 +2,7 @@
 ## visualize the manifold
 
 ### Tile-level tSNE ###
-inlist=c('Results/P12', 'Results/P13', 'Results/P20', 'Results/P4', 'Results/P7', 'Results/R12', 'Results/R13', 'Results/R20', 'Results/R4', 'Results/R7')
+inlist=c('Results/P18', 'Results/P6', 'Results/R18', 'Results/R6')
 
 for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')

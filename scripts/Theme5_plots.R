@@ -10,7 +10,9 @@ other = other[, c('Folder', 'Slide_ROC.95.CI_lower', 'Slide_ROC', 'Slide_ROC.95.
                   'Tile_ROC.95.CI_lower', 'Tile_ROC', 'Tile_ROC.95.CI_upper')]
 colnames(other) = gsub('Folder', 'Feature', colnames(other))
 
-other = filter(other, !grepl("8", Feature))
+other = filter(other, !grepl("8c", Feature))
+other = filter(other, !grepl("8p", Feature))
+other = filter(other, !grepl("8q", Feature))
 all = other[order(-other$Slide_ROC),]
 all = na.omit(all)
 
