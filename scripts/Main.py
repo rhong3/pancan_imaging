@@ -233,7 +233,8 @@ if __name__ == "__main__":
             va = pd.read_csv(data_dir + '/va_sample_full.csv', header=0)
         except FileNotFoundError:
             if opt.presplit:
-                Sample_prep2.set_sep_secondary(path=data_dir, label_col=opt.label_column, splitfile=opt.presplit)
+                Sample_prep2.set_sep_secondary(path=data_dir, label_col=opt.label_column, splitfile=opt.presplit,
+                                               exclude=opt.exclude)
             else:
                 alll = Sample_prep2.big_image_sum(label_col=opt.label_column, path=opt.tile_path,
                                                   ref_file=opt.reference, pdmd=opt.pdmd, exclude=opt.exclude)

@@ -156,7 +156,7 @@ def set_sep(alll, path, cut=0.3):
 
 # TO KEEP SPLIT SAME AS BASELINES. seperate into training and testing; each type is the same separation
 # ratio on big images test and train csv files contain tiles' path.
-def set_sep_secondary(path, label_col, splitfile):
+def set_sep_secondary(path, label_col, splitfile, exclude=None):
     split = pd.read_csv(splitfile, header=0)
 
     test = split[split['set'] == 'test']
@@ -182,6 +182,11 @@ def set_sep_secondary(path, label_col, splitfile):
     for idx, row in validation.iterrows():
         tile_ids = paired_tile_ids_in(row['Patient_ID'], row['Slide_ID'], row['Tumor'], row[label_col], row['path'])
         validation_tiles = pd.concat([validation_tiles, tile_ids])
+
+    if exclude:
+        train_tiles = train_tiles[~train_tiles['Tumor'].isin(exclude)]
+        validation_tiles = validation_tiles[~validation_tiles['Tumor'].isin(exclude)]
+        test_tiles = test_tiles[~test_tiles['Tumor'].isin(exclude)]
 
     # No shuffle on test set
     train_tiles = sku.shuffle(train_tiles)
