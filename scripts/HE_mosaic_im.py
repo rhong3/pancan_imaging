@@ -39,34 +39,30 @@ if __name__ == "__main__":
     dirls = dirr.split(',')
 
     for i in dirls:
-        try:
-            ipdat = pd.read_csv('../Results/{}/out/{}.csv'.format(i, filename))
-            ipdat['X0'] = (ipdat['X0']+110)
-            ipdat['X0'] = ipdat['X0']/ipdat['X0'].max()*bin
-            ipdat['X1'] = (ipdat['X1']+110)
-            ipdat['X1'] = ipdat['X1'] / ipdat['X0'].max()*bin
-            ipdat['x_int'] = ipdat['X0'].round()
-            ipdat['y_int'] = ipdat['X1'].round()
-            imdat = sample(ipdat, pdmd, bin)
-            imdat.to_csv('../Results/{}/out/tsne_selected.csv'.format(i), index=False)
-            for j in range(3):
-                new_im = Image.new(mode='RGB', size=(size*(bin+1), size*(bin+1)), color='white')
+        ipdat = pd.read_csv('../Results/{}/out/{}.csv'.format(i, filename))
+        ipdat['X0'] = (ipdat['X0']+110)
+        ipdat['X0'] = ipdat['X0']/ipdat['X0'].max()*bin
+        ipdat['X1'] = (ipdat['X1']+110)
+        ipdat['X1'] = ipdat['X1'] / ipdat['X1'].max()*bin
+        ipdat['x_int'] = ipdat['X0'].round()
+        ipdat['y_int'] = ipdat['X1'].round()
+        imdat = sample(ipdat, pdmd, bin)
+        imdat.to_csv('../Results/{}/out/tsne_selected.csv'.format(i), index=False)
+        for j in range(3):
+            new_im = Image.new(mode='RGB', size=(size*(bin+1), size*(bin+1)), color='white')
 
-                for idx, rows in imdat.iterrows():
-                    impath = rows['L{}impath'.format(j)]
-                    x = int(rows.x_int)
-                    y = int(rows.y_int)
-                    try:
-                        im = Image.open(impath)
-                        im.thumbnail((size, size))
-                        new_im.paste(im, ((x-1)*size, (bin-y)*size))
-                    except FileNotFoundError:
-                        print(impath)
-                        pass
-                new_im.save(os.path.abspath('../Results/{}/out/{}_{}.jpeg'.format(i, outim, j)), "JPEG")
-                print('{} done'.format(i))
-        except FileNotFoundError:
-            print('{} passed'.format(i))
-            pass
+            for idx, rows in imdat.iterrows():
+                impath = rows['L{}impath'.format(j)]
+                x = int(rows.x_int)
+                y = int(rows.y_int)
+                try:
+                    im = Image.open(impath)
+                    im.thumbnail((size, size))
+                    new_im.paste(im, ((x-1)*size, (bin-y)*size))
+                except FileNotFoundError:
+                    print(impath)
+                    pass
+            new_im.save(os.path.abspath('../Results/{}/out/{}_{}.jpeg'.format(i, outim, j)), "JPEG")
+            print('{} done'.format(i))
 
 
