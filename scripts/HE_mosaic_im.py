@@ -26,6 +26,7 @@ def sample(dat, md, bins):
         for j in range(bins):
             try:
                 sub = dat.loc[(dat['x_int'] == i) & (dat['y_int'] == j)]
+                sub = sub.loc[(sub['P0'] > 0.6) | (sub['P0'] < 0.4)]
                 picked = sub.sample(1, replace=False)
                 for idx, row in picked.iterrows():
                     sampledls.append([row['L1path'], row['L2path'], row['L3path'], row['x_int'], row['y_int']])
