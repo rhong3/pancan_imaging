@@ -8,7 +8,7 @@ library(MLmetrics)
 library(boot)
 library(gmodels)
 
-feature = "TP53"
+feature = "Tumor"
 cancers = c("UCEC", "CCRCC", "LUAD", "LSCC", "PDA", "HNSCC")
 inlist = c()
 for (x in cancers){
