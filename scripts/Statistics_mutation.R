@@ -78,7 +78,7 @@ for (i in targets){
       # PRC
       prcR = PRAUC(Test_tile$POS_score, factor(Test_tile$True_label))
       prls = list()
-      for (j in 1:10){
+      for (j in 1:5){
         sampleddf = Test_tile[sample(nrow(Test_tile), round(nrow(Test_tile)*0.9)),]
         prc = PRAUC(sampleddf$POS_score, factor(sampleddf$True_label))
         prls[j] = prc

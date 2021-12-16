@@ -62,7 +62,7 @@ for (i in targets){
       # PRC
       SprcR = PRAUC(Test_slide$POS_score, factor(Test_slide$True_label))
       Sprls = list()
-      for (j in 1:100){
+      for (j in 1:10){
         sampleddf = Test_slide[sample(nrow(Test_slide), round(nrow(Test_slide)*0.9)),]
         Sprc = PRAUC(sampleddf$POS_score, factor(sampleddf$True_label))
         Sprls[j] = Sprc
@@ -85,7 +85,7 @@ for (i in targets){
       # PRC
       prcR = PRAUC(Test_tile$POS_score, factor(Test_tile$True_label))
       prls = list()
-      for (j in 1:10){
+      for (j in 1:5){
         sampleddf = Test_tile[sample(nrow(Test_tile), round(nrow(Test_tile)*0.9)),]
         prc = PRAUC(sampleddf$POS_score, factor(sampleddf$True_label))
         prls[j] = prc
