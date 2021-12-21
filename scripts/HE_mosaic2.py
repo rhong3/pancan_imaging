@@ -25,6 +25,11 @@ def sample(dat, md, bins):
         classes = 5
         redict = {1: 'stage1_score', 2: 'stage2_score', 3: 'stage3_score', 4: 'stage4_score', 0: 'stage0_score'}
         cutoff = 0.25
+    elif md == "origin":
+        redict = {1: 'CCRCC_score', 2: 'CO_score', 3: 'BRCA_score', 4: 'LUAD_score', 0: 'HNSCC_score',
+                  5: 'LSCC_score', 6: 'PDA_score', 7: 'UCEC_score', 8: 'GBM_score', 9: 'OV_score'}
+        classes = 10
+        cutoff = 0.2
     elif md == "grade":
         redict = {1: 'grade1_score', 2: 'grade2_score', 3: 'grade3_score', 4: 'grade4_score', 0: 'grade0_score'}
         classes = 5
