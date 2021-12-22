@@ -8,7 +8,7 @@ library(MLmetrics)
 library(boot)
 library(gmodels)
 
-feature = "TP53"
+feature = "Tumor"
 cancers = c("UCEC", "CCRCC", "LUAD", "LSCC", "PDA", "HNSCC")
 inlist = c()
 for (x in cancers){
@@ -50,7 +50,6 @@ for (i in targets){
       Test_slide <- read.csv(paste("~/documents/pancan_imaging/Results/", folder, "/out/Test_slide.csv", sep=''))
       Test_tile <- read.csv(paste("~/documents/pancan_imaging/Results/", folder, "/out/Test_tile.csv", sep=''))
       
-      Test_slide = rbind(Test_slide, Test_slide)
       # per Slide level
       answers <- factor(Test_slide$True_label)
       results <- factor(Test_slide$Prediction)

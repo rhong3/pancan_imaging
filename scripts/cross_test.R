@@ -32,3 +32,9 @@ ggheatmap +
                                title.position = "top", title.hjust = 0.5)) + ggtitle("Tumor vs. Normal Slide AUROC") + 
   xlab('Trained on') + ylab('Applied to')
 
+### Legacy ###
+# label$path = as.character(label$path)
+# for (i in 1:nrow(label)){
+#   label$path[i] = paste('../tiles', as.character(label$Tumor[i]), as.character(label$Patient_ID[i]), strsplit(as.character(label$Slide_ID[i]), split='-')[[1]][3], '', sep='/')
+# }
+# write.csv(label, '~/documents/pancan_imaging/DLCCA/tumor_normal.csv', row.names = FALSE)
