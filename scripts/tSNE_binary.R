@@ -2,7 +2,7 @@
 ## visualize the manifold
 
 ### Tile-level tSNE ###
-inlist=c('Results/P18', 'Results/P6', 'Results/R18', 'Results/R6')
+inlist=c('Results/Tumor_LUAD_on_UCEC_CCA')
 
 for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')
