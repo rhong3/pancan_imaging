@@ -10,7 +10,7 @@ TP53[,c(3,4)] = round(TP53[,c(3,4)], digits=3)
 Tumor[,c(3,4)] = round(Tumor[,c(3,4)], digits=3)
 
 # Create a ggheatmap
-ggheatmap <- ggplot(Tumor, aes(Model, On, fill = Slide_ROC))+
+ggheatmap <- ggplot(Tumor, aes(Model, On, fill = Tile_ROC))+
   geom_tile(color = "white")+
   scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
                        midpoint = 0.5, limit = c(0,1), space = "Lab", 
