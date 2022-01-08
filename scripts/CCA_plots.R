@@ -41,8 +41,14 @@ cellularity = cellularity[, c('Folder', 'Slide_Multiclass_ROC.95.CI_lower', 'Sli
                   'Tile_Multiclass_ROC.95.CI_lower', 'Tile_Multiclass_ROC', 'Tile_Multiclass_ROC.95.CI_upper')]
 colnames(cellularity) = gsub('Folder', 'Feature', colnames(cellularity))
 colnames(cellularity) = gsub('Multiclass_', '', colnames(cellularity))
+origin <- read_csv("Results/Statistics_origin.csv")
+origin = origin[, c('Folder', 'Slide_Multiclass_ROC.95.CI_lower', 'Slide_Multiclass_ROC', 'Slide_Multiclass_ROC.95.CI_upper',
+                              'Tile_Multiclass_ROC.95.CI_lower', 'Tile_Multiclass_ROC', 'Tile_Multiclass_ROC.95.CI_upper')]
+colnames(origin) = gsub('Folder', 'Feature', colnames(origin))
+colnames(origin) = gsub('Multiclass_', '', colnames(origin))
 
-all = rbind(mutation, tumor, stage, grade, nuclei, necrosis, cellularity)
+
+all = rbind(mutation, tumor, stage, grade, nuclei, necrosis, cellularity, origin)
 all = all[order(-all$Slide_ROC),]
 all = na.omit(all)
 
@@ -50,7 +56,7 @@ all = na.omit(all)
 # tiles
 library(ggplot2)
 library(ggpubr)
-todolist = c("tumor_CCA", "TP53_CCA", "ARID1A_CCA", "ARID2_CCA", "BRCA2_CCA", "CTNNB1_CCA", "EGFR_CCA", "JAK1_CCA", "KRAS_CCA",
+todolist = c("TP53_CCA", "ARID1A_CCA", "ARID2_CCA", "BRCA2_CCA", "CTNNB1_CCA", "EGFR_CCA", "JAK1_CCA", "KRAS_CCA",
              "MTOR_CCA", "NOTCH1_CCA", "NOTCH3_CCA", "PIK3CA_CCA", "PTEN_CCA", "STK11_CCA", "TP53_CCA", "ZFHX3_CCA")
 tile_all = data.frame(Prediction_score= numeric(0), True_label= character(0), feature = character(0))
 for (f in todolist){
@@ -76,8 +82,8 @@ tile_all$feature = gsub('_CCA', "", tile_all$feature)
 
 pp = ggboxplot(tile_all, x = "feature", y = "Prediction_score",
                color = "black", fill = "True_label", palette = "grey")+ 
-  stat_compare_means(method.args = list(alternative = "less"), aes(group = True_label), label = "p.signif", label.y = 1.1) + 
-  stat_compare_means(method.args = list(alternative = "less"), aes(group = True_label), label = "p.format", label.y = 1.15) + 
+  stat_compare_means(method.args = list(alternative = "greater"), aes(group = True_label), label = "p.signif", label.y = 1.1) + 
+  stat_compare_means(method.args = list(alternative = "greater"), aes(group = True_label), label = "p.format", label.y = 1.15) + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size=15, face="bold"))
 
 pdf(file=paste("Results/CCA_Wilcoxon_tiles.pdf", sep=''),
@@ -110,8 +116,8 @@ slide_all$feature = gsub('_CCA', "", slide_all$feature)
 
 pp = ggboxplot(slide_all, x = "feature", y = "Prediction_score",
                color = "black", fill = "True_label", palette = "grey")+ 
-  stat_compare_means(method.args = list(alternative = "less"), aes(group = True_label), label = "p.signif", label.y = 1.1) + 
-  stat_compare_means(method.args = list(alternative = "less"), aes(group = True_label), label = "p.format", label.y = 1.15) + 
+  stat_compare_means(method.args = list(alternative = "greater"), aes(group = True_label), label = "p.signif", label.y = 1.1) + 
+  stat_compare_means(method.args = list(alternative = "greater"), aes(group = True_label), label = "p.format", label.y = 1.15) + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size=15, face="bold"))
 
 pdf(file=paste("Results/CCA_Wilcoxon_slides.pdf", sep=''),
@@ -152,7 +158,7 @@ pdf(file="Results/CCA_ROC_plot_tile.pdf",
 grid.arrange(pt,nrow=1, ncol=1)
 dev.off()
 
-
+print(pt)
 
 
 ### individual class AUROC for multiclass tasks ###

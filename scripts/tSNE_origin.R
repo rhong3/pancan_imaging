@@ -72,6 +72,7 @@ for(xx in inlist){
 
     pblist[[i]]=ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
       geom_point(aes(col=Tumor),alpha=0.5)+
+      scale_color_manual(values=c('#ff7f0e', '#902020', '#41e0d1', '#cb997e', '#9566bd', '#ff0101'))+
       xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
       ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
       theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
