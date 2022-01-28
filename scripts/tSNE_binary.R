@@ -2,7 +2,7 @@
 ## visualize the manifold
 
 ### Tile-level tSNE ###
-inlist=c('Results/IC125')
+inlist=c('Results/IC62', 'Results/IC67')
 
 for(xx in inlist){
   input_file=paste('~/documents/pancan_imaging/',xx,'/out/For_tSNE.csv',sep='')
@@ -17,10 +17,12 @@ for(xx in inlist){
   
   library(dplyr)
   library(Rtsne)
-  ori_dat = read.table(file=input_file,header=T,sep=',')
-  sp_ori_dat=ori_dat[sample(nrow(ori_dat), 20000), ]
-  write.table(sp_ori_dat, file=sampled_file, row.names = F, sep=',')
+  # ori_dat = read.table(file=input_file,header=T,sep=',')
+  # sp_ori_dat=ori_dat[sample(nrow(ori_dat), 20000), ]
+  # write.table(sp_ori_dat, file=sampled_file, row.names = F, sep=',')
   
+  sp_ori_dat = read.table(file=sampled_file,header=T,sep=',')
+  sp_ori_dat = na.omit(sp_ori_dat)
   X = as.matrix(sp_ori_dat[,start:ncol(sp_ori_dat)])
   res = Rtsne(X, initial_dims=100, check_duplicates = FALSE)
   Y=res$Y
@@ -57,7 +59,7 @@ for(xx in inlist){
   
   pb=ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
     geom_point(aes(col=Tumor),alpha=0.5, size=2)+
-    scale_color_manual(values=c('#ff7f0e', '#902020', '#41e0d1', '#cb997e', '#9566bd', '#ff0101'))+
+    # scale_color_manual(values=c('#ff7f0e', '#902020', '#41e0d1', '#cb997e', '#9566bd', '#ff0101'))+
     xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
     ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
@@ -66,7 +68,8 @@ for(xx in inlist){
   
   pc=ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
     geom_point(aes(col=True_label),alpha=0.5, size=2)+
-    scale_color_manual(values=c('steelblue', 'red')) +
+    scale_color_manual(values=c('steelblue', 'red'))+
+    # scale_color_gradient2(high='red',mid='gray',low='steelblue',midpoint=MDP)+
     xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
     ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
@@ -75,7 +78,8 @@ for(xx in inlist){
   
   pd=ggplot(data=dat,aes_string(x='tsne1',y='tsne2'))+
     geom_point(aes(col=Prediction),alpha=0.5, size=2)+
-    scale_color_manual(values=c('steelblue', 'red')) +
+    scale_color_manual(values=c('steelblue', 'red'))+
+    # scale_color_gradient2(high='red',mid='gray',low='steelblue',midpoint=MDP)+
     xlim(-max(abs(dat$tsne1))*1.1,max(abs(dat$tsne1))*1.1)+
     ylim(-max(abs(dat$tsne2))*1.1,max(abs(dat$tsne2))*1.1)+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
