@@ -8,8 +8,7 @@ library(MLmetrics)
 library(boot)
 library(gmodels)
 
-inlist = c('IC1_CCRCC-IC1', 'IC1_UCEC-IC1', 'IC1_PDA-IC1', 'IC1_LUAD-IC1', 'IC1_LSCC-IC1', 'IC1_GBM-IC1', 'IC1_BRCA-IC1', 'IC1_CO-IC1', 'IC1_OV-IC1', 'IC1_HNSCC-IC1',
-           'IC39_CCRCC-IC39', 'IC39_UCEC-IC39', 'IC39_PDA-IC39', 'IC39_LUAD-IC39', 'IC39_LSCC-IC39', 'IC39_BRCA-IC39', 'IC39_CO-IC39', 'IC39_OV-IC39', 'IC39_HNSCC-IC39')
+inlist = c('IC38-IC38')
 # Check previously calculated trials
 previous=read.csv("~/Documents/pancan_imaging/Results/Statistics_other.csv")
 existed=paste(previous$Folder, previous$Feature, previous$Type_number, sep='-')

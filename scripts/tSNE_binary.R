@@ -2,8 +2,7 @@
 ## visualize the manifold
 
 ### Tile-level tSNE ###
-inlist=c('Results/IC1_BRCA', 'Results/IC1_CO', 'Results/IC1_OV',
-        'Results/IC39_BRCA', 'Results/IC39_CO', 'Results/IC39_OV')
+inlist=c('Results/IC38', 'Results/IC15', 'Results/IC46', 'Results/IC29', 'Results/IC3')
 
 for(xx in inlist){
   tryCatch(
@@ -20,9 +19,9 @@ for(xx in inlist){
     
     library(dplyr)
     library(Rtsne)
-    ori_dat = read.table(file=input_file,header=T,sep=',')
-    sp_ori_dat=ori_dat#[sample(nrow(ori_dat), 20000), ]
-    write.table(sp_ori_dat, file=sampled_file, row.names = F, sep=',')
+    # ori_dat = read.table(file=input_file,header=T,sep=',')
+    # sp_ori_dat=ori_dat#[sample(nrow(ori_dat), 20000), ]
+    # write.table(sp_ori_dat, file=sampled_file, row.names = F, sep=',')
   
     sp_ori_dat = read.table(file=sampled_file,header=T,sep=',')
     sp_ori_dat = na.omit(sp_ori_dat)
