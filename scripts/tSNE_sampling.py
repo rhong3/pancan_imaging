@@ -3,7 +3,7 @@
 import pandas as pd
 import random
 
-for i in ['IC46', 'IC29', 'IC38', 'IC15', 'IC3']:
+for i in ['IC5', 'IC70']:
     n = sum(1 for line in open('../Results/{}/out/For_tSNE.csv'.format(i))) - 1
     s = 20000
     skip = sorted(random.sample(range(n), n - s))

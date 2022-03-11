@@ -2,7 +2,7 @@
 ## visualize the manifold
 
 ### Tile-level tSNE ###
-inlist=c('Results/IC38', 'Results/IC15', 'Results/IC46', 'Results/IC29', 'Results/IC3')
+inlist=c('Results/IC5', 'Results/IC70')
 
 for(xx in inlist){
   tryCatch(
