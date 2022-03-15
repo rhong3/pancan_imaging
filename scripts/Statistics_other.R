@@ -8,7 +8,7 @@ library(MLmetrics)
 library(boot)
 library(gmodels)
 
-inlist = c('IC5-IC5', 'IC70-IC70')
+inlist = c('IC46_gyn-IC46')
 # Check previously calculated trials
 previous=read.csv("~/Documents/pancan_imaging/Results/Statistics_other.csv")
 existed=paste(previous$Folder, previous$Feature, previous$Type_number, sep='-')
