@@ -48,18 +48,21 @@ import os
 #
 
 # ICA labels
-ic = pd.read_csv('../IC_1QT_raw_new.csv', header=0)
+ic = pd.read_csv('../sub_pancan_IC_1QT.csv', header=0)
 tumor = pd.read_csv('../tumor_label_df.csv', header=0, usecols=['Patient_ID', 'Slide_ID', 'Tumor_normal'])
 tumor = tumor[tumor['Tumor_normal'] == 1]
 tumor = tumor.drop(columns=['Tumor_normal'])
 
 ic = ic.join(tumor.set_index('Patient_ID'), on='Patient_ID', how='left')
-ic = ic.dropna()
-ic = ic[['Slide_ID', 'Patient_ID', 'Tumor', 'ic_003_q75', 'ic_005_q75', 'ic_015_q75', 'ic_029_q75', 'ic_038_q75',
-       'ic_046_q75', 'ic_049_q75', 'ic_070_q75']]
+ic = ic.dropna(subset=['Slide_ID', 'Patient_ID', 'Tumor'])
+ic = ic[['Slide_ID', 'Patient_ID', 'Tumor', 'pan_gyn_ic_002_q75', 'pan_gyn_ic_007_q75',
+       'pan_gyn_ic_009_q75', 'pan_gyn_ic_014_q75', 'pan_scc_ic_000_q75',
+       'pan_scc_ic_006_q75', 'pan_scc_ic_012_q75', 'pan_scc_ic_027_q75',
+       'pan_ad_ic_005_q75', 'pan_ad_ic_006_q75', 'pan_ad_ic_011_q75',
+       'pan_ad_ic_012_q75', 'pan_ad_ic_018_q75']]
 # icx = pd.read_csv('../IC_1QT_label.csv', header=0)
 # ic = ic.join(icx.set_index(['Patient_ID', 'Slide_ID', 'Tumor']), on=['Patient_ID', 'Slide_ID', 'Tumor'], how='outer')
-ic.to_csv('../IC_1QT_label_new.csv', index=False)
+ic.to_csv('../sub_pancan_IC_1QT_new.csv', index=False)
 
 # # Vas cluster scores label
 # protein = pd.read_csv('../Theme5/Final_Protein_method_gsva4.csv', header=0,
