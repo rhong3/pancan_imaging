@@ -47,22 +47,38 @@ import os
 # summ_df.to_csv('../Chrm8q_label_df.csv', index=False)
 #
 
-# ICA labels
-ic = pd.read_csv('../sub_pancan_IC_1QT.csv', header=0)
+# # ICA labels
+# ic = pd.read_csv('../sub_pancan_IC_1QT.csv', header=0)
+# tumor = pd.read_csv('../tumor_label_df.csv', header=0, usecols=['Patient_ID', 'Slide_ID', 'Tumor_normal'])
+# tumor = tumor[tumor['Tumor_normal'] == 1]
+# tumor = tumor.drop(columns=['Tumor_normal'])
+#
+# ic = ic.join(tumor.set_index('Patient_ID'), on='Patient_ID', how='left')
+# ic = ic.dropna(subset=['Slide_ID', 'Patient_ID', 'Tumor'])
+# ic = ic[['Slide_ID', 'Patient_ID', 'Tumor', 'pan_gyn_ic_002_q75', 'pan_gyn_ic_007_q75',
+#        'pan_gyn_ic_009_q75', 'pan_gyn_ic_014_q75', 'pan_scc_ic_000_q75',
+#        'pan_scc_ic_006_q75', 'pan_scc_ic_012_q75', 'pan_scc_ic_027_q75',
+#        'pan_ad_ic_005_q75', 'pan_ad_ic_006_q75', 'pan_ad_ic_011_q75',
+#        'pan_ad_ic_012_q75', 'pan_ad_ic_018_q75']]
+# # icx = pd.read_csv('../IC_1QT_label.csv', header=0)
+# # ic = ic.join(icx.set_index(['Patient_ID', 'Slide_ID', 'Tumor']), on=['Patient_ID', 'Slide_ID', 'Tumor'], how='outer')
+# ic.to_csv('../sub_pancan_IC_1QT_new.csv', index=False)
+
+# Drug labels
+ic = pd.read_csv('../pancan_1.1_ps_gene_drug.csv', header=0)
 tumor = pd.read_csv('../tumor_label_df.csv', header=0, usecols=['Patient_ID', 'Slide_ID', 'Tumor_normal'])
 tumor = tumor[tumor['Tumor_normal'] == 1]
 tumor = tumor.drop(columns=['Tumor_normal'])
 
 ic = ic.join(tumor.set_index('Patient_ID'), on='Patient_ID', how='left')
 ic = ic.dropna(subset=['Slide_ID', 'Patient_ID', 'Tumor'])
-ic = ic[['Slide_ID', 'Patient_ID', 'Tumor', 'pan_gyn_ic_002_q75', 'pan_gyn_ic_007_q75',
-       'pan_gyn_ic_009_q75', 'pan_gyn_ic_014_q75', 'pan_scc_ic_000_q75',
-       'pan_scc_ic_006_q75', 'pan_scc_ic_012_q75', 'pan_scc_ic_027_q75',
-       'pan_ad_ic_005_q75', 'pan_ad_ic_006_q75', 'pan_ad_ic_011_q75',
-       'pan_ad_ic_012_q75', 'pan_ad_ic_018_q75']]
+ic = ic[['Slide_ID', 'Patient_ID', 'Tumor', 'palbociclib', 'MEK.162',
+       'cobimetinib', 'SN.38', 'neratinib',
+       'valrubicin', 'tivozanib', 'AZD.9291',
+       'vemurafenib', 'vandetanib']]
 # icx = pd.read_csv('../IC_1QT_label.csv', header=0)
 # ic = ic.join(icx.set_index(['Patient_ID', 'Slide_ID', 'Tumor']), on=['Patient_ID', 'Slide_ID', 'Tumor'], how='outer')
-ic.to_csv('../sub_pancan_IC_1QT_new.csv', index=False)
+ic.to_csv('../pancan_1.1_ps_gene_drug_label.csv', index=False)
 
 # # Vas cluster scores label
 # protein = pd.read_csv('../Theme5/Final_Protein_method_gsva4.csv', header=0,
