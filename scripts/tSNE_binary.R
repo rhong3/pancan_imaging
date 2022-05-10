@@ -2,9 +2,8 @@
 ## visualize the manifold
 
 ### Tile-level tSNE ###
-inlist=c('Results/gyn_IC14','Results/gyn_IC2','Results/gyn_IC7','Results/gyn_IC9',
-         'Results/ad_IC5','Results/ad_IC6','Results/ad_IC11','Results/ad_IC12','Results/ad_IC18', 
-         'Results/scc_IC0','Results/scc_IC6','Results/scc_IC12','Results/scc_IC27')
+inlist=c('Results/cobimetinib','Results/vemurafenib','Results/AZD.9291','Results/valrubicin',
+         'Results/SN.38','Results/MEK.162','Results/neratinib','Results/tivozanib')
 
 for(xx in inlist){
   tryCatch(
